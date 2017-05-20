@@ -3,5 +3,9 @@ project(Alfred)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES main.cpp src/Logger/Logger.cpp src/Logger/Logger.hpp)
-add_executable(Alfred ${SOURCE_FILES})
+set(SOURCE_PROMISE main.cpp src/Promise/Promise.hpp src/DecisionTree/DecisionTree.hpp)
+add_executable(Alfred ${SOURCE_PROMISE})
+target_link_libraries(Alfred pthread)
+
+set(SOURCE_LOGGER main.cpp src/Logger/Logger.hpp test/testLogger.cpp)
+add_executable(Logger ${SOURCE_LOGGER})
