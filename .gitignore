@@ -400,3 +400,6 @@ flycheck_*.el
 /server/
 .projectile
 .dir-locals.el
+*.sln
+*.vcxproj
+*.filters
