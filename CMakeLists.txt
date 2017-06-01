@@ -3,11 +3,13 @@ project(Alfred)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_PROMISE main.cpp src/Promise/Promise.hpp src/DecisionTree/DecisionTree.hpp src/Timer/Timer.hpp)
+set (SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp)
+
+set(SOURCE_PROMISE main.cpp src/Promise/Promise.hpp src/DecisionTree/DecisionTree.hpp src/Timer/Timer.hpp ${SOURCE_UTILS})
 add_executable(Alfred ${SOURCE_PROMISE})
 target_link_libraries(Alfred pthread)
 
-set(SOURCE_LOGGER main.cpp src/Logger/Logger.hpp test/testLogger.cpp)
+set(SOURCE_LOGGER src/Logger/Logger.hpp test/testLogger.cpp)
 add_executable(Logger ${SOURCE_LOGGER})
 
 

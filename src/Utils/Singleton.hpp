@@ -11,20 +11,24 @@
 #ifndef ALFRED_SINGLETON_HPP
 #define ALFRED_SINGLETON_HPP
 
-template <typename T>
-class Singleton
+#include "NonCopyable.hpp"
+
+namespace Alfred
 {
-private:
-    T _singletonValue;
-
-public:
-    T &getSingleton()
+    template <typename T>
+    class Singleton : public NonCopyable
     {
-        if (_singletonValue)
-            return _singletonValue;
-        _singletonValue = T();
-        return _singletonValue;
-    }
-};
+    private:
+        T _singletonValue;
 
+    public:
+        T &getSingleton()
+        {
+            if (_singletonValue)
+                return _singletonValue;
+            _singletonValue = T();
+            return _singletonValue;
+        }
+    };
+}
 #endif //ALFRED_SINGLETON_HPP
