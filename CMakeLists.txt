@@ -9,3 +9,7 @@ target_link_libraries(Alfred pthread)
 
 set(SOURCE_LOGGER main.cpp src/Logger/Logger.hpp test/testLogger.cpp)
 add_executable(Logger ${SOURCE_LOGGER})
+
+
+set(SOURCE_TEST_TIMER test/testTimer.cpp src/Timer/Timer.hpp)
+add_executable(test_Timer ${SOURCE_TEST_TIMER})

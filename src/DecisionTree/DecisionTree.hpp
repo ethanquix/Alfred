@@ -11,12 +11,8 @@
 #ifndef ALFRED_DECISIONTREE_HPP
 #define ALFRED_DECISIONTREE_HPP
 
-
-
-class DecisionTree {
-
+class DecisionTree
+{
 };
-
-
 
 #endif //ALFRED_DECISIONTREE_HPP

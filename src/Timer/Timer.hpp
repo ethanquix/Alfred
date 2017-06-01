@@ -15,18 +15,31 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <cassert>
 
 //TODO Multithread is Better
 
-namespace Alfred {
+namespace Alfred
+{
 
-    class TimerCheckpointAlreadyExist : public std::exception {
-        const char *what() const throw() override { return "Checkpoint already exist.\n"; }
+    /**
+     * Exception for Timer trigerred when the user want to add a checkpoint which already exist
+     */
+    class TimerCheckpointAlreadyExist : public std::exception
+    {
+        const char *what() const throw() override
+        { return "Checkpoint already exist.\n"; }
     };
 
-    class Timer {
-        int max;
-        int precTime = -1;
+    /**
+     * WARNING: The _onTick and _onEnd callback will be called only if they both exist (!= nullptr)
+     * You can create them via the constructor or via the setXXXCallback function
+     */
+    class Timer
+    {
+        int max = -1;
+        long precTime = -1;
         std::chrono::time_point<std::chrono::system_clock> timeStart;
         std::function<void(const std::string &)> _onTick;
         std::function<void()> _onEnd;
@@ -34,13 +47,17 @@ namespace Alfred {
         std::unordered_map<int, std::unordered_map<std::string, std::function<void()>>> _checkpoint;
 
     public:
+
+        explicit Timer() = default;
+
         /**
          * Create a Timer from max seconds
          * @param max max seconds
          */
         explicit Timer(int max) :
-                max(max),
-                _update([this]() -> bool { return(updateWithoutCallback()); }) {};
+            max(max),
+            _update([this]() -> bool { return (updateWithoutCallback()); })
+        {};
 
         /**
          * Create a Timer from max seconds
@@ -48,17 +65,33 @@ namespace Alfred {
          * @param _onTick Callback called each second. Signature must be std::function<void(const std::string &)> string is the time beautified
          * @param _onEnd Callback called at the end of the time
          */
-        explicit Timer(int max, std::function<void(const std::string &)> _onTick, std::function<void()> _onEnd) :
-                max(max),
-                _onTick(_onTick),
-                _onEnd(_onEnd),
-                _update([this]() -> bool { return(updateWithCallback()); }) {};
+        explicit Timer(int max, std::function<void(const std::string &)> _onTick,
+                       std::function<void()> _onEnd = nullptr) :
+            max(max),
+            _onTick(std::move(_onTick)),
+            _onEnd(std::move(_onEnd)),
+            _update([this]() -> bool { return (updateWithCallback()); })
+        {};
 
         /**
          * Set max time
          * @param time
          */
-        void setTime(int time) {
+
+        Timer &operator=(const Timer &other)
+        {
+            max = other.max;
+            precTime = other.precTime;
+            timeStart = other.timeStart;
+            _onTick = other._onTick;
+            _onEnd = other._onEnd;
+            _update = other._update;
+            _checkpoint = other._checkpoint; //not sure about this one
+            return *this;
+        }
+
+        void setTime(int time)
+        {
             max = time;
             precTime = -1;
         }
@@ -66,7 +99,9 @@ namespace Alfred {
         /*
          * Start the timer
          */
-        void start() {
+        void start()
+        {
+            assert(max > 0 && "Alfred - Timer: You have not set time before calling start (timer.setTime)");
             timeStart = std::chrono::system_clock::now();
             precTime = -1;
         }
@@ -74,13 +109,15 @@ namespace Alfred {
         /*
          * Restart the timer
          */
-        void restart() { start(); };
+        void restart()
+        { start(); };
 
         /**
          * Update the timer
-         * @return
+         * @return return true if time is over. false otherwise
          */
-        bool update() const { return (_update()); };
+        bool update() const
+        { return (_update()); };
 
         /**
          * Add a checkpoint to the timer. Raise exception if a checkpoint with this name already exist at time time
@@ -88,23 +125,25 @@ namespace Alfred {
          * @param name Name of the breakpoint
          * @param func Callback in form std::function<void()>
          */
-        void addCheckpoint(int time, const std::string &name, std::function<void()> func) {
-            if (_onEnd != nullptr)
-                _update = [this]() -> bool { return(updateWithCallbackWithCheckpoint()); };
+        void addCheckpoint(int time, const std::string &name, std::function<void()> func)
+        {
+            if (_onTick != nullptr)
+                _update = [this]() -> bool { return (updateWithCallbackWithCheckpoint()); };
             else
-                _update = [this]() -> bool { return(updateWithoutCallbackWithCheckpoint()); };
+                _update = [this]() -> bool { return (updateWithoutCallbackWithCheckpoint()); };
 
             if (_checkpoint[time].count(name))
                 throw TimerCheckpointAlreadyExist();
-            _checkpoint[time][name] = func;
+            _checkpoint[time][name] = std::move(func);
         }
 
         /**
          * Delete a checkpoint with name name.
          * @param name Name of the checkpoint
          */
-        void deleteCheckpoint(const std::string &name) {
-            for (auto it : _checkpoint) {
+        void deleteCheckpoint(const std::string &name)
+        {
+            for (auto &it : _checkpoint) {
                 it.second.erase(name);
                 if (it.second.empty())
                     _checkpoint.erase(it.first);
@@ -116,24 +155,49 @@ namespace Alfred {
          * Delete all checkpoint with time time
          * @param time Time at wich delete all checkpoint
          */
-        void deleteCheckpoint(int time) {
+        void deleteCheckpoint(int time)
+        {
             _checkpoint.erase(time);
             defUpdateFonction();
         }
 
+        /**
+         * Set callback called each tick
+         */
+        void setOnTickCallback(std::function<void(const std::string &)> func)
+        {
+            _onTick = func;
+            defUpdateFonction();
+        }
+
+        /**
+         * Set callback called at the end
+         */
+        void setEndCallback(std::function<void()> func)
+        {
+            _onEnd = func;
+            defUpdateFonction();
+        }
+
     private:
+
         /**
          * Beautify from seconde to min
          * @param sec
          * @return string in form of -> MIN:SEC like 1:42
          */
-        std::string beautifySec(int sec) const
+        std::string beautifySec(long sec) const
         {
+            std::string out;
+
             auto minute = sec / 60;
-            if (minute == 0)
-                return std::to_string(sec);
-            auto out = std::to_string(minute);
-            out += ":" + std::to_string(sec - (minute * 60));
+            if (minute < 10)
+                out += "0";
+            out += std::to_string(minute) + ":";
+            sec = sec - minute * 60;
+            if (sec < 10)
+                out += "0";
+            out += std::to_string(sec);
             return out;
         }
 
@@ -144,21 +208,22 @@ namespace Alfred {
          * Call _onTick or _onEnd depending of the situation
          * @return return true if time is over. false otherwise
          */
-        bool updateWithCallback() {
+        bool updateWithCallback()
+        {
             auto now = std::chrono::system_clock::now();
-            int elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
+            auto remaining_time = max - std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
 
-            if (elapsed_seconds < max) {
-                if (elapsed_seconds != precTime)
-                {
-                    precTime = elapsed_seconds;
-                    _onTick(beautifySec(elapsed_seconds));
+            if (remaining_time > 0) {
+                if (remaining_time != precTime) {
+                    precTime = remaining_time;
+                    _onTick(beautifySec(remaining_time));
                 }
             } else {
-                _onEnd();
-                _update = [this]() -> bool { return(nothing()); };
+                if (_onEnd != nullptr)
+                    _onEnd();
+                _update = [this]() -> bool { return (nothing()); };
             }
-            return elapsed_seconds > max;
+            return remaining_time <= 0;
         }
 
         /**
@@ -168,55 +233,59 @@ namespace Alfred {
         bool updateWithoutCallback() const
         {
             auto now = std::chrono::system_clock::now();
-            auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
-            return elapsed_seconds > max;
+            auto remaining_time = max - std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
+            return remaining_time <= 0;
         }
 
         bool updateWithoutCallbackWithCheckpoint()
         {
             auto now = std::chrono::system_clock::now();
-            auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
-            if (precTime != elapsed_seconds)
-            {
-                for (auto it : _checkpoint[elapsed_seconds])
+            auto remaining_time = max - std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
+            if (precTime != remaining_time) {
+                for (const auto &it : _checkpoint[remaining_time])
                     it.second();
-                precTime = elapsed_seconds;
+                precTime = remaining_time;
             }
-            return elapsed_seconds > max;
+            return remaining_time <= 0;
         }
 
-        bool updateWithCallbackWithCheckpoint() {
+        bool updateWithCallbackWithCheckpoint()
+        {
             auto now = std::chrono::system_clock::now();
-            int elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
+            auto remaining_time = max - std::chrono::duration_cast<std::chrono::seconds>(now - timeStart).count();
 
-            if (elapsed_seconds < max) {
-                if (elapsed_seconds != precTime)
-                {
-                    precTime = elapsed_seconds;
-                    _onTick(beautifySec(elapsed_seconds));
-                    for (auto it : _checkpoint[elapsed_seconds])
+            if (remaining_time > 0) {
+                if (remaining_time != precTime) {
+                    precTime = remaining_time;
+                    _onTick(beautifySec(remaining_time));
+                    for (const auto &it : _checkpoint[remaining_time])
                         it.second();
                 }
+            } else {
+                if (_onEnd != nullptr)
+                    _onEnd();
+                _update = [this]() -> bool { return (nothing()); };
             }
-            else {
-                _onEnd();
-                _update = [this]() -> bool { return(nothing()); };
-            }
-            return elapsed_seconds > max;
+            return remaining_time <= 0;
         }
 
-        static bool nothing() {
+        static bool nothing()
+        {
             return true;
         }
 
         inline void defUpdateFonction()
         {
-            if (_checkpoint.empty())
-            {
-                if (_onEnd != nullptr)
-                    _update = [this]() -> bool { return(updateWithCallback()); };
+            if (_checkpoint.empty()) {
+                if (_onTick != nullptr)
+                    _update = [this]() -> bool { return (updateWithCallback()); };
                 else
-                    _update = [this]() -> bool { return(updateWithoutCallback()); };
+                    _update = [this]() -> bool { return (updateWithoutCallback()); };
+            } else {
+                if (_onTick != nullptr)
+                    _update = [this]() -> bool { return (updateWithCallbackWithCheckpoint()); };
+                else
+                    _update = [this]() -> bool { return (updateWithoutCallbackWithCheckpoint()); };
             }
         }
     };
