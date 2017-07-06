@@ -65,7 +65,6 @@ o88o     o8888o o888o o888o   d888b    `Y8bod8P' `Y8bod88P\"          `Y8bood8P'
 
 macro(PRINT_HEADER)
     message(" " ${BoldMagenta}${ZAPPY_MSG}${Reset})
-    #message(" ----------------------------------------------------------------------------------------------------------")
     message("                      " ${BoldMagenta}${PROJECT_NAME}${Reset} ${PROJECT_BUILD_MESSAGE})
     message(" ")
     message(" " ${COPYRIGHT_BUILD_MESSAGE})
@@ -73,5 +72,4 @@ macro(PRINT_HEADER)
     message(" " ${ORGANIZATION_BUILD_MESSAGE})
     message(" ")
     message(" ")
-    #message(" ----------------------------------------------------------------------------------------------------------")
 endmacro()
