@@ -16,17 +16,11 @@
 namespace Alfred
 {
     template <typename T>
-    class Singleton : public NonCopyable
+    struct Singleton : public NonCopyable
     {
-    private:
-        T _singletonValue;
-
-    public:
-        T &getSingleton()
+        static T &getSingleton()
         {
-            if (_singletonValue)
-                return _singletonValue;
-            _singletonValue = T();
+            static T _singletonValue;
             return _singletonValue;
         }
     };

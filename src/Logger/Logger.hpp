@@ -15,22 +15,27 @@
 #include <chrono>
 #include <sstream>
 #include <iomanip>
-
-#define LOG getLogger()
+#include <map>
+#include <assert.h>
+#include "Singleton.hpp"
 
 namespace Alfred
 {
-    class Logger
+    class Logger : public Singleton<Logger>
     {
-    public:
-        static Logger *getLogger()
-        {
-            static Logger *_curr = nullptr;
+        //Var
+    private:
+        std::map<std::string, std::pair<std::clock_t, std::string>> _timers;
 
-            if (_curr == nullptr)
-                _curr = new Logger();
-            return _curr;
-        }
+    public:
+        enum level
+        {
+            DEBUG = 0,
+            INFO,
+            WARNING,
+            ERROR,
+            FATAL
+        };
 
     private:
         const std::string getTime()
@@ -42,20 +47,67 @@ namespace Alfred
             return std::string("[" + ss.str() + "] ");
         }
 
+        template <typename T>
+        constexpr void log_format(const std::string &begin, const std::string &color, T str)
+        {
+            std::cerr << color
+                      << begin << getTime()
+                      << str
+                      << std::string("\033[0m") << std::endl;
+        }
+
     public:
+
         template <typename T>
         void log(T str)
         {
-            std::string tmp;
-
-            std::cout << getTime() << str << std::endl;
+            std::cerr << "INFO - " << getTime() << str << std::endl;
         }
-    };
 
-    inline Alfred::Logger *getLogger()
-    {
-        return Logger::getLogger();
-    };
-}
+        template <typename T>
+        void log(level level, T str)
+        {
+            switch (level) {
+#if DEBUG_MODE
+                case DEBUG:
+                    log_format("DEBUG ", "\033[34m", str);
+                    break;
+#endif
+                case INFO:
+                    log(str);
+                    break;
+                case WARNING:
+                    log_format("WARNING ", "\033[33m", str);
+                    break;
+                case ERROR:
+                    log_format("ERROR ", "\033[31m", str);
+                    break;
+                case FATAL:
+                    log_format("FATAL ", "\033[1;4;31m", str);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void timer_start(const std::string &name, const std::string &desc = "")
+        {
+            _timers[name].first = std::clock();
+            _timers[name].second = desc;
+        }
+
+        double timer_fire(const std::string &name)
+        {
+            //This key don't exist
+            assert(_timers.count(name) == 1);
+            double elapsed = (double(std::clock() - _timers[name].first) / double(CLOCKS_PER_SEC));
+            std::cout << "TIMER - " << getTime() << name << " " << _timers[name].second << ": " << int(elapsed * 1000)
+                      << "ms" << std::endl;
+            return elapsed;
+        }
+    }; //Logger Class
+} //Alfred Namespace
+
+#define LOG Alfred::Logger::getSingleton()
 
 #endif //ALFRED_LOGGER_HPP

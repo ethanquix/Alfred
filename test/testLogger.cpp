@@ -12,5 +12,12 @@
 
 int main()
 {
-    Alfred::LOG->log("yop");
+    LOG.log("yop");
+    LOG.log(Alfred::Logger::DEBUG, "yop");
+    LOG.log(Alfred::Logger::INFO, "yop");
+    LOG.log(Alfred::Logger::WARNING, "yop");
+    LOG.log(Alfred::Logger::ERROR, "yop");
+    LOG.log(Alfred::Logger::FATAL, "yop");
+    LOG.timer_start("yop", "il sert a rien");
+    LOG.timer_fire("yop");
 }
