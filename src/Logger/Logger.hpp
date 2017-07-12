@@ -54,6 +54,7 @@ namespace Alfred
                       << begin << getTime()
                       << str
                       << std::string("\033[0m") << std::endl;
+            std::flush(std::cerr);
         }
 
     public:
@@ -62,6 +63,7 @@ namespace Alfred
         void log(T str)
         {
             std::cerr << "INFO - " << getTime() << str << std::endl;
+            std::flush(std::cerr);
         }
 
         template <typename T>
@@ -101,8 +103,10 @@ namespace Alfred
             //This key don't exist
             assert(_timers.count(name) == 1);
             double elapsed = (double(std::clock() - _timers[name].first) / double(CLOCKS_PER_SEC));
-            std::cout << "TIMER - " << getTime() << name << " " << _timers[name].second << ": " << int(elapsed * 1000)
+            std::cerr << "TIMER - " << getTime() << name << "\t" << _timers[name].second << ": " << int(elapsed * 1000)
                       << "ms" << std::endl;
+            std::flush(std::cerr);
+            _timers.erase(name);
             return elapsed;
         }
     }; //Logger Class
