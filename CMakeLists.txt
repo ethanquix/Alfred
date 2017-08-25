@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(Alfred)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG_MODE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE")
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -15,7 +15,9 @@ set(SOURCE_LOGGER ${SOURCE_UTILS} src/Logger/Logger.hpp)
 
 set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp)
 
-include_directories(src/Timer src/Utils src/Promise src/Logger src/Network)
+set(SOURCE_MATH ${SOURCE_UTILS} src/Math/Math.hpp src/Math/Matrix.hpp)
+
+include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Math)
 
 
 #--------- TESTS ---------#
@@ -28,4 +30,6 @@ target_link_libraries(test_Promise pthread)
 add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
 add_executable(test_Network ${SOURCE_NETWORK} test/testNetwork.cpp)
+
+add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
 

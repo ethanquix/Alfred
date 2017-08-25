@@ -21,7 +21,7 @@ namespace Alfred
         explicit INetwork(int port);
         INetwork(int ip, int port);
 
-        virtual INetwork &send(const std::string &msg) = 0;
+        virtual INetwork &send(const char *msg) = 0;
         virtual INetwork &receive() = 0;
         //TODO CHANGE RECEIVE PROTO (return)
         //TODO IPACKETUTILS INTERFACE (with different possible implem) to parse to send and parse to receive (like send a vector of float and receive it

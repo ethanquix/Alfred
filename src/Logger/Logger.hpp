@@ -72,20 +72,20 @@ namespace Alfred
             switch (level) {
 #if DEBUG_MODE
                 case DEBUG:
-                    log_format("DEBUG ", "\033[34m", str);
+                    log_format("DEBUG - ", "\033[34m", str);
                     break;
 #endif
                 case INFO:
                     log(str);
                     break;
                 case WARNING:
-                    log_format("WARNING ", "\033[33m", str);
+                    log_format("WARNING - ", "\033[33m", str);
                     break;
                 case ERROR:
-                    log_format("ERROR ", "\033[31m", str);
+                    log_format("ERROR - ", "\033[31m", str);
                     break;
                 case FATAL:
-                    log_format("FATAL ", "\033[1;4;31m", str);
+                    log_format("FATAL - ", "\033[1;4;31m", str);
                     break;
                 default:
                     break;
