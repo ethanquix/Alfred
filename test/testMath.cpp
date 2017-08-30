@@ -10,11 +10,26 @@
 
 #include "Math.hpp"
 
+//todo
+//all
+
 int main()
 {
-    Alfred::Matrix<int, 1, 2> a;
+    Alfred::Matrix<int> a(2, 3);
+    a.setMatrix(1, 2, 3, 4, 5, 6);
 
-    a.setLine(0, 1);
-    a.setLine(1, 3);
-    a.print().translate().print();
+    Alfred::Matrix<int> b(3, 2);
+    b.setMatrix(7, 8, 9, 10, 11, 12);
+
+
+    a.print();
+//    b.print();
+//
+//    auto f = a.dot(b).print().flatten();
+//
+//    for (const auto &elem : f)
+//        std::cout << elem << std::endl;
+//    a.reshape(10, 1).print();
+//    a = a + a;
+//    a.print();
 }

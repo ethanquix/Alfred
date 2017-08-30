@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(Alfred)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG_MODE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE")
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -19,7 +19,7 @@ set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 
 set(SOURCE_MATH ${SOURCE_UTILS} src/Math/Math.hpp src/Math/Matrix.hpp)
 
-include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle)
+include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkles src/Math)
 
 
 
