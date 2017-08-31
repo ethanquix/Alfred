@@ -19,7 +19,6 @@ int main()
     Alfred::Matrix<int> b(3, 2);
     b.setMatrix(7, 8, 9, 10, 11, 12);
 
-
 //    a.print();
 //    std::cout << c;
     std::cout << a;

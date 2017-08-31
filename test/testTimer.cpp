@@ -19,7 +19,7 @@ int main()
 {
     Alfred::Timer t(3, funcUpdate);
     t.addCheckpoint(2, "salut", [] () {std::cout << "Yop" << std::endl;});
-    t.deleteCheckpoint("saluat");
+    t.deleteCheckpoint("salut");
     t.start();
     while (!t.update());
     return (0);
