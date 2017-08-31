@@ -20,7 +20,10 @@ int main()
     Alfred::InfiniteList<int> l(0);
     l.setNextFunc(next);
 
-    std::cout << l[10] << std::endl;
-    std::cout << l++;
-    std::cout << l++;
+    std::cout << l.map([] (int x) -> int { return x * x; }).limit(3).sum() << std::endl; // -> 5
+
+//    std::cout << l[10] << std::endl;
+//    std::cout << l++;
+//    std::cout << l++;
+
 }

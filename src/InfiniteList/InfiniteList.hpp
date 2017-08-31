@@ -30,11 +30,13 @@ namespace Alfred
     private:
         std::vector<T> _list;
         std::function<T(InfiniteList<T> &)> _next;
+        std::function<T(T elem)> _map;
 
     public:
         InfiniteList(const T &first = T()) :
             _list(),
-            _next(nullptr)
+            _next(nullptr),
+            _map(nullptr)
         {
             _list.push_back(first);
         }
@@ -114,6 +116,29 @@ namespace Alfred
         {
             next();
             return *this;
+        }
+
+        InfiniteList<T> &map(std::function<T(T elem)> func)
+        {
+            _map = func;
+            return *this;
+        }
+
+        InfiniteList<T> &limit(size_t x)
+        {
+            get(x - 1);
+            for (size_t i = 0; i < x; ++i) {
+                _list[i] = _map(_list[i]);
+            }
+            return *this;
+        }
+
+        T sum()
+        {
+            T out = {};
+            for (auto &elem : _list)
+                out = out + elem;
+            return out;
         }
     }; //Class InfiniteList
 } //Namespace Alfred;
