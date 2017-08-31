@@ -10,9 +10,6 @@
 
 #include "Math.hpp"
 
-//todo
-//all
-
 int main()
 {
     Alfred::Matrix<int> a(2, 3);
@@ -22,7 +19,9 @@ int main()
     b.setMatrix(7, 8, 9, 10, 11, 12);
 
 
-    a.print();
+//    a.print();
+    std::cout << a;
+    std::cout << a[1][1];
 //    b.print();
 //
 //    auto f = a.dot(b).print().flatten();

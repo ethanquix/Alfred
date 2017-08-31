@@ -15,6 +15,7 @@
 
 #include <array>
 #include <vector>
+#include <ostream>
 
 namespace Alfred
 {
@@ -98,12 +99,12 @@ namespace Alfred
             return _lines;
         }
 
-        const std::pair<size_t, size_t> getShape()
+        const std::pair<size_t, size_t> getShape() const
         {
             return std::pair<size_t, size_t>(_lines, _cols);
         };
 
-        const std::vector<T> getLine(const size_t number)
+        const std::vector<T> getLine(const size_t number) const
         {
             std::vector<T> out;
 
@@ -114,7 +115,7 @@ namespace Alfred
             return out;
         };
 
-        const std::vector<T> getCol(const size_t number)
+        const std::vector<T> getCol(const size_t number) const
         {
             std::vector<T> out;
 
@@ -172,7 +173,7 @@ namespace Alfred
             return *this;
         }
 
-        const T get(size_t line, size_t col)
+        const T get(size_t line, size_t col) const
         {
             if (line >= _lines)
                 throw MatrixOutOfBounds(line, _lines, "row");
@@ -181,7 +182,7 @@ namespace Alfred
             return _matrix[line][col];
         }
 
-        const T get(size_t pos)
+        const T get(size_t pos) const
         {
             if (pos >= _lines * _cols)
                 throw MatrixOutOfBounds(pos, _lines * _cols, "lit. pos");
@@ -349,6 +350,76 @@ namespace Alfred
                 }
             }
             return *this;
+        }
+
+        template <typename X>
+        Matrix<T> operator-(X x)
+        {
+            for (size_t i = 0; i < _lines; ++i) {
+                for (size_t j = 0; j < _cols; ++j) {
+                    _matrix[i][j] -= x;
+                }
+            }
+            return *this;
+        }
+
+        Matrix<T> operator-(Matrix<T> x)
+        {
+            if (getShape() != x.getShape())
+                throw MatrixBadShape(_dim, x.getDim(), "addition");
+            for (size_t i = 0; i < _lines; ++i) {
+                for (size_t j = 0; j < _cols; ++j) {
+                    _matrix[i][j] -= x.get(i, j);
+                }
+            }
+            return *this;
+        }
+
+        template <typename X>
+        Matrix<T> operator/(X x)
+        {
+            for (size_t i = 0; i < _lines; ++i) {
+                for (size_t j = 0; j < _cols; ++j) {
+                    _matrix[i][j] /= x;
+                }
+            }
+            return *this;
+        }
+
+        Matrix<T> operator/(Matrix<T> x)
+        {
+            if (getShape() != x.getShape())
+                throw MatrixBadShape(_dim, x.getDim(), "addition");
+            for (size_t i = 0; i < _lines; ++i) {
+                for (size_t j = 0; j < _cols; ++j) {
+                    _matrix[i][j] /= x.get(i, j);
+                }
+            }
+            return *this;
+        }
+
+        std::vector<T> &operator[](const size_t line)
+        {
+            if (line >= _lines)
+                throw MatrixOutOfBounds(line, _lines, "line");
+            return _matrix[line];
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, const Matrix &matrix)
+        {
+            os << "Matrix: " << matrix.getDim() << std::endl;
+            size_t lines = matrix.getLinesNumber();
+            for (size_t i = 0; i < lines; ++i) {
+                auto line = matrix.getLine(i);
+                auto &last = *(--line.end());
+                for (const auto &elem : line) {
+                    os << elem;
+                    if (&elem != &last)
+                        os << ", ";
+                }
+                os << std::endl;
+            }
+            return os;
         }
     }; //Class Matrix
 } //Namespace Alfred
