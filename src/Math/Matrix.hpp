@@ -75,7 +75,7 @@ namespace Alfred
         std::string _dim;
 
     public:
-        Matrix(size_t LINES, size_t COLS) :
+        Matrix(size_t LINES = 1, size_t COLS = 1) :
             _matrix(),
             _lines(LINES),
             _cols(COLS),
@@ -90,19 +90,13 @@ namespace Alfred
         }
 
         size_t getColsNumber() const
-        {
-            return _cols;
-        }
+        { return _cols; }
 
         size_t getLinesNumber() const
-        {
-            return _lines;
-        }
+        { return _lines; }
 
         const std::pair<size_t, size_t> getShape() const
-        {
-            return std::pair<size_t, size_t>(_lines, _cols);
-        };
+        { return std::pair<size_t, size_t>(_lines, _cols); };
 
         const std::vector<T> getLine(const size_t number) const
         {
@@ -127,9 +121,7 @@ namespace Alfred
         };
 
         const std::string &getDim() const
-        {
-            return _dim;
-        }
+        { return _dim; }
 
         const std::vector<T> flatten()
         {
@@ -325,9 +317,7 @@ namespace Alfred
         }
 
         Matrix<T> operator*(Matrix<T> x)
-        {
-            return this->dot(x);
-        }
+        { return this->dot(x); }
 
         template <typename X>
         Matrix<T> operator+(X x)

@@ -13,6 +13,7 @@
 int main()
 {
     Alfred::Matrix<int> a(2, 3);
+    Alfred::Matrix<Alfred::Matrix<int>> c(2, 3);
     a.setMatrix(1, 2, 3, 4, 5, 6);
 
     Alfred::Matrix<int> b(3, 2);
@@ -20,6 +21,7 @@ int main()
 
 
 //    a.print();
+//    std::cout << c;
     std::cout << a;
     std::cout << a[1][1];
 //    b.print();

@@ -15,6 +15,6 @@
 
 namespace Alfred
 {
-}
+} //Namespace Alfred
 
 #endif //ALFRED_MATH_HPP
