@@ -24,6 +24,31 @@ namespace Alfred
         { return "Bad line number for this matrix.\n"; }
     };
 
+    class BadMatrixSize : public std::exception
+    {
+        std::string msg;
+    public:
+        BadMatrixSize(const std::string &size) :
+            msg(std::string("Bad Matrix size:  ") + size)
+        {}
+
+        virtual const char *what() const throw()
+        { return msg.c_str(); }
+    };
+
+    class MatrixOutOfBounds : public std::exception
+    {
+        std::string msg;
+    public:
+        MatrixOutOfBounds(const size_t &pos, const size_t &max, const std::string &loc) :
+            msg(std::string("Cant access this location ") + std::to_string(pos) + loc +
+                std::string(" while maximum is") + std::to_string(max))
+        {}
+
+        virtual const char *what() const throw()
+        { return msg.c_str(); }
+    };
+
     class MatrixBadShape : public std::exception
     {
         std::string msg;
@@ -126,16 +151,9 @@ namespace Alfred
         Matrix &set(size_t line, size_t col, T elem)
         {
             if (line >= _lines)
-                LOG.log(Alfred::Logger::FATAL,
-                        "Matrix: Bad line " + std::to_string(line) + " while dimension is " + _dim + " -> " +
-                        std::to_string(_lines));
-            //TODO add custom exception
-
+                throw MatrixOutOfBounds(line, _lines, "row");
             if (col > _cols)
-                LOG.log(Alfred::Logger::FATAL,
-                        "Matrix: Too much element " + std::to_string(col) + " while dimension is " + _dim + " -> " +
-                        std::to_string(_cols));
-            //TODO add custom exception
+                throw MatrixOutOfBounds(col, _cols, "col");
 
             _matrix[line][col] = elem;
             return *this;
@@ -144,10 +162,8 @@ namespace Alfred
         Matrix &set(size_t pos, T elem)
         {
             if (pos >= _lines * _cols)
-                LOG.log(Logger::FATAL, "Bad position");
-            //todo custom exception
-            if (pos == 0)
-            {
+                throw MatrixOutOfBounds(pos, _lines * _cols, "lit. pos");
+            if (pos == 0) {
                 _matrix[0][0] = elem;
                 return *this;
             }
@@ -158,14 +174,17 @@ namespace Alfred
 
         const T get(size_t line, size_t col)
         {
+            if (line >= _lines)
+                throw MatrixOutOfBounds(line, _lines, "row");
+            if (col > _cols)
+                throw MatrixOutOfBounds(col, _cols, "col");
             return _matrix[line][col];
         }
 
         const T get(size_t pos)
         {
             if (pos >= _lines * _cols)
-                LOG.log(Logger::FATAL, "Bad position");
-            //todo custom exception
+                throw MatrixOutOfBounds(pos, _lines * _cols, "lit. pos");
             if (pos == 0)
                 return _matrix[0][0];
             size_t tmpi = pos / _cols;
@@ -176,19 +195,13 @@ namespace Alfred
         Matrix &setLine(size_t line, Args... src)
         {
             if (line >= _lines)
-                LOG.log(Alfred::Logger::FATAL,
-                        "Matrix: Bad line " + std::to_string(line) + " while dimension is " + _dim + " -> " +
-                        std::to_string(_lines));
-            //TODO add custom exception
+                throw MatrixOutOfBounds(line, _lines, "row");
 
-            size_t col = 0;
-            //TODO c'est immonde
             std::vector<T> tmp = {src...};
             if (tmp.size() > _cols)
-                LOG.log(Alfred::Logger::FATAL,
-                        "Matrix: Too much element " + std::to_string(tmp.size()) + " while dimension is " + _dim +
-                        " -> " + std::to_string(_cols));
-            //TODO add custom exception
+                throw MatrixOutOfBounds(tmp.size(), _cols, "col");
+
+            size_t col = 0;
             for (const auto &it : tmp)
                 _matrix[line][col++] = it;
             return *this;
@@ -199,21 +212,14 @@ namespace Alfred
         {
             clear();
             std::vector<T> tmp = {src...};
-            //TODO c'est immonde
 
             if (tmp.size() < _lines * _cols)
-                LOG.log(Alfred::Logger::FATAL, "Matrix: Bad Dimension while dimension is " + _dim);
-            //TODO add custom exception
+                throw MatrixOutOfBounds(tmp.size(), _lines * _cols, "lit. pos");
 
-            size_t col = 0;
-            size_t line = 0;
-            while (line < _lines) {
-                col = 0;
-                while (col < _cols) {
+            for (size_t line = 0; line < _lines; ++line) {
+                for (size_t col = 0; col < _cols; ++col) {
                     _matrix[line][col] = tmp[line * _cols + col];
-                    col++;
                 }
-                line++;
             }
             return *this;
         };
@@ -222,8 +228,12 @@ namespace Alfred
         {
             std::cout << "Matrix: " << _dim << std::endl;
             for (const auto &line : _matrix) {
-                for (const auto &elem : line)
-                    std::cout << elem << ", "; //todo not ", " at end line
+                auto &last = *(--line.end());
+                for (const auto &elem : line) {
+                    std::cout << elem;
+                    if (&elem != &last)
+                        std::cout << ", ";
+                }
                 std::cout << std::endl;
             }
 
@@ -275,8 +285,7 @@ namespace Alfred
         Matrix &reshape(size_t lines, size_t cols)
         {
             if (lines * cols == 0)
-                LOG.log(Logger::FATAL, "Can not make 0 sized matrix");
-            //todo exception
+                throw BadMatrixSize(std::to_string(lines) + "x" + std::to_string(cols));
             std::vector<std::vector<T>> out;
             out.resize(lines);
             for (size_t i = 0; i < lines; ++i) {
