@@ -80,7 +80,6 @@ namespace Alfred
                 }
                 _todo.pop_front();
             }
-
             return *this;
         }
 
@@ -258,6 +257,12 @@ namespace Alfred
                 precSize = out.size();
                 i++;
             }
+        }
+
+        const unsigned long count()
+        {
+            __execute();
+            return _list.size();
         }
     }; //Class InfiniteList
 } //Namespace Alfred;

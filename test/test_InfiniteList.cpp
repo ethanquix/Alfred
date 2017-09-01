@@ -29,5 +29,5 @@ int main()
     Alfred::InfiniteList<int> l(0);
     l.setNextFunc(next);
 
-    std::cout << l.filter(isPrime).enumerate([](int x) -> bool { std::cout << x << std::endl; return x > 10; }) << std::endl;
+    std::cout << l.filter(isPrime).enumerate([](int x) -> bool { std::cout << x << std::endl; return x > 1500; }).count() << std::endl;
 }
