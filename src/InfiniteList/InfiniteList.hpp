@@ -11,10 +11,16 @@
 #ifndef ALFRED_INFINITELIST_HPP
 #define ALFRED_INFINITELIST_HPP
 
+//WARNING
+//It may look like a functional streams implementation but it's not
+//I am currently working on a functionnal streams implementation
+//But this is just an experimentation
+
 #include <vector>
 #include <functional>
 #include <Logger.hpp>
 #include <ostream>
+#include <queue>
 
 namespace Alfred
 {
@@ -24,21 +30,65 @@ namespace Alfred
         { return "You need to set a next function before you can access a not yet calculated element.\n"; }
     };
 
+    enum InfiniteListOperator
+    {
+        ILO_MAP,
+        ILO_FILTER
+    };
+
     template <typename T>
     class InfiniteList
     {
     private:
         std::vector<T> _list;
         std::function<T(InfiniteList<T> &)> _next;
-        std::function<T(T elem)> _map;
+        std::deque<std::function<T(T elem)>> _map;
+        std::deque<std::function<bool(T)>> _filter;
+        std::deque<enum InfiniteListOperator> _todo;
+        size_t _idx;
 
     public:
         InfiniteList(const T &first = T()) :
             _list(),
             _next(nullptr),
-            _map(nullptr)
+            _map(),
+            _filter(),
+            _todo(),
+            _idx(0)
         {
             _list.push_back(first);
+        }
+
+    private:
+        InfiniteList<T> &__execute()
+        {
+            while (!_todo.empty()) {
+                if (_todo.front() == ILO_MAP) {
+                    for (size_t i = 0; i < _list.size(); ++i) {
+                        _list[i] = _map.front()(_list[i]);
+                    }
+                    _map.pop_front();
+                } else if (_todo.front() == ILO_FILTER) {
+                    std::vector<T> _new = {};
+
+                    for (const auto &it : _list) {
+                        if (_filter.front()(it))
+                            _new.push_back(it);
+                    }
+                    _list = _new;
+                    _filter.pop_front();
+                }
+                _todo.pop_front();
+            }
+
+            return *this;
+        }
+
+    public:
+
+        const size_t getIdx() const
+        {
+            return _idx;
         }
 
         InfiniteList<T> &setNextFunc(std::function<T(InfiniteList<T> &)> func)
@@ -51,8 +101,10 @@ namespace Alfred
         {
             if (_next == nullptr)
                 throw InfiniteListNoNextFunction();
-            while (_list.size() <= pos)
+            while (_list.size() <= pos) {
+                _idx = _list.size();
                 _list.push_back(_next(*this));
+            }
             return _list[pos];
         }
 
@@ -71,8 +123,11 @@ namespace Alfred
         const size_t size() const
         { return _list.size(); }
 
-        std::vector<T> flatten() const
-        { return _list; }
+        std::vector<T> flatten()
+        {
+            __execute();
+            return _list;
+        }
 
         InfiniteList<T> &print()
         {
@@ -88,9 +143,7 @@ namespace Alfred
         }
 
         T &operator[](const size_t pos)
-        {
-            return get(pos);
-        }
+        { return get(pos); }
 
         InfiniteList<T> &operator++()
         {
@@ -98,9 +151,9 @@ namespace Alfred
             return *this;
         }
 
-        friend std::ostream &operator<<(std::ostream &os, const InfiniteList &list)
+        friend std::ostream &operator<<(std::ostream &os, InfiniteList &list)
         {
-            os << "max: " << std::to_string(list.max()) << std::endl;
+            os << std::to_string(list.size()) << "elem" << std::endl;
             auto l = list.flatten();
             auto &last = *(--l.end());
             for (const auto &elem : l) {
@@ -120,16 +173,18 @@ namespace Alfred
 
         InfiniteList<T> &map(std::function<T(T elem)> func)
         {
-            _map = func;
+            _map.push_back(func);
+            _todo.push_back(ILO_MAP);
             return *this;
         }
 
         InfiniteList<T> &limit(size_t x)
         {
             get(x - 1);
-            for (size_t i = 0; i < x; ++i) {
-                _list[i] = _map(_list[i]);
-            }
+            _list.resize(x);
+
+            __execute();
+
             return *this;
         }
 
@@ -139,6 +194,70 @@ namespace Alfred
             for (auto &elem : _list)
                 out = out + elem;
             return out;
+        }
+
+        InfiniteList<T> &filter(std::function<bool(T)> func)
+        {
+            _filter.push_back(func);
+            _todo.push_back(ILO_FILTER);
+
+            return *this;
+        }
+
+        InfiniteList<T> &end()
+        {
+            __execute();
+
+            return *this;
+        }
+
+        InfiniteList<T> &enumerate(std::function<bool(T)> func)
+        {
+            size_t i = 0;
+            std::vector<T> out;
+            size_t precSize = 0;
+            bool stop = false;
+
+            while (true) {
+                stop = false;
+                get(i);
+                out.push_back(_list[i]);
+
+                auto save_map = _map;
+                auto save_filter = _filter;
+
+                for (const auto &todo : _todo) {
+                    if (stop)
+                        break;
+                    switch (todo) {
+                        case ILO_MAP:
+                            out.back() = _map.front()(out.back());
+                            _map.pop_front();
+                            break;
+                        case ILO_FILTER:
+                            if (!_filter.front()(out.back())) {
+                                out.pop_back();
+                                stop = true;
+                                continue;
+                            }
+                            _filter.pop_front();
+                            break;
+                    }
+                }
+                _map = save_map;
+                _filter = save_filter;
+
+                if (!stop && precSize != out.size() && func(out.back())) {
+                    out.pop_back();
+                    _list = out;
+                    _map.clear();
+                    _filter.clear();
+                    _todo.clear();
+                    return *this;
+                }
+                precSize = out.size();
+                i++;
+            }
         }
     }; //Class InfiniteList
 } //Namespace Alfred;

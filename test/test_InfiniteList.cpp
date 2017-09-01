@@ -12,7 +12,16 @@
 
 int next(Alfred::InfiniteList<int> &cur)
 {
-    return cur.last() + 1;
+    return cur.getIdx();
+}
+
+bool isPrime(int x)
+{
+    for (size_t i = 2; i <= x / 2; ++i) {
+        if (x % i == 0)
+            return false;
+    }
+    return true;
 }
 
 int main()
@@ -20,10 +29,5 @@ int main()
     Alfred::InfiniteList<int> l(0);
     l.setNextFunc(next);
 
-    std::cout << l.map([] (int x) -> int { return x * x; }).limit(3).sum() << std::endl; // -> 5
-
-//    std::cout << l[10] << std::endl;
-//    std::cout << l++;
-//    std::cout << l++;
-
+    std::cout << l.filter(isPrime).enumerate([](int x) -> bool { std::cout << x << std::endl; return x > 10; }) << std::endl;
 }
