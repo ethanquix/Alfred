@@ -21,6 +21,18 @@
 
 namespace Alfred
 {
+    class LoggerFatal : public std::exception
+    {
+        std::string msg;
+    public:
+        LoggerFatal(const std::string &msg) :
+            msg(std::string("Fatal Error: ") + msg)
+        {}
+
+        virtual const char *what() const throw()
+        { return msg.c_str(); }
+    };
+
     class Logger : public Singleton<Logger>
     {
         //Var
@@ -60,7 +72,7 @@ namespace Alfred
     public:
 
         template <typename T>
-        void log(T str)
+        inline void log(T str)
         {
             std::cerr << "INFO - " << getTime() << str << std::endl;
             std::flush(std::cerr);
@@ -75,6 +87,7 @@ namespace Alfred
                     log_format("DEBUG - ", "\033[34m", str);
                     break;
 #endif
+                default:
                 case INFO:
                     log(str);
                     break;
@@ -86,10 +99,34 @@ namespace Alfred
                     break;
                 case FATAL:
                     log_format("FATAL - ", "\033[1;4;31m", str);
-                    break;
-                default:
+                    throw LoggerFatal(str);
                     break;
             }
+        }
+
+        template <typename T>
+        void error(T str)
+        {
+            log_format("ERROR - ", "\033[31m", str);
+        }
+
+        template <typename T>
+        void warning(T str)
+        {
+            log_format("WARNING - ", "\033[33m", str);
+        }
+
+        template <typename T>
+        void info(T str)
+        {
+            log(str);
+        }
+
+        template <typename T>
+        void fatal(T str)
+        {
+            log_format("FATAL - ", "\033[1;4;31m", str);
+            throw LoggerFatal(str);
         }
 
         void timer_start(const std::string &name, const std::string &desc = "")
