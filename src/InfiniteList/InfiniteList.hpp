@@ -102,6 +102,11 @@ namespace Alfred
             this->_list[idx] = elem;
         }
 
+        InfiniteList<T> &setNext(const T &elem)
+        {
+            this->_list.push_back(elem);
+        }
+
         const size_t getIdx() const
         {
             return _idx;
@@ -195,7 +200,7 @@ namespace Alfred
         }
 
         template <typename X>
-        InfiniteList<X> map_to(std::function<X(T elem)> func, size_t max)
+        InfiniteList<X> &map_to(std::function<X(T elem)> func, size_t max)
         {
             std::vector<X> list;
 
@@ -207,8 +212,8 @@ namespace Alfred
                 else
                     list.push_back(func(elem));
 
-            InfiniteList<X> out(list);
-            return out;
+            auto out = new InfiniteList<X>(list);
+            return *out;
         }
 
         InfiniteList<T> &limit(size_t x)
@@ -299,6 +304,16 @@ namespace Alfred
             return _list.size();
         }
     }; //Class InfiniteList
+
+    int module_Counter(Alfred::InfiniteList<int> &cur)
+    {
+        return cur.getIdx();
+    }
+
+    int module_Fibonnacci(Alfred::InfiniteList<int> &cur)
+    {
+        return cur[cur.getIdx() - 1] + cur[cur.getIdx() - 2];
+    }
 } //Namespace Alfred;
 
 #endif //ALFRED_INFINITELIST_HPP
