@@ -59,6 +59,17 @@ namespace Alfred
             _list.push_back(first);
         }
 
+        InfiniteList(const std::vector<T> &from) :
+            _list(),
+            _next(nullptr),
+            _map(),
+            _filter(),
+            _todo(),
+            _idx(0)
+        {
+            _list = from;
+        }
+
     private:
         InfiniteList<T> &__execute()
         {
@@ -84,6 +95,12 @@ namespace Alfred
         }
 
     public:
+
+        InfiniteList<T> &set(const T &elem, const size_t idx)
+        {
+            this->get(idx + 1);
+            this->_list[idx] = elem;
+        }
 
         const size_t getIdx() const
         {
@@ -130,7 +147,7 @@ namespace Alfred
 
         InfiniteList<T> &print()
         {
-            std::cout << "max: " << std::to_string(max()) << std::endl;
+            std::cout << std::to_string(size()) << "elem" << std::endl;
             auto &last = *(--_list.end());
             for (const auto &elem : _list) {
                 std::cout << elem;
@@ -177,6 +194,23 @@ namespace Alfred
             return *this;
         }
 
+        template <typename X>
+        InfiniteList<X> map_to(std::function<X(T elem)> func, size_t max)
+        {
+            std::vector<X> list;
+
+            get(max - 1);
+
+            for (const auto &elem : _list)
+                if (max-- == 0)
+                    break;
+                else
+                    list.push_back(func(elem));
+
+            InfiniteList<X> out(list);
+            return out;
+        }
+
         InfiniteList<T> &limit(size_t x)
         {
             get(x - 1);
@@ -215,7 +249,7 @@ namespace Alfred
             size_t i = 0;
             std::vector<T> out;
             size_t precSize = 0;
-            bool stop = false;
+            bool stop;
 
             while (true) {
                 stop = false;

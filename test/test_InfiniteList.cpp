@@ -24,10 +24,24 @@ bool isPrime(int x)
     return true;
 }
 
+std::string test(int x)
+{
+    return std::to_string(x) + "bonjour";
+}
+
 int main()
 {
     Alfred::InfiniteList<int> l(0);
     l.setNextFunc(next);
 
-    std::cout << l.filter(isPrime).enumerate([](int x) -> bool { std::cout << x << std::endl; return x > 1500; }).count() << std::endl;
+//    l[100];
+
+//    std::function<std::string(int)> a;
+//    a = test;
+
+//    l.map_to(a, 10).print();
+
+//    std::cout << l << std::endl;
+
+    std::cout << l.filter(isPrime).enumerate([](int x) -> bool { return x > 1500; }) << std::endl;
 }
