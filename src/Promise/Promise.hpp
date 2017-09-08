@@ -19,13 +19,13 @@ namespace Alfred
         explicit Promise(std::function<RET(VAL)> fun) :
             fun(fun)
         {
-            future = std::async(std::launch::async, [&]() -> RET { this->doWork(); });
+            future = std::async(std::launch::async, [&]() -> RET { return this->doWork(); });
         }
 
         explicit Promise(std::function<RET(VAL)> fun, Promise *dad) :
             fun(fun)
         {
-            future = std::async(std::launch::async, [&, dad]() -> RET { doThenWork(dad); });
+            future = std::async(std::launch::async, [&, dad]() -> RET { return doThenWork(dad); });
         }
 
         Promise &then(std::function<RET(VAL)> fun)

@@ -12,6 +12,7 @@
 #define ALFRED_MATH_HPP
 
 #include "Matrix.hpp"
+#include "Fraction.hpp"
 
 namespace Alfred
 {

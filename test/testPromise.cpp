@@ -4,7 +4,7 @@
 
 int test(int i)
 {
-    usleep(5000);
+    usleep(500000);
     std::cout << i << std::endl;
     return i + 1;
 }
@@ -22,5 +22,5 @@ int main()
     p.then(test).then(test).then(test).then(test).then(test).then(test).then(test);
 
     std::cout << "It's async !" << std::endl;
-    usleep(50000);
+    usleep(5000000);
 }

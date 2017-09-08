@@ -100,11 +100,13 @@ namespace Alfred
         {
             this->get(idx + 1);
             this->_list[idx] = elem;
+            return *this;
         }
 
         InfiniteList<T> &setNext(const T &elem)
         {
             this->_list.push_back(elem);
+            return *this;
         }
 
         const size_t getIdx() const

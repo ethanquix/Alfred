@@ -17,11 +17,11 @@ set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src
 
 set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 
-set(SOURCE_MATH ${SOURCE_UTILS} src/Math/Math.hpp src/Math/Matrix.hpp src/Math/MatrixException.hpp)
+set(SOURCE_MATH ${SOURCE_UTILS} src/Math/Math.hpp src/Math/Matrix.hpp src/Math/MatrixException.hpp src/Math/Fraction.hpp)
 
 set(SOURCE_INFINITE_LIST ${SOURCE_UTILS} src/InfiniteList/InfiniteList.hpp)
 
-include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkles src/Math src/InfiniteList)
+include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle src/Math src/InfiniteList)
 
 
 
