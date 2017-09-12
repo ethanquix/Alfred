@@ -9,11 +9,11 @@ set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp)
 
 set(SOURCE_TIMER src/Timer/Timer.hpp)
 
-set(SOURCE_PROMISE src/Promise/Promise.hpp)
+set(SOURCE_PROMISE src/Promise/Promise.hpp src/Network/Unix/UnixServer.hpp)
 
 set(SOURCE_LOGGER ${SOURCE_UTILS} src/Logger/Logger.hpp)
 
-set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp)
+set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp)
 
 set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 
@@ -21,7 +21,9 @@ set(SOURCE_MATH ${SOURCE_UTILS} src/Math/Math.hpp src/Math/Matrix.hpp src/Math/M
 
 set(SOURCE_INFINITE_LIST ${SOURCE_UTILS} src/InfiniteList/InfiniteList.hpp)
 
-include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle src/Math src/InfiniteList)
+set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/EventManager/EventManager.hpp src/EventManager/EventManagerExceptions.hpp)
+
+include_directories(src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle src/Math src/InfiniteList src/EventManager)
 
 
 
@@ -41,3 +43,5 @@ add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
 add_executable(test_Merkle ${SOURCE_MERKLE} test/testMerkle.cpp)
 
 add_executable(test_InfiniteList ${SOURCE_INFINITE_LIST} test/test_InfiniteList.cpp)
+
+add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/test_EventManager.cpp)
