@@ -18,6 +18,7 @@ namespace Alfred
     class IClient : protected INetwork
     {
     public:
+
         virtual void listen() = 0;
     };
 }

@@ -117,9 +117,11 @@ namespace Alfred
         }
 
         template <typename T>
-        void info(T str)
+        void debug(T str)
         {
-            log(str);
+#if DEBUG_MODE
+            log_format("DEBUG - ", "\033[34m", str);
+#endif
         }
 
         template <typename T>
