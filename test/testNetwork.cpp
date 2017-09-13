@@ -12,7 +12,7 @@
 #include "INetwork.hpp"
 #include "ISerializer.hpp"
 #include "../src/Network/Serializer/BasicSerializer.hpp"
-#include "Unix/UnixServerTCP.hpp"
+#include "Implem/ServerTCP.hpp"
 
 struct Test
 {
@@ -30,12 +30,12 @@ void conn(Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client)
 
 int main()
 {
-    Alfred::UnixServerTCP tcp(8000);
+    Alfred::ServerTCP tcp(8000);
 
     tcp.onConnect(conn);
 
-    tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client) -> void {
-        serv->receive(); //TODO REDONE THE RECEIVE FUNC
+    tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client, const char *msg) -> void {
+        std::cout << msg << std::endl;
         serv->send(client, "ok salut");
     });
 

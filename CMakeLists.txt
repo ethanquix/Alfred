@@ -9,11 +9,11 @@ set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp)
 
 set(SOURCE_TIMER src/Timer/Timer.hpp)
 
-set(SOURCE_PROMISE src/Promise/Promise.hpp src/Network/Unix/UnixServerTCP.hpp)
+set(SOURCE_PROMISE src/Promise/Promise.hpp src/Network/Implem/ServerTCP.hpp)
 
 set(SOURCE_LOGGER ${SOURCE_UTILS} src/Logger/Logger.hpp)
 
-set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp src/Network/Unix/UnixServerTCP.hpp)
+set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp src/Network/Implem/ServerTCP.hpp src/Network/Implem/ClientTCP.hpp)
 
 set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 

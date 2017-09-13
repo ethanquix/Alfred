@@ -17,13 +17,13 @@
 
 namespace Alfred
 {
-    class UnixServerTCP : public IServer
+    class ServerTCP : public IServer
     {
     private:
-        fd_set rfds;
-        size_t client_fd;
-        struct sockaddr_in client_in;
-        socklen_t size = sizeof(client_in);
+        fd_set _rfds;
+        size_t _client_fd;
+        struct sockaddr_in _client_in;
+        socklen_t _size = sizeof(_client_in);
 
         void _bind()
         {
@@ -41,8 +41,8 @@ namespace Alfred
 
         void _accept()
         {
-            client_fd = accept(_info.fd, (struct sockaddr *)&(client_in),
-                               &size);
+            _client_fd = accept(_info.fd, (struct sockaddr *)&(_client_in),
+                                &_size);
         }
 
         char *_receive()
@@ -50,16 +50,16 @@ namespace Alfred
             char *buff = new char[1024 * sizeof(char)];
             ssize_t index;
 
-            if ((index = read(client_fd, buff, 1024)) <= 0) {
+            if ((index = read(_client_fd, buff, 1024)) <= 0) {
                 if (index < 0)
                     LOG.error("Failed to read");
-                close(client_fd);
-                printf("Client %zu Disconnected\n", client_fd);
-                _clients.erase(client_fd);
+                close(_client_fd);
+                printf("Client %zu Disconnected\n", _client_fd);
+                _clients.erase(_client_fd);
                 return (nullptr);
             }
             buff[index] = '\0';
-            LOG.debug(std::to_string(client_fd) + " " + std::string(buff));
+            LOG.debug(std::to_string(_client_fd) + " " + std::string(buff));
             return (buff);
         }
 
@@ -69,46 +69,43 @@ namespace Alfred
 
             int index = -1;
             while (++index < FD_SETSIZE) {
-                if (FD_ISSET(index, &rfds)) {
+                if (FD_ISSET(index, &_rfds)) {
                     if (index == _info.fd) {
                         //New client
                         _accept();
-                        tmp.in = client_in;
-                        tmp.fd = client_fd;
-                        this->_clients[client_fd] = tmp;
-                        printf("Client %zu Connected\n", client_fd);
+                        tmp.in = _client_in;
+                        tmp.fd = _client_fd;
+                        this->_clients[_client_fd] = tmp;
+                        printf("Client %zu Connected\n", _client_fd);
                         _first_connect(this, tmp);
                     } else {
                         //Returning client
-                        client_fd = index;
-                        tmp.in = client_in;
-                        tmp.fd = client_fd;
+                        _client_fd = index;
+                        tmp.in = _client_in;
+                        tmp.fd = _client_fd;
                         //Handle
-                        _on_received(this, tmp);
+                        _on_received(this, tmp, _receive());
                     }
                 }
             }
         }
 
     public:
-        UnixServerTCP() :
+        ServerTCP() :
             IServer()
         {
-            _mode = TCP;
             _bind();
         }
 
-        explicit UnixServerTCP(const size_t port) :
+        explicit ServerTCP(const size_t port) :
             IServer(port)
         {
-            _mode = TCP;
             _bind();
         }
 
-        UnixServerTCP(const std::string &ip, const size_t port) :
+        ServerTCP(const std::string &ip, const size_t port) :
             IServer(ip, port)
         {
-            _mode = TCP;
             _bind();
         }
 
@@ -118,34 +115,24 @@ namespace Alfred
             return *this;
         }
 
-        INetwork &receive() override
-        {
-            _receive();
-            //TODO RETURN CHAR *
-            return *this;
-        }
-
         INetwork &run() override
         {
             struct timeval tv = {};
             int retval;
 
-            //TODO loop here infinite
-
             while (!_stop) {
                 tv.tv_usec = 0;
                 tv.tv_sec = 0;
-                FD_ZERO(&rfds);
+                FD_ZERO(&_rfds);
                 for (const auto &it : _clients)
-                    FD_SET(it.second.fd, &rfds);
-                FD_SET(_info.fd, &rfds);
+                    FD_SET(it.second.fd, &_rfds);
+                FD_SET(_info.fd, &_rfds);
                 if ((retval = select(_clients.size() + _info.fd + 2,
-                                     &rfds, NULL, NULL, &tv)) == -1 && !_stop/* TODO && NOT SIGNAL */)
+                                     &_rfds, NULL, NULL, &tv)) == -1 && !_stop)
                     LOG.fatal("Select failed"); //TODO CUSTOM EXCEPTION
                 else if (retval >= 0)
                     select_check();
             }
-            //TODO END LOOP
             return *this;
         }
     };

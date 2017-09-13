@@ -27,7 +27,8 @@ namespace Alfred
     {
     protected:
         ConnectionInfo _info = {};
-        enum ConnectionMode _mode;
+        enum ConnectionMode _mode = TCP;
+        bool _stop = false;
 
     public:
         INetwork()
@@ -48,9 +49,12 @@ namespace Alfred
             _info.port = port;
         };
 
+        virtual void stop()
+        {
+            _stop = true;
+        }
+
         virtual INetwork &send(const ConnectionInfo &to, const char *msg) = 0;
-        virtual INetwork &receive() = 0;
-        //TODO CHANGE RECEIVE PROTO (return)
         //TO_[DONE] IPACKETUTILS INTERFACE (with different possible implem) to parse to send and parse to receive (like send a vector of float and receive it
     };
 }

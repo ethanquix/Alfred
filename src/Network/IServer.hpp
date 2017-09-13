@@ -23,8 +23,7 @@ namespace Alfred
     protected:
         std::unordered_map<int, struct ConnectionInfo> _clients;
         std::function<void(IServer *, const struct ConnectionInfo &)> _first_connect = nullptr;
-        std::function<void(IServer *, const struct ConnectionInfo &)> _on_received = nullptr;
-        bool _stop = false;
+        std::function<void(IServer *, const struct ConnectionInfo &, const char *)> _on_received = nullptr;
 
     public:
         IServer() : INetwork()
@@ -52,15 +51,11 @@ namespace Alfred
             return *this;
         }
 
-        virtual INetwork &onReceive(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
+        virtual INetwork &
+        onReceive(const std::function<void(IServer *, const struct ConnectionInfo &, const char *)> &_func)
         {
             _on_received = _func;
             return *this;
-        }
-
-        INetwork &stop()
-        {
-            _stop = true;
         }
     };
 }
