@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Logger.hpp"
+#include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
 #include <string>
 
 #define DEFAULT_PORT 8000
@@ -15,6 +18,7 @@ namespace Alfred
         std::string ip;
         int fd;
         struct sockaddr_in in;
+        int id; //TODO UNIQUE ID GENERATOR
     };
 
     enum ConnectionMode
@@ -54,7 +58,13 @@ namespace Alfred
             _stop = true;
         }
 
-        virtual INetwork &send(const ConnectionInfo &to, const char *msg) = 0;
+        virtual INetwork &run() = 0;
         //TO_[DONE] IPACKETUTILS INTERFACE (with different possible implem) to parse to send and parse to receive (like send a vector of float and receive it
+
+
+        //TODO Multithreading
+        //TODO Hostname resolution
+        //TODO FUNCTION ON DISCONNECT
+        //TODO CHECK IF SERVER AND CLIENT WELL CONNECTED BEFORE SENDING MSG
     };
 }

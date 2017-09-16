@@ -11,8 +11,6 @@
 #ifndef ALFRED_UNIXSERVER_HPP
 #define ALFRED_UNIXSERVER_HPP
 
-#include <netdb.h>
-#include <unistd.h>
 #include "IServer.hpp"
 
 namespace Alfred
@@ -20,10 +18,9 @@ namespace Alfred
     class ServerTCP : public IServer
     {
     private:
+        struct ConnectionInfo _currentClient;
         fd_set _rfds;
-        size_t _client_fd;
-        struct sockaddr_in _client_in;
-        socklen_t _size = sizeof(_client_in);
+        socklen_t _sizeCurrentClient = sizeof(_currentClient.in);
 
         void _bind()
         {
@@ -41,8 +38,8 @@ namespace Alfred
 
         void _accept()
         {
-            _client_fd = accept(_info.fd, (struct sockaddr *)&(_client_in),
-                                &_size);
+            _currentClient.fd = accept(_info.fd, (struct sockaddr *)&(_currentClient.in),
+                                       &_sizeCurrentClient);
         }
 
         char *_receive()
@@ -50,16 +47,17 @@ namespace Alfred
             char *buff = new char[1024 * sizeof(char)];
             ssize_t index;
 
-            if ((index = read(_client_fd, buff, 1024)) <= 0) {
+            if ((index = read(_currentClient.fd, buff, 1024)) <= 0) {
                 if (index < 0)
                     LOG.error("Failed to read");
-                close(_client_fd);
-                printf("Client %zu Disconnected\n", _client_fd);
-                _clients.erase(_client_fd);
+                close(_currentClient.fd);
+                printf("Client %d Disconnected\n", _currentClient.fd);
+                _on_disconnect(this, _currentClient);
+                _clients.erase(_currentClient.fd);
                 return (nullptr);
             }
             buff[index] = '\0';
-            LOG.debug(std::to_string(_client_fd) + " " + std::string(buff));
+            LOG.debug(std::to_string(_currentClient.fd) + " " + std::string(buff));
             return (buff);
         }
 
@@ -73,16 +71,16 @@ namespace Alfred
                     if (index == _info.fd) {
                         //New client
                         _accept();
-                        tmp.in = _client_in;
-                        tmp.fd = _client_fd;
-                        this->_clients[_client_fd] = tmp;
-                        printf("Client %zu Connected\n", _client_fd);
+                        tmp.in = _currentClient.in;
+                        tmp.fd = _currentClient.fd;
+                        this->_clients[_currentClient.fd] = tmp;
+                        printf("Client %d Connected\n", _currentClient.fd);
                         _first_connect(this, tmp);
                     } else {
                         //Returning client
-                        _client_fd = index;
-                        tmp.in = _client_in;
-                        tmp.fd = _client_fd;
+                        _currentClient.fd = index;
+                        tmp.in = _currentClient.in;
+                        tmp.fd = _currentClient.fd;
                         //Handle
                         _on_received(this, tmp, _receive());
                     }

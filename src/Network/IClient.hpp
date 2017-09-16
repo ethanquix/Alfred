@@ -22,9 +22,22 @@ namespace Alfred
         std::function<void(IClient *, const char *msg)> _onReceived;
 
     public:
-        virtual IClient &connect() = 0;
-//        virtual IClient &connectTo(const std::string &ip, size_t port) = 0; TODO
-        virtual void listen() = 0;
+        IClient() : INetwork()
+        {
+        }
+
+        explicit IClient(const size_t port) : INetwork(port)
+        {
+        }
+
+        IClient(const std::string &ip, const size_t port) : INetwork(ip, port)
+        {
+        }
+
+        virtual IClient &Connect() = 0;
+        virtual IClient &Connect(const std::string &ip, size_t port) = 0;
+
+        virtual INetwork &send(const char *msg) = 0;
 
         virtual IClient &onReceived(const std::function<void(IClient *, const char *msg)> &func)
         {

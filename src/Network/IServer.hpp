@@ -24,6 +24,7 @@ namespace Alfred
         std::unordered_map<int, struct ConnectionInfo> _clients;
         std::function<void(IServer *, const struct ConnectionInfo &)> _first_connect = nullptr;
         std::function<void(IServer *, const struct ConnectionInfo &, const char *)> _on_received = nullptr;
+        std::function<void(IServer *, const struct ConnectionInfo &)> _on_disconnect = nullptr;
 
     public:
         IServer() : INetwork()
@@ -37,8 +38,6 @@ namespace Alfred
         IServer(const std::string &ip, const size_t port) : INetwork(ip, port)
         {
         }
-
-        virtual INetwork &run() = 0;
 
         virtual std::unordered_map<int, struct ConnectionInfo> &getClients()
         {
@@ -57,6 +56,15 @@ namespace Alfred
             _on_received = _func;
             return *this;
         }
+
+        virtual INetwork &
+        onDisconnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
+        {
+            _on_disconnect = _func;
+            return *this;
+        }
+
+        virtual INetwork &send(const ConnectionInfo &to, const char *msg) = 0;
     };
 }
 
