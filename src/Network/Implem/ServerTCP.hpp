@@ -11,6 +11,7 @@
 #ifndef ALFRED_UNIXSERVER_HPP
 #define ALFRED_UNIXSERVER_HPP
 
+#include <cstring>
 #include "IServer.hpp"
 
 namespace Alfred
@@ -42,23 +43,30 @@ namespace Alfred
                                        &_sizeCurrentClient);
         }
 
-        char *_receive()
+        const char *_receive()
         {
             char *buff = new char[1024 * sizeof(char)];
+            std::string out;
             ssize_t index;
 
-            if ((index = read(_currentClient.fd, buff, 1024)) <= 0) {
-                if (index < 0)
-                    LOG.error("Failed to read");
-                close(_currentClient.fd);
-                printf("Client %d Disconnected\n", _currentClient.fd);
-                _on_disconnect(this, _currentClient);
-                _clients.erase(_currentClient.fd);
-                return (nullptr);
+            while (!_stop) {
+                std::memset(&buff[0], 0, sizeof(buff));
+                if ((index = read(_currentClient.fd, buff, 1024)) <= 0) {
+                    if (index < 0)
+                        LOG.error("Failed to read");
+                    close(_currentClient.fd);
+                    printf("Client %d Disconnected\n", _currentClient.fd);
+                    _on_disconnect(this, _currentClient);
+                    _clients.erase(_currentClient.fd);
+                    return (nullptr);
+                }
+                LOG.log(std::string("Buffer: ") + buff);
+                LOG.log(std::string("Out: ") + (out + buff));
+                if (buff[index] == _endChar)
+                    return (out + buff).c_str();
+                out += buff;
+//                buff[index] = '\0'; TODO MAYBE
             }
-            buff[index] = '\0';
-            LOG.debug(std::to_string(_currentClient.fd) + " " + std::string(buff));
-            return (buff);
         }
 
         void select_check()

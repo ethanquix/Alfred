@@ -33,6 +33,7 @@ namespace Alfred
         ConnectionInfo _info = {};
         enum ConnectionMode _mode = TCP;
         bool _stop = false;
+        char _endChar = '\0';
 
     public:
         INetwork()
