@@ -65,6 +65,15 @@ namespace Alfred
         }
 
         virtual INetwork &send(const ConnectionInfo &to, const char *msg) = 0;
+
+//        const int operator[](const size_t id)
+//        {
+//            if (_clients.find(id) == _clients.end())
+//                return -1;
+//            else
+//                return _clients[id].fd;
+//        }
+        //TODO CHANGE SEND PROTO TO ONLY ACCEPT FD, THEN USE THIS TO BETTER ACCESS AND JUST server->Send(ID_CLIENT, "YOLO);
     };
 }
 

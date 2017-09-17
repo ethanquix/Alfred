@@ -46,38 +46,67 @@ namespace Alfred
 
         const char *_receive()
         {
+            struct PacketHeader header;
+            int to_read;
             ssize_t index;
-            std::stringstream out;
-            char *buff = new char[4096 * sizeof(char)];
-            std::string x;
-            int to_receive = 1;
-            int received = 0;
+            char *buff = new char[_packetSize * sizeof(char)];
+            std::string *out = new std::string("");
 
-            //TODO SEND FIRST RECEIVE AND THEN TO RECEIVE BLABLA
-            //TODO SAME FOR CLIENT
-            while (!_stop && received < to_receive) {
-                bzero(buff, 4096);
-                if ((index = read(_currentClient.fd, buff, 4096)) <= 0) {
+            while (!_stop) { //TODO A VIRER
+                bzero(buff, _packetSize);
+//                if ((index = read(_currentClient.fd, buff, _packetSize)) <= 0) {
+                if ((index = read(_currentClient.fd, &header, sizeof(struct PacketHeader))) <= 0) {
                     if (index < 0)
                         LOG.error("Failed to read");
                     close(_currentClient.fd);
                     printf("Client %d Disconnected\n", _currentClient.fd);
+                    //TODO ADD AN _disconnect FUNCTION
                     _on_disconnect(this, _currentClient);
                     _clients.erase(_currentClient.fd);
+                    delete (buff);
                     return (nullptr);
                 }
-                std::cout << buff[index - 1] << std::endl;
-                if (buff[index - 1] == _endChar) {
-                    buff[index - 1] = '\0';
-                    out << buff;
-                    out >> x;
-                    out.clear();
-                    LOG.error("ON SE TIRE " + x);
-                    return x.c_str(); //TODO MAYBE JUST STRING OR REALLOC DUDE
+
+                LOG.debug("SIZE OF PACKET IS: " + std::to_string(header.length));
+
+                if (index < sizeof(struct PacketHeader))
+                    LOG.fatal(
+                        "Unknown error during read invalid header size ? Use Alfred Client please to send msg or set the length option to false");
+
+                if ((index = read(_currentClient.fd, buff, _packetSize - sizeof(struct PacketHeader))) <= 0) {
+                    if (index < 0)
+                        LOG.error("Failed to read 2");
+                    close(_currentClient.fd);
+                    printf("Client %d Disconnected 2\n", _currentClient.fd);
+                    _on_disconnect(this, _currentClient);
+                    _clients.erase(_currentClient.fd);
+                    delete (buff);
+                    return (nullptr);
                 }
-                buff[index] = '\0'; //TODO ?
-                LOG.error("CUR BUF: " + std::string(buff));
-                out << buff;
+                *out += buff;
+                to_read = header.length - index;
+
+                while (to_read > 0) //TODO CHECK IF MULTIPLE PACKET AND ADD QUEUE
+                {
+                    bzero(buff, _packetSize);
+                    if ((index = read(_currentClient.fd, buff, _packetSize)) <= 0) {
+                        if (index < 0)
+                            LOG.error("Failed to read 3");
+                        close(_currentClient.fd);
+                        printf("Client %d Disconnected 3\n", _currentClient.fd);
+                        _on_disconnect(this, _currentClient);
+                        _clients.erase(_currentClient.fd);
+                        delete (buff);
+                        return (nullptr);
+                    }
+//                    LOG.error("CUR BUFF RECU: " + std::string(buff));
+                    *out += buff;
+                    to_read -= index; //TODO FRAGMENTER PLEINS PACKET SI to_read < 0
+                }
+                out[header.length] = '\0';
+                LOG.error("G RECU: " + *out);
+                delete (buff);
+                return out->c_str();
             }
         }
 
@@ -102,7 +131,9 @@ namespace Alfred
                         tmp.in = _currentClient.in;
                         tmp.fd = _currentClient.fd;
                         //Handle
-                        _on_received(this, tmp, _receive());
+                        const char *msg = _receive();
+                        if (msg != nullptr)
+                            _on_received(this, tmp, msg);
                     }
                 }
             }

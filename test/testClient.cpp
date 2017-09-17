@@ -12,7 +12,7 @@
 
 int main()
 {
-    Alfred::ClientTCP client;
+    Alfred::ClientTCP client(8001);
 
     client.onReceived([](Alfred::IClient *c, const char *msg) {
         std::cout << "I received: " << msg << std::endl;

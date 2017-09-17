@@ -21,6 +21,11 @@ namespace Alfred
         int id; //TODO UNIQUE ID GENERATOR
     };
 
+    struct PacketHeader //TODO CHANGE THAT BY ONE STRUCT PER CLIENT AND SEND STRUCT AT START TO SAY IF YES OR NOT LENGTH OR END DELIMITER OR FIXED SIZE
+    {
+        int length;
+    };
+
     enum ConnectionMode
     {
         TCP = 0,
@@ -33,7 +38,8 @@ namespace Alfred
         ConnectionInfo _info = {};
         enum ConnectionMode _mode = TCP;
         bool _stop = false;
-        char _endChar = '\0';
+        int _packetSize = 1024;
+        int _lengthIndicatorSize = 4;
 
     public:
         INetwork()
@@ -57,6 +63,18 @@ namespace Alfred
         virtual void stop()
         {
             _stop = true;
+        }
+
+        INetwork &setPacketSize(int packetSize)
+        {
+            _packetSize = packetSize;
+            return *this;
+        }
+
+        INetwork &setLengthIndicatorSize(int lengthIndicatorSize)
+        {
+            _lengthIndicatorSize = lengthIndicatorSize;
+            return *this;
         }
 
         virtual INetwork &run() = 0;

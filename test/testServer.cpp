@@ -23,19 +23,17 @@ struct Test
 
 void conn(Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client)
 {
-    LOG.log("YOP");
-    LOG.log(client.fd);
     serv->send(client, "t ki");
 }
 
 int main()
 {
-    Alfred::ServerTCP tcp(8000);
+    Alfred::ServerTCP tcp(8001);
 
     tcp.onConnect(conn);
 
     tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client, const char *msg) -> void {
-        std::cout << msg << std::endl;
+        LOG.log("Le client m'a envoyé: " + std::string(msg));
         serv->send(client, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
     });
 

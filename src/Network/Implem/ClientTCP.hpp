@@ -35,10 +35,10 @@ namespace Alfred
 
         const char *_receive()
         {
-            char *buff = new char[1024 * sizeof(char)];
+            char *buff = new char[_packetSize * sizeof(char)];
             ssize_t index;
 
-            if ((index = read(_info.fd, buff, 1024)) <= 0) {
+            if ((index = read(_info.fd, buff, _packetSize)) <= 0) {
                 if (index < 0)
                     LOG.error("Failed to read");
                 close(_info.fd);
@@ -98,11 +98,18 @@ namespace Alfred
                 else if (retval >= 0)
                     select_check();
             }
+            close(_info.fd);
             return *this;
         }
 
-        INetwork &Send(const char *msg) override
+        //TODO CHANGE RECEIVE METHOD BY LENGTH OR FIXED LENGTH
+        INetwork &Send(const char *msg) override //TODO CHANGE PROTO BY VOID * AND SIZE_T LENGTH
         {
+            struct PacketHeader header;
+
+            std::string tmp(msg);
+            header.length = tmp.size();
+            write(_info.fd, &header, sizeof(struct PacketHeader));
             dprintf(_info.fd, "%s", msg);
             return *this;
         }

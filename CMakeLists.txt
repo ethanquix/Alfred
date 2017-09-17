@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 project(Alfred)
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
 set(CMAKE_CXX_STANDARD 14)
 
