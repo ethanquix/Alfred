@@ -122,7 +122,7 @@ namespace Alfred
                         _accept();
                         tmp.in = _currentClient.in;
                         tmp.fd = _currentClient.fd;
-                        this->_clients[_currentClient.fd] = tmp;
+                        this->_clients[_currentClient.fd] = ClientInfo(tmp);
                         printf("Client %d Connected\n", _currentClient.fd);
                         _first_connect(this, tmp);
                     } else {
@@ -159,7 +159,7 @@ namespace Alfred
             _bind();
         }
 
-        INetwork &send(const ConnectionInfo &to, const char *msg) override
+        INetwork &Send(const ConnectionInfo &to, const char *msg) override
         {
             dprintf(to.fd, "%s", msg);
             return *this;
@@ -175,7 +175,7 @@ namespace Alfred
                 tv.tv_sec = 0;
                 FD_ZERO(&_rfds);
                 for (const auto &it : _clients)
-                    FD_SET(it.second.fd, &_rfds);
+                    FD_SET(it.second.getFD(), &_rfds);
                 FD_SET(_info.fd, &_rfds);
                 if ((retval = select(_clients.size() + _info.fd + 2,
                                      &_rfds, NULL, NULL, &tv)) == -1 && !_stop)

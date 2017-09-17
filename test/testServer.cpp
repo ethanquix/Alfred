@@ -23,7 +23,7 @@ struct Test
 
 void conn(Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client)
 {
-    serv->send(client, "t ki");
+    serv->Send(client, "t ki");
 }
 
 int main()
@@ -34,7 +34,7 @@ int main()
 
     tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client, const char *msg) -> void {
         LOG.log("Le client m'a envoyé: " + std::string(msg));
-        serv->send(client, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
+        serv->Send(client, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
     });
 
     tcp.onDisconnect([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client) {

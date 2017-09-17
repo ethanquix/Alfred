@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Logger.hpp"
+#include "ClientInfo.hpp"
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,15 +13,6 @@
 
 namespace Alfred
 {
-    struct ConnectionInfo
-    {
-        size_t port;
-        std::string ip;
-        int fd;
-        struct sockaddr_in in;
-        int id; //TODO UNIQUE ID GENERATOR
-    };
-
     struct PacketHeader //TODO CHANGE THAT BY ONE STRUCT PER CLIENT AND SEND STRUCT AT START TO SAY IF YES OR NOT LENGTH OR END DELIMITER OR FIXED SIZE
     {
         int length;
