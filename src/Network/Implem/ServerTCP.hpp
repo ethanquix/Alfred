@@ -12,6 +12,7 @@
 #define ALFRED_UNIXSERVER_HPP
 
 #include <cstring>
+#include <sys/ioctl.h>
 #include "IServer.hpp"
 
 namespace Alfred
@@ -45,13 +46,18 @@ namespace Alfred
 
         const char *_receive()
         {
-            char *buff = new char[1024 * sizeof(char)];
-            std::string out;
             ssize_t index;
+            std::stringstream out;
+            char *buff = new char[4096 * sizeof(char)];
+            std::string x;
+            int to_receive = 1;
+            int received = 0;
 
-            while (!_stop) {
-                std::memset(&buff[0], 0, sizeof(buff));
-                if ((index = read(_currentClient.fd, buff, 1024)) <= 0) {
+            //TODO SEND FIRST RECEIVE AND THEN TO RECEIVE BLABLA
+            //TODO SAME FOR CLIENT
+            while (!_stop && received < to_receive) {
+                bzero(buff, 4096);
+                if ((index = read(_currentClient.fd, buff, 4096)) <= 0) {
                     if (index < 0)
                         LOG.error("Failed to read");
                     close(_currentClient.fd);
@@ -60,12 +66,18 @@ namespace Alfred
                     _clients.erase(_currentClient.fd);
                     return (nullptr);
                 }
-                LOG.log(std::string("Buffer: ") + buff);
-                LOG.log(std::string("Out: ") + (out + buff));
-                if (buff[index] == _endChar)
-                    return (out + buff).c_str();
-                out += buff;
-//                buff[index] = '\0'; TODO MAYBE
+                std::cout << buff[index - 1] << std::endl;
+                if (buff[index - 1] == _endChar) {
+                    buff[index - 1] = '\0';
+                    out << buff;
+                    out >> x;
+                    out.clear();
+                    LOG.error("ON SE TIRE " + x);
+                    return x.c_str(); //TODO MAYBE JUST STRING OR REALLOC DUDE
+                }
+                buff[index] = '\0'; //TODO ?
+                LOG.error("CUR BUF: " + std::string(buff));
+                out << buff;
             }
         }
 
@@ -97,6 +109,7 @@ namespace Alfred
         }
 
     public:
+
         ServerTCP() :
             IServer()
         {

@@ -70,5 +70,6 @@ namespace Alfred
         //TODO ADD ON_DISCONNECT CLIENT
         //TODO ADD DEFAULT FUNCTION FOR CLIENT AND SERVER
         //TODO CHANGE CONNECT BEHAVIOR (Like not _bind in constructor but in connect)
+        //TODO CHANGE CLIENT WHICH CAN NOT SEND ANY MSG
     };
 }

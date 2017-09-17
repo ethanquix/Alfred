@@ -87,10 +87,6 @@ namespace Alfred
 
         INetwork &run() override
         {
-            //TODO LOOP ETC
-
-            char buffer[1024];
-            ssize_t n = 0;
             int retval;
 
             while (!_stop) {
