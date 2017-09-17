@@ -36,7 +36,11 @@ int main()
 
     tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client, const char *msg) -> void {
         std::cout << msg << std::endl;
-        serv->send(client, "ok salut");
+        serv->send(client, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
+    });
+
+    tcp.onDisconnect([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client) {
+        LOG.debug("Wesh y'a " + std::to_string(client.fd) + " qui s'est déconnecté");
     });
 
     tcp.run();

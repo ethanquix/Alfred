@@ -37,7 +37,9 @@ target_link_libraries(test_Promise pthread)
 
 add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
-add_executable(test_Network ${SOURCE_NETWORK} test/testNetwork.cpp)
+add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp)
+
+add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp)
 
 add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
 

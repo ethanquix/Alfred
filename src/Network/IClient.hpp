@@ -37,9 +37,9 @@ namespace Alfred
         virtual IClient &Connect() = 0;
         virtual IClient &Connect(const std::string &ip, size_t port) = 0;
 
-        virtual INetwork &send(const char *msg) = 0;
+        virtual INetwork &Send(const char *msg) = 0;
 
-        virtual IClient &onReceived(const std::function<void(IClient *, const char *msg)> &func)
+        virtual IClient &onReceived(const std::function<void(IClient *, const char *)> &func)
         {
             _onReceived = func;
             return *this;

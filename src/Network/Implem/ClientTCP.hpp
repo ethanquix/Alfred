@@ -19,6 +19,7 @@ namespace Alfred
     class ClientTCP : public IClient
     {
     private:
+        fd_set rdfs = {};
 
         void _bind()
         {
@@ -30,8 +31,28 @@ namespace Alfred
                 LOG.fatal("Socket creation error"); //TODO add perror
             if (connect(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
                 LOG.fatal("Bind failed");
-            if ((listen(_info.fd, _info.port)) == -1)
-                LOG.fatal("Listen failed");
+        }
+
+        const char *_receive()
+        {
+            char *buff = new char[1024 * sizeof(char)];
+            ssize_t index;
+
+            if ((index = read(_info.fd, buff, 1024)) <= 0) {
+                if (index < 0)
+                    LOG.error("Failed to read");
+                close(_info.fd);
+                printf("Server %d Disconnected\n", _info.fd);
+                return (nullptr);
+            }
+            buff[index] = '\0';
+            LOG.debug(std::to_string(_info.fd) + " " + std::string(buff));
+            return (buff);
+        }
+
+        void select_check()
+        {
+            _onReceived(this, _receive());
         }
 
     public:
@@ -67,35 +88,27 @@ namespace Alfred
         INetwork &run() override
         {
             //TODO LOOP ETC
+
+            char buffer[1024];
+            ssize_t n = 0;
+            int retval;
+
+            while (!_stop) {
+                FD_ZERO(&rdfs);
+                FD_SET(_info.fd, &rdfs);
+                retval = select(_info.fd + 1, &rdfs, NULL, NULL, NULL);
+                if (retval == -1)
+                    LOG.fatal("Select failed"); //TODO CUSTOM EXCEPTION
+                else if (retval >= 0)
+                    select_check();
+            }
             return *this;
         }
 
-        INetwork &send(const char *msg) override
+        INetwork &Send(const char *msg) override
         {
             dprintf(_info.fd, "%s", msg);
             return *this;
-        }
-
-        const char *_receive()
-        {
-            char *buff = new char[1024 * sizeof(char)];
-            ssize_t index;
-
-            if ((index = read(_info.fd, buff, 1024)) <= 0) {
-                if (index < 0)
-                    LOG.error("Failed to read");
-                close(_info.fd);
-                printf("Server %zu Disconnected\n", _info.fd);
-                return (nullptr);
-            }
-            buff[index] = '\0';
-            LOG.debug(std::to_string(_info.fd) + " " + std::string(buff));
-            return (buff);
-        }
-
-        IClient &onReceived(const std::function<void(IClient *, const char *)> &func) override
-        {
-            _onReceived(this, _receive());
         }
     };
 }

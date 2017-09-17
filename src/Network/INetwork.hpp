@@ -66,5 +66,8 @@ namespace Alfred
         //TODO Hostname resolution
         //TODO FUNCTION ON DISCONNECT
         //TODO CHECK IF SERVER AND CLIENT WELL CONNECTED BEFORE SENDING MSG
+        //TODO ADD ON_DISCONNECT CLIENT
+        //TODO ADD DEFAULT FUNCTION FOR CLIENT AND SERVER
+        //TODO CHANGE CONNECT BEHAVIOR (Like not _bind in constructor but in connect)
     };
 }
