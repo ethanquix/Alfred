@@ -33,7 +33,7 @@ namespace Alfred
 
     public:
         int remainingSize = -1;
-        std::string mailbox;
+//        std::string mailbox;
 
         ClientInfo() = default;
 

@@ -28,7 +28,7 @@ void conn(Alfred::IServer *serv, int clientID)
 
 int main()
 {
-    Alfred::ServerTCP tcp(8001);
+    Alfred::ServerTCP tcp;
 
     tcp.onConnect(conn);
 

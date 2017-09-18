@@ -44,91 +44,45 @@ namespace Alfred
                                        &_sizeCurrentClient);
         }
 
-        //TODO PRINCIPE
-        //On remplit la mailbox avec read
-        //On parse ensuite la mailbox et on renvoit le premier truc
-        const char *handle_mailbox(int fd)
+        const char *_receive_helper_dc(int index)
         {
-            if (_clients[fd].mailbox.empty())
-                return nullptr;
-            if (_clients[fd].remainingSize == -1) {
-                if (_clients[fd].mailbox.size() < _lengthIndicatorSize)
-                    return nullptr;
-                struct PacketHeader header;
-
-                header = static_cast<struct PackerHeader &>(_clients[fd].mailbox.substr(0, _lengthIndicatorSize));
-            }
-
-            std::string *ret = new std::string();
-            if (_clients[fd].mailbox.size() >= _clients[fd].remainingSize) {
-                *ret = _clients[fd].mailbox.substr(0, _clients[fd].remainingSize);
-                _clients[fd].remainingSize = -1;
-                _clients[fd].mailbox.erase(0, _clients[fd].remainingSize);
-                return (*ret).c_str();
-            }
+            if (index < 0)
+                LOG.error("Failed to read");
+            close(_currentClient.fd);
+            printf("Client %d Disconnected\n", _currentClient.fd);
+            //TODO ADD A _disconnect FUNCTION
+            _on_disconnect(this, _currentClient.fd);
+            _clients.erase(_currentClient.fd);
+            return (nullptr);
         }
 
         const char *_receive()
         {
-            struct PacketHeader header;
-            int to_read;
+            int to_read = 0;
             ssize_t index;
-            char *buff = new char[_packetSize * sizeof(char)];
             std::string *out = new std::string("");
 
             while (!_stop) { //TODO A VIRER
-                bzero(buff, _packetSize);
-//                if ((index = read(_currentClient.fd, buff, _packetSize)) <= 0) {
-                if ((index = read(_currentClient.fd, &header, sizeof(struct PacketHeader))) <= 0) {
-                    if (index < 0)
-                        LOG.error("Failed to read");
-                    close(_currentClient.fd);
-                    printf("Client %d Disconnected\n", _currentClient.fd);
-                    //TODO ADD A _disconnect FUNCTION
-                    _on_disconnect(this, _currentClient.fd);
-                    _clients.erase(_currentClient.fd);
-                    delete (buff);
-                    return (nullptr);
+                if ((index = read(_currentClient.fd, &to_read, _lengthIndicatorSize)) <= 0) {
+                    return _receive_helper_dc(index);
                 }
-
-                LOG.debug("SIZE OF PACKET IS: " + std::to_string(header.length));
-
-                if (index < sizeof(struct PacketHeader))
+                to_read = ntohl(to_read);
+                if (index < _lengthIndicatorSize)
                     LOG.fatal(
                         "Unknown error during read invalid header size ? Use Alfred Client please to send msg or set the length option to false");
-
-                if ((index = read(_currentClient.fd, buff, _packetSize - sizeof(struct PacketHeader))) <= 0) {
-                    if (index < 0)
-                        LOG.error("Failed to read 2");
-                    close(_currentClient.fd);
-                    printf("Client %d Disconnected 2\n", _currentClient.fd);
-                    _on_disconnect(this, _currentClient.fd);
-                    _clients.erase(_currentClient.fd);
-                    delete (buff);
-                    return (nullptr);
-                }
-                *out += buff;
-                to_read = header.length - index;
-
-                while (to_read > 0) //TODO CHECK IF MULTIPLE PACKET AND ADD QUEUE
-                {
-                    bzero(buff, _packetSize);
-                    if ((index = read(_currentClient.fd, buff, _packetSize)) <= 0) {
-                        if (index < 0)
-                            LOG.error("Failed to read 3");
-                        close(_currentClient.fd);
-                        printf("Client %d Disconnected 3\n", _currentClient.fd);
-                        _on_disconnect(this, _currentClient.fd);
-                        _clients.erase(_currentClient.fd);
+                char *buff = new char[(to_read + 1) * sizeof(char)];
+                while (to_read > 0) {
+                    LOG.error("Hey je passe dans la boucle 3 " + std::to_string(to_read));
+                    bzero(buff, (to_read + 1) * sizeof(char));
+                    if ((index = read(_currentClient.fd, buff, to_read)) <= 0) {
                         delete (buff);
-                        return (nullptr);
+                        return _receive_helper_dc(index);
                     }
-//                    LOG.error("CUR BUFF RECU: " + std::string(buff));
+                    buff[index] = '\0';
                     *out += buff;
-                    to_read -= index; //TODO FRAGMENTER PLEINS PACKET SI to_read < 0
+                    to_read -= index;
                 }
-
-                out->resize(header.length); //TODO FIX
+//                out->resize(size); //TODO FIX [TODONE] ?
                 LOG.error("G RECU: " + *out);
                 delete (buff);
                 return out->c_str();
@@ -178,7 +132,9 @@ namespace Alfred
             _bind();
         }
 
-        ServerTCP(const std::string &ip, const size_t port) :
+        ServerTCP(
+            const std::string &ip,
+            const size_t port) :
             IServer(ip, port)
         {
             _bind();
@@ -186,15 +142,10 @@ namespace Alfred
 
         IServer &Send(int clientID, const char *msg) override
         {
-            struct PacketHeader header;
-            std::ostringstream oss;
-
-            header.length = std::string(msg).size();
-
-            oss << header.length << msg;
-
-            std::string out = oss.str();
-            write(_clients[clientID].getFD(), out.data(), out.size());
+            std::string to_send(msg);
+            int size = htonl(to_send.size());
+            write(_clients[clientID].getFD(), (const char *)&size, _lengthIndicatorSize);
+            write(_clients[clientID].getFD(), to_send.data(), to_send.size());
             return *this;
         }
 

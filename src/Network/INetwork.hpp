@@ -31,17 +31,25 @@ namespace Alfred
         virtual const char *what() const throw()
         { return msg.c_str(); }
     };
-
-    struct PacketHeader //TODO CHANGE THAT BY ONE STRUCT PER CLIENT AND SEND STRUCT AT START TO SAY IF YES OR NOT LENGTH OR END DELIMITER OR FIXED SIZE
-    {
-        int length;
-    };
-
-    std::ostream& operator<<(std::ostream& out, struct PacketHeader& h)
-    {
-        out.write(reinterpret_cast<char*>(&h), sizeof(struct PacketHeader));
-        return out;
-    }
+//
+//    struct PacketHeader //TODO CHANGE THAT BY ONE STRUCT PER CLIENT AND SEND STRUCT AT START TO SAY IF YES OR NOT LENGTH OR END DELIMITER OR FIXED SIZE
+//    {
+//        int length;
+//    };
+//
+//    std::ostringstream &operator<<(std::ostringstream &os, struct PacketHeader &h)
+//    {
+//        os << h.length;
+//        return os;
+//    }
+//
+//    std::string &operator>>(std::string &src, struct PacketHeader &h)
+//    {
+//        std::istringstream iss(src);
+//
+//        iss >> h.length;
+//        return src;
+//    }
 
     enum ConnectionMode
     {
@@ -57,7 +65,7 @@ namespace Alfred
         bool _stop = false;
         bool _isBind = false;
         int _packetSize = 1024;
-        int _lengthIndicatorSize = 4;
+        size_t _lengthIndicatorSize = sizeof(int); //TODO FIX THIS VALUE
 
     public:
         INetwork()
@@ -86,12 +94,6 @@ namespace Alfred
         INetwork &setPacketSize(int packetSize)
         {
             _packetSize = packetSize;
-            return *this;
-        }
-
-        INetwork &setLengthIndicatorSize(int lengthIndicatorSize)
-        {
-            _lengthIndicatorSize = lengthIndicatorSize;
             return *this;
         }
 
