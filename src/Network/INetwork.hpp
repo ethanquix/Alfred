@@ -8,6 +8,13 @@
 #include <unistd.h>
 #include <string>
 
+
+//TODO
+//IDEE: En gros, CLIENT:
+// 1 thread pour recevoir et ducoup send se fait sur le principal
+// POUR SERVER
+// Un thread pour send (sendqueue)
+
 #define DEFAULT_PORT 8000
 #define DEFAULT_IP "127.0.0.1"
 
@@ -29,6 +36,12 @@ namespace Alfred
     {
         int length;
     };
+
+    std::ostream& operator<<(std::ostream& out, struct PacketHeader& h)
+    {
+        out.write(reinterpret_cast<char*>(&h), sizeof(struct PacketHeader));
+        return out;
+    }
 
     enum ConnectionMode
     {

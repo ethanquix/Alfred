@@ -32,6 +32,9 @@ namespace Alfred
         struct ConnectionInfo _info;
 
     public:
+        int remainingSize = -1;
+        std::string mailbox;
+
         ClientInfo() = default;
 
         explicit ClientInfo(const struct ConnectionInfo &info) :

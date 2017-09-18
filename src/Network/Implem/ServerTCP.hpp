@@ -44,6 +44,30 @@ namespace Alfred
                                        &_sizeCurrentClient);
         }
 
+        //TODO PRINCIPE
+        //On remplit la mailbox avec read
+        //On parse ensuite la mailbox et on renvoit le premier truc
+        const char *handle_mailbox(int fd)
+        {
+            if (_clients[fd].mailbox.empty())
+                return nullptr;
+            if (_clients[fd].remainingSize == -1) {
+                if (_clients[fd].mailbox.size() < _lengthIndicatorSize)
+                    return nullptr;
+                struct PacketHeader header;
+
+                header = static_cast<struct PackerHeader &>(_clients[fd].mailbox.substr(0, _lengthIndicatorSize));
+            }
+
+            std::string *ret = new std::string();
+            if (_clients[fd].mailbox.size() >= _clients[fd].remainingSize) {
+                *ret = _clients[fd].mailbox.substr(0, _clients[fd].remainingSize);
+                _clients[fd].remainingSize = -1;
+                _clients[fd].mailbox.erase(0, _clients[fd].remainingSize);
+                return (*ret).c_str();
+            }
+        }
+
         const char *_receive()
         {
             struct PacketHeader header;
@@ -60,7 +84,7 @@ namespace Alfred
                         LOG.error("Failed to read");
                     close(_currentClient.fd);
                     printf("Client %d Disconnected\n", _currentClient.fd);
-                    //TODO ADD AN _disconnect FUNCTION
+                    //TODO ADD A _disconnect FUNCTION
                     _on_disconnect(this, _currentClient.fd);
                     _clients.erase(_currentClient.fd);
                     delete (buff);
@@ -103,7 +127,8 @@ namespace Alfred
                     *out += buff;
                     to_read -= index; //TODO FRAGMENTER PLEINS PACKET SI to_read < 0
                 }
-                out[header.length] = '\0';
+
+                out->resize(header.length); //TODO FIX
                 LOG.error("G RECU: " + *out);
                 delete (buff);
                 return out->c_str();
@@ -161,7 +186,15 @@ namespace Alfred
 
         IServer &Send(int clientID, const char *msg) override
         {
-            dprintf(_clients[clientID].getFD(), "%s", msg);
+            struct PacketHeader header;
+            std::ostringstream oss;
+
+            header.length = std::string(msg).size();
+
+            oss << header.length << msg;
+
+            std::string out = oss.str();
+            write(_clients[clientID].getFD(), out.data(), out.size());
             return *this;
         }
 
