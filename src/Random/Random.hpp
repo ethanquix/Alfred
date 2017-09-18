@@ -24,10 +24,11 @@ namespace Alfred
             const std::string VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             std::default_random_engine generator;
             std::uniform_int_distribution<int> distribution(0, VALID_CHARS.size() - 1);
-            std::string out;
-            std::generate_n(std::back_inserter(out), max, [&]() {
+            auto out = new std::string();
+            std::generate_n(std::back_inserter(*out), max, [&]() {
                 return VALID_CHARS[distribution(generator)];
             });
+            return *out;
         }
 
         static const int randint(size_t min, size_t max)

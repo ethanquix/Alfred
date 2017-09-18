@@ -30,7 +30,7 @@ namespace Alfred
             if (_info.fd == -1)
                 LOG.fatal("Socket creation error"); //TODO add perror
             if (connect(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
-                LOG.fatal("Bind failed");
+                throw BindFailed(_info.ip, _info.port);
         }
 
         const char *_receive()
@@ -43,6 +43,8 @@ namespace Alfred
                     LOG.error("Failed to read");
                 close(_info.fd);
                 printf("Server %d Disconnected\n", _info.fd);
+                stop();
+                _on_disconnect();
                 return (nullptr);
             }
             buff[index] = '\0';
@@ -52,43 +54,45 @@ namespace Alfred
 
         void select_check()
         {
-            _onReceived(this, _receive());
+            const char *msg = _receive();
+            if (msg)
+                _onReceived(this, msg);
         }
 
     public:
         ClientTCP() : IClient()
-        {
-            _bind();
-        }
+        {}
 
         explicit ClientTCP(const size_t port) : IClient(port)
-        {
-            _bind();
-        }
+        {}
 
         ClientTCP(const std::string &ip, const size_t port) : IClient(ip, port)
-        {
-            _bind();
-        }
+        {}
 
         IClient &Connect() override
         {
+            _isBind = false;
             _bind();
+            _isBind = true;
             return *this;
         }
 
         IClient &Connect(const std::string &ip, const size_t port) override
         {
+            _isBind = false;
             _info.ip = ip;
             _info.port = port;
             _bind();
+            _isBind = true;
             return *this;
         }
 
-        INetwork &run() override
+        IClient &Listen() override
         {
             int retval;
 
+            if (!_isBind)
+                LOG.fatal("You need to call Connect before call Listen");
             while (!_stop) {
                 FD_ZERO(&rdfs);
                 FD_SET(_info.fd, &rdfs);
@@ -103,7 +107,7 @@ namespace Alfred
         }
 
         //TODO CHANGE RECEIVE METHOD BY LENGTH OR FIXED LENGTH
-        INetwork &Send(const char *msg) override //TODO CHANGE PROTO BY VOID * AND SIZE_T LENGTH
+        IClient &Send(const char *msg) override //TODO CHANGE PROTO BY VOID * AND SIZE_T LENGTH
         {
             struct PacketHeader header;
 

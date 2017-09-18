@@ -22,9 +22,9 @@ namespace Alfred
     {
     protected:
         std::unordered_map<int, ClientInfo> _clients;
-        std::function<void(IServer *, const struct ConnectionInfo &)> _first_connect = nullptr;
-        std::function<void(IServer *, const struct ConnectionInfo &, const char *)> _on_received = nullptr;
-        std::function<void(IServer *, const struct ConnectionInfo &)> _on_disconnect = nullptr;
+        std::function<void(IServer *, const struct ConnectionInfo &)> _first_connect = [] (IServer *, const struct ConnectionInfo &) {};
+        std::function<void(IServer *, const struct ConnectionInfo &, const char *)> _on_received = [] (IServer *, const struct ConnectionInfo &, const char *) {};
+        std::function<void(IServer *, const struct ConnectionInfo &)> _on_disconnect = [] (IServer *, const struct ConnectionInfo &) {};
 
     public:
         IServer() : INetwork()
@@ -44,27 +44,29 @@ namespace Alfred
             return _clients;
         };
 
-        virtual INetwork &onConnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
+        virtual IServer &onConnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
         {
             _first_connect = _func;
             return *this;
         }
 
-        virtual INetwork &
+        virtual IServer &
         onReceive(const std::function<void(IServer *, const struct ConnectionInfo &, const char *)> &_func)
         {
             _on_received = _func;
             return *this;
         }
 
-        virtual INetwork &
+        virtual IServer &
         onDisconnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
         {
             _on_disconnect = _func;
             return *this;
         }
 
-        virtual INetwork &Send(const ConnectionInfo &to, const char *msg) = 0;
+        virtual IServer &Send(const ConnectionInfo &to, const char *msg) = 0;
+
+        virtual IServer &run() = 0;
 
 //        const int operator[](const size_t id)
 //        {

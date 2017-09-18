@@ -13,6 +13,18 @@
 
 namespace Alfred
 {
+    class BindFailed : public std::exception
+    {
+        std::string msg;
+    public:
+        BindFailed(const std::string &ip, int port) :
+            msg(std::string("Failed to bind to ip: ") + ip + " and port " + std::to_string(port))
+        {}
+
+        virtual const char *what() const throw()
+        { return msg.c_str(); }
+    };
+
     struct PacketHeader //TODO CHANGE THAT BY ONE STRUCT PER CLIENT AND SEND STRUCT AT START TO SAY IF YES OR NOT LENGTH OR END DELIMITER OR FIXED SIZE
     {
         int length;
@@ -30,6 +42,7 @@ namespace Alfred
         ConnectionInfo _info = {};
         enum ConnectionMode _mode = TCP;
         bool _stop = false;
+        bool _isBind = false;
         int _packetSize = 1024;
         int _lengthIndicatorSize = 4;
 
@@ -69,7 +82,6 @@ namespace Alfred
             return *this;
         }
 
-        virtual INetwork &run() = 0;
         //TO_[DONE] IPACKETUTILS INTERFACE (with different possible implem) to parse to send and parse to receive (like send a vector of float and receive it
 
 

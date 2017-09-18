@@ -22,9 +22,8 @@ int main()
         c->stop();
     });
 
-//    client.Connect();
+    client.Connect();
 
-    //TODO Implement run method
-
-    client.run();
+    //TODO THREAD SAFE ETC...
+    client.Listen();
 }

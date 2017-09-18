@@ -33,7 +33,7 @@ namespace Alfred
             if (_info.fd == -1)
                 LOG.fatal("Socket creation error"); //TODO add perror
             if (bind(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
-                LOG.fatal("Bind failed");
+                throw BindFailed(_info.ip, _info.port);
             if ((listen(_info.fd, _info.port)) == -1)
                 LOG.fatal("Listen failed");
         }
@@ -159,13 +159,13 @@ namespace Alfred
             _bind();
         }
 
-        INetwork &Send(const ConnectionInfo &to, const char *msg) override
+        IServer &Send(const ConnectionInfo &to, const char *msg) override
         {
             dprintf(to.fd, "%s", msg);
             return *this;
         }
 
-        INetwork &run() override
+        IServer &run() override
         {
             struct timeval tv = {};
             int retval;

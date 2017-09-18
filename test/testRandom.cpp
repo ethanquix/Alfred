@@ -8,3 +8,10 @@
 ** Last update Mon Sep 18 01:18:43 2017 Dimitri Wyzlic
 */
 
+#include <iostream>
+#include "Random.hpp"
+
+int main()
+{
+    std::cout << Alfred::Random::string(400) << std::endl;
+}

@@ -23,7 +23,7 @@ namespace Alfred
         std::string ip;
         int fd;
         struct sockaddr_in in;
-        int id = Random::randint(0, INTMAX_MAX); //TODO UNIQUE ID GENERATOR
+        int id = Random::randint(0, std::numeric_limits<int>::max()); //TODO UNIQUE ID GENERATOR
     };
 
     class ClientInfo

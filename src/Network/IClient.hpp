@@ -12,6 +12,7 @@
 #define ALFRED_ICLIENT_HPP
 
 #include <functional>
+#include <exception>
 #include "INetwork.hpp"
 
 namespace Alfred
@@ -19,7 +20,8 @@ namespace Alfred
     class IClient : public INetwork
     {
     protected:
-        std::function<void(IClient *, const char *msg)> _onReceived;
+        std::function<void(IClient *, const char *msg)> _onReceived = [] (IClient *, const char *msg) {};
+        std::function<void()> _on_disconnect = [] () {};
 
     public:
         IClient() : INetwork()
@@ -37,11 +39,19 @@ namespace Alfred
         virtual IClient &Connect() = 0;
         virtual IClient &Connect(const std::string &ip, size_t port) = 0;
 
-        virtual INetwork &Send(const char *msg) = 0;
+        virtual IClient &Send(const char *msg) = 0;
+
+        virtual IClient &Listen() = 0;
 
         virtual IClient &onReceived(const std::function<void(IClient *, const char *)> &func)
         {
             _onReceived = func;
+            return *this;
+        }
+
+        virtual IClient &onDisconnect(std::function<void()> func)
+        {
+            _on_disconnect = func;
             return *this;
         }
 //Et la send qui est virtual oklm
