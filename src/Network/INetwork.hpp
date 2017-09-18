@@ -65,7 +65,8 @@ namespace Alfred
         bool _stop = false;
         bool _isBind = false;
         int _packetSize = 1024;
-        size_t _lengthIndicatorSize = sizeof(int); //TODO FIX THIS VALUE
+        size_t _lengthIndicatorSize = sizeof(int);
+        bool _threaded; //TODO
 
     public:
         INetwork()
@@ -97,16 +98,8 @@ namespace Alfred
             return *this;
         }
 
-        //TO_[DONE] IPACKETUTILS INTERFACE (with different possible implem) to parse to send and parse to receive (like send a vector of float and receive it
-
-
         //TODO Multithreading
         //TODO Hostname resolution
-        //TODO FUNCTION ON DISCONNECT
-        //TODO CHECK IF SERVER AND CLIENT WELL CONNECTED BEFORE SENDING MSG
-        //TODO ADD ON_DISCONNECT CLIENT
-        //TODO ADD DEFAULT FUNCTION FOR CLIENT AND SERVER
-        //TODO CHANGE CONNECT BEHAVIOR (Like not _bind in constructor but in connect)
-        //TODO CHANGE CLIENT WHICH CAN NOT SEND ANY MSG
+        //TODO CHANGE CLIENT WHICH CAN NOT SEND ANY MSG [REFER MULTITHREADING]
     };
 }

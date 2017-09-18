@@ -51,31 +51,26 @@ namespace Alfred
             ssize_t index;
             std::string *out = new std::string("");
 
-            while (!_stop) { //TODO A VIRER
-                if ((index = read(_info.fd, &to_read, _lengthIndicatorSize)) <= 0) {
+            if ((index = read(_info.fd, &to_read, _lengthIndicatorSize)) <= 0) {
+                return _receive_helper_dc(index);
+            }
+            to_read = ntohl(to_read);
+            if (index < _lengthIndicatorSize)
+                LOG.fatal("Unknown error during read invalid header size");
+            char *buff = new char[(to_read + 1) * sizeof(char)];
+            while (to_read > 0) {
+                bzero(buff, (to_read + 1) * sizeof(char));
+                if ((index = read(_info.fd, buff, to_read)) <= 0) {
+                    delete (buff);
                     return _receive_helper_dc(index);
                 }
-                to_read = ntohl(to_read);
-                if (index < _lengthIndicatorSize)
-                    LOG.fatal(
-                        "Unknown error during read invalid header size ? Use Alfred Client please to send msg or set the length option to false");
-                char *buff = new char[(to_read + 1) * sizeof(char)];
-                while (to_read > 0) {
-                    LOG.error("Hey je passe dans la boucle 3 " + std::to_string(to_read));
-                    bzero(buff, (to_read + 1) * sizeof(char));
-                    if ((index = read(_info.fd, buff, to_read)) <= 0) {
-                        delete (buff);
-                        return _receive_helper_dc(index);
-                    }
-                    buff[index] = '\0';
-                    *out += buff;
-                    to_read -= index;
-                }
-//                out->resize(size); //TODO FIX [TODONE] ?
-                LOG.error("G RECU: " + *out);
-                delete (buff);
-                return out->c_str();
+                buff[index] = '\0';
+                *out += buff;
+                to_read -= index;
             }
+//                out->resize(size); //TODO FIX [TODONE] ?
+            delete (buff);
+            return out->c_str();
         }
 
         void select_check()
