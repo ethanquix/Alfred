@@ -22,9 +22,10 @@ namespace Alfred
     {
     protected:
         std::unordered_map<int, ClientInfo> _clients;
-        std::function<void(IServer *, const struct ConnectionInfo &)> _first_connect = [] (IServer *, const struct ConnectionInfo &) {};
-        std::function<void(IServer *, const struct ConnectionInfo &, const char *)> _on_received = [] (IServer *, const struct ConnectionInfo &, const char *) {};
-        std::function<void(IServer *, const struct ConnectionInfo &)> _on_disconnect = [] (IServer *, const struct ConnectionInfo &) {};
+        std::function<void(IServer *, int clientFD)> _first_connect = [](IServer *, int clientFD) {};
+        std::function<void(IServer *, int clientFD, const char *)> _on_received = [](IServer *, int clientFD,
+                                                                                     const char *) {};
+        std::function<void(IServer *, int clientFD)> _on_disconnect = [](IServer *, int clientFD) {};
 
     public:
         IServer() : INetwork()
@@ -44,27 +45,32 @@ namespace Alfred
             return _clients;
         };
 
-        virtual IServer &onConnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
+        virtual IServer &onConnect(const std::function<void(IServer *, int clientFD)> &_func)
         {
             _first_connect = _func;
             return *this;
         }
 
         virtual IServer &
-        onReceive(const std::function<void(IServer *, const struct ConnectionInfo &, const char *)> &_func)
+        onReceive(const std::function<void(IServer *, int clientFD, const char *msg)> &_func)
         {
             _on_received = _func;
             return *this;
         }
 
         virtual IServer &
-        onDisconnect(const std::function<void(IServer *, const struct ConnectionInfo &)> &_func)
+        onDisconnect(const std::function<void(IServer *, int clientFD)> &_func)
         {
             _on_disconnect = _func;
             return *this;
         }
 
-        virtual IServer &Send(const ConnectionInfo &to, const char *msg) = 0;
+        virtual ClientInfo &getClientInfo(int clientID)
+        {
+            return _clients[clientID];
+        }
+
+        virtual IServer &Send(int clientFD, const char *msg) = 0;
 
         virtual IServer &run() = 0;
 

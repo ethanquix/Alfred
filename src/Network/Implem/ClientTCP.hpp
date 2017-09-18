@@ -117,6 +117,15 @@ namespace Alfred
             dprintf(_info.fd, "%s", msg);
             return *this;
         }
+
+        IClient &sendThenListen(const char *msg) override
+        {
+            if (!_isBind)
+                LOG.fatal("You need to call Connect before call Listen");
+            Send(msg);
+            Listen();
+            return *this;
+        }
     };
 }
 

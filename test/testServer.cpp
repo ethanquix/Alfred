@@ -21,9 +21,9 @@ struct Test
     std::vector<std::string> *c;
 };
 
-void conn(Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client)
+void conn(Alfred::IServer *serv, int clientID)
 {
-    serv->Send(client, "t ki");
+    serv->Send(clientID, "t ki");
 }
 
 int main()
@@ -32,13 +32,13 @@ int main()
 
     tcp.onConnect(conn);
 
-    tcp.onReceive([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client, const char *msg) -> void {
+    tcp.onReceive([](Alfred::IServer *serv, int clientID, const char *msg) -> void {
         LOG.log("Le client m'a envoyé: " + std::string(msg));
-        serv->Send(client, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
+        serv->Send(clientID, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
     });
 
-    tcp.onDisconnect([](Alfred::IServer *serv, const struct Alfred::ConnectionInfo &client) {
-        LOG.debug("Wesh y'a " + std::to_string(client.fd) + " qui s'est déconnecté");
+    tcp.onDisconnect([](Alfred::IServer *serv, int clientID) {
+        LOG.debug("Wesh y'a " + std::to_string(serv->getClientInfo(clientID).getID()) + " qui s'est déconnecté");
     });
 
     tcp.run();

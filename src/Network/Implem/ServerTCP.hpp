@@ -61,7 +61,7 @@ namespace Alfred
                     close(_currentClient.fd);
                     printf("Client %d Disconnected\n", _currentClient.fd);
                     //TODO ADD AN _disconnect FUNCTION
-                    _on_disconnect(this, _currentClient);
+                    _on_disconnect(this, _currentClient.fd);
                     _clients.erase(_currentClient.fd);
                     delete (buff);
                     return (nullptr);
@@ -78,7 +78,7 @@ namespace Alfred
                         LOG.error("Failed to read 2");
                     close(_currentClient.fd);
                     printf("Client %d Disconnected 2\n", _currentClient.fd);
-                    _on_disconnect(this, _currentClient);
+                    _on_disconnect(this, _currentClient.fd);
                     _clients.erase(_currentClient.fd);
                     delete (buff);
                     return (nullptr);
@@ -94,7 +94,7 @@ namespace Alfred
                             LOG.error("Failed to read 3");
                         close(_currentClient.fd);
                         printf("Client %d Disconnected 3\n", _currentClient.fd);
-                        _on_disconnect(this, _currentClient);
+                        _on_disconnect(this, _currentClient.fd);
                         _clients.erase(_currentClient.fd);
                         delete (buff);
                         return (nullptr);
@@ -124,7 +124,7 @@ namespace Alfred
                         tmp.fd = _currentClient.fd;
                         this->_clients[_currentClient.fd] = ClientInfo(tmp);
                         printf("Client %d Connected\n", _currentClient.fd);
-                        _first_connect(this, tmp);
+                        _first_connect(this, tmp.fd);
                     } else {
                         //Returning client
                         _currentClient.fd = index;
@@ -133,7 +133,7 @@ namespace Alfred
                         //Handle
                         const char *msg = _receive();
                         if (msg != nullptr)
-                            _on_received(this, tmp, msg);
+                            _on_received(this, tmp.fd, msg);
                     }
                 }
             }
@@ -159,9 +159,9 @@ namespace Alfred
             _bind();
         }
 
-        IServer &Send(const ConnectionInfo &to, const char *msg) override
+        IServer &Send(int clientID, const char *msg) override
         {
-            dprintf(to.fd, "%s", msg);
+            dprintf(_clients[clientID].getFD(), "%s", msg);
             return *this;
         }
 

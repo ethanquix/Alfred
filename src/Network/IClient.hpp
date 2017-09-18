@@ -20,8 +20,8 @@ namespace Alfred
     class IClient : public INetwork
     {
     protected:
-        std::function<void(IClient *, const char *msg)> _onReceived = [] (IClient *, const char *msg) {};
-        std::function<void()> _on_disconnect = [] () {};
+        std::function<void(IClient *, const char *msg)> _onReceived = [](IClient *, const char *msg) {};
+        std::function<void()> _on_disconnect = []() {};
 
     public:
         IClient() : INetwork()
@@ -42,6 +42,8 @@ namespace Alfred
         virtual IClient &Send(const char *msg) = 0;
 
         virtual IClient &Listen() = 0;
+
+        virtual IClient &sendThenListen(const char *msg) = 0;
 
         virtual IClient &onReceived(const std::function<void(IClient *, const char *)> &func)
         {
