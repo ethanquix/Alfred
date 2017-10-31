@@ -60,3 +60,5 @@ add_executable(test_InfiniteList ${SOURCE_INFINITE_LIST} test/test_InfiniteList.
 add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/test_EventManager.cpp)
 
 add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
+
+add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp)
