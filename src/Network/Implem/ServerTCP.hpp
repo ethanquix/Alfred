@@ -8,163 +8,133 @@
 ** Last update Fri Sep 08 16:12:28 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_UNIXSERVER_HPP
-#define ALFRED_UNIXSERVER_HPP
+#pragma once
 
+#include "AServer.hpp"
+#include "ClientTCP.hpp"
+#include <sys/socket.h>
 #include <cstring>
 #include <sys/ioctl.h>
-#include "IServer.hpp"
+#include <netinet/in.h>
+#include <netdb.h>
+#include <Network/exceptions/BindFailed.hpp>
 
 namespace Alfred
 {
-    class ServerTCP : public IServer
+    namespace Network
     {
-    private:
-        struct ConnectionInfo _currentClient;
-        fd_set _rfds;
-        socklen_t _sizeCurrentClient = sizeof(_currentClient.in);
-
-        void _bind()
+        class ServerTCP : public AServer
         {
-            _info.in.sin_addr.s_addr = INADDR_ANY;
-            _info.in.sin_family = AF_INET;
-            _info.in.sin_port = htons(_info.port);
-            _info.fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
-            if (_info.fd == -1)
-                LOG.fatal("Socket creation error"); //TODO add perror
-            if (bind(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
-                throw BindFailed(_info.ip, _info.port);
-            if ((listen(_info.fd, _info.port)) == -1)
-                LOG.fatal("Listen failed");
-        }
+          private:
+            InfoNetwork _info;
+            fd_set _rfds;
+            socklen_t _sizeCurrentClient = sizeof(struct sockaddr_in);
+            std::thread *_asyncListenThread;
 
-        void _accept()
-        {
-            _currentClient.fd = accept(_info.fd, (struct sockaddr *)&(_currentClient.in),
-                                       &_sizeCurrentClient);
-        }
-
-        const char *_receive_helper_dc(int index)
-        {
-            if (index < 0)
-                LOG.error("Failed to read");
-            close(_currentClient.fd);
-            printf("Client %d Disconnected\n", _currentClient.fd);
-            //TODO ADD A _disconnect FUNCTION
-            _on_disconnect(this, _currentClient.fd);
-            _clients.erase(_currentClient.fd);
-            return (nullptr);
-        }
-
-        const char *_receive()
-        {
-            int to_read = 0;
-            ssize_t index;
-            std::string *out = new std::string("");
-
-            if ((index = read(_currentClient.fd, &to_read, _lengthIndicatorSize)) <= 0) {
-                return _receive_helper_dc(index);
+            void _bind()
+            {
+                _info.in.sin_addr.s_addr = INADDR_ANY;
+                _info.in.sin_family = AF_INET;
+                _info.in.sin_port = htons(_info.port);
+                _info.fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
+                if (_info.fd == -1)
+                    LOG.fatal("Socket creation error"); //TODO add perror
+                if (bind(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
+                    throw BindFailed(_info.ip, _info.port);
+                if ((listen(_info.fd, _info.port)) == -1)
+                    LOG.fatal("Listen failed");
             }
-            to_read = ntohl(to_read);
-            if (index < _lengthIndicatorSize)
-                LOG.fatal("Unknown error during read invalid header size");
-            char *buff = new char[(to_read + 1) * sizeof(char)];
-            while (to_read > 0) {
-                bzero(buff, (to_read + 1) * sizeof(char));
-                if ((index = read(_currentClient.fd, buff, to_read)) <= 0) {
-                    delete (buff);
-                    return _receive_helper_dc(index);
-                }
-                buff[index] = '\0';
-                *out += buff;
-                to_read -= index;
+
+            void _accept()
+            {
+                struct sockaddr_in in;
+
+                int fd = accept(_info.fd, (struct sockaddr *)&(in), &_sizeCurrentClient);
+                _clients.async_at(fd) = _clientBuilder(in, fd);
+                LOG.log("[SERVER] New client " + _clients.async_at(fd)->getInfos().ip + " port: " +
+                        std::to_string(_clients.async_at(fd)->getInfos().port));
+                _first_connect(this, fd);
+//                _clients[fd]->AsyncListen();
             }
-//                out->resize(size); //TODO FIX [TODONE] ?
-            delete (buff);
-            return out->c_str();
-        }
 
-        void select_check()
-        {
-            struct ConnectionInfo tmp;
+            void select_check()
+            {
+                int index = -1;
+                while (++index < FD_SETSIZE) {
+                    if (FD_ISSET(index, &_rfds)) {
+                        if (index == _info.fd) {
+                            LOG.log("hey");
 
-            int index = -1;
-            while (++index < FD_SETSIZE) {
-                if (FD_ISSET(index, &_rfds)) {
-                    if (index == _info.fd) {
-                        //New client
-                        _accept();
-                        tmp.in = _currentClient.in;
-                        tmp.fd = _currentClient.fd;
-                        this->_clients[_currentClient.fd] = ClientInfo(tmp);
-                        printf("Client %d Connected\n", _currentClient.fd);
-                        _first_connect(this, tmp.fd);
-                    } else {
+                            //New client
+                            _accept();
+                        } else {
+                            _clients.async_at(index)->onReceived();
                         //Returning client
-                        _currentClient.fd = index;
-                        tmp.in = _currentClient.in;
-                        tmp.fd = _currentClient.fd;
+                        //Balek le client s'en occupe comme un grand
+//                            _currentClient.fd = index;
+//                            tmp.in = _currentClient.in;
+//                            tmp.fd = _currentClient.fd;
                         //Handle
-                        const char *msg = _receive();
-                        if (msg != nullptr)
-                            _on_received(this, tmp.fd, msg);
+//                            const char *msg = _receive();
+//                            if (msg != nullptr)
+//                                _on_received(this, tmp.fd, msg);
+                        }
                     }
                 }
             }
-        }
 
-    public:
+          public:
 
-        ServerTCP() :
-            IServer()
-        {
-            _bind();
-        }
-
-        explicit ServerTCP(const size_t port) :
-            IServer(port)
-        {
-            _bind();
-        }
-
-        ServerTCP(
-            const std::string &ip,
-            const size_t port) :
-            IServer(ip, port)
-        {
-            _bind();
-        }
-
-        IServer &Send(int clientID, const char *msg) override
-        {
-            std::string to_send(msg);
-            int size = htonl(to_send.size());
-            write(_clients[clientID].getFD(), (const char *)&size, _lengthIndicatorSize);
-            write(_clients[clientID].getFD(), to_send.data(), to_send.size());
-            return *this;
-        }
-
-        IServer &run() override
-        {
-            struct timeval tv = {};
-            int retval;
-
-            while (!_stop) {
-                tv.tv_usec = 0;
-                tv.tv_sec = 0;
-                FD_ZERO(&_rfds);
-                for (const auto &it : _clients)
-                    FD_SET(it.second.getFD(), &_rfds);
-                FD_SET(_info.fd, &_rfds);
-                if ((retval = select(_clients.size() + _info.fd + 2,
-                                     &_rfds, NULL, NULL, &tv)) == -1 && !_stop)
-                    LOG.fatal("Select failed"); //TODO CUSTOM EXCEPTION
-                else if (retval >= 0)
-                    select_check();
+            ServerTCP() :
+                AServer()
+            {
+                _info.port = _port; //TODO REMOVE THE BASE INFO STRUCT
+                _bind();
             }
-            return *this;
-        }
-    };
-}
 
-#endif //ALFRED_UNIXSERVER_HPP
+            explicit ServerTCP(unsigned port) :
+                AServer(port)
+            {
+                _info.port = port;
+                _bind();
+            }
+
+            virtual ~ServerTCP()
+            {
+                _stop = true;
+                for (const auto &it: _clients)
+                    it.second->Stop();
+                if (_asyncListenThread != nullptr) {
+                    _asyncListenThread->join();
+                }
+            }
+
+            IServer &run() override
+            {
+                struct timeval tv = {};
+                int retval;
+
+                while (!_stop) {
+                    tv.tv_usec = 0;
+                    tv.tv_sec = 0;
+                    FD_ZERO(&_rfds);
+                    for (const auto &it : _clients)
+                        FD_SET(it.first, &_rfds);
+                    FD_SET(_info.fd, &_rfds);
+                    if ((retval = select(_clients.size() + _info.fd + 2,
+                                         &_rfds, NULL, NULL, &tv)) == -1 && !_stop)
+                        LOG.fatal("Select failed"); //TODO CUSTOM EXCEPTION
+                    else if (retval >= 0)
+                        select_check();
+                }
+                return *this;
+            }
+
+            IServer &asyncRun() override
+            {
+                _asyncListenThread = new std::thread([this]() { this->run(); });
+                return *this;
+            }
+        };
+    }
+}

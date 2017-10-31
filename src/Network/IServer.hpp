@@ -14,76 +14,30 @@
 #include <unordered_map>
 #include <unordered_map>
 #include <functional>
-#include "INetwork.hpp"
-#include "ClientInfo.hpp"
+#include <netinet/in.h>
+#include "IClient.hpp"
+#include "AsyncUnorderedMap.hpp"
 
 namespace Alfred
 {
-    class IServer
+    namespace Network
     {
-    protected:
-        std::unordered_map<int, ClientInfo> _clients;
-        std::function<void(IServer *, int clientFD)> _first_connect = [](IServer *, int clientFD) {};
-        std::function<void(IServer *, int clientFD, const char *)> _on_received = [](IServer *, int clientFD,
-                                                                                     const char *) {};
-        std::function<void(IServer *, int clientFD)> _on_disconnect = [](IServer *, int clientFD) {};
-
-    public:
-        IServer() : INetwork()
+        class IServer
         {
-        }
-
-        explicit IServer(const size_t port) : INetwork(port)
-        {
-        }
-
-        IServer(const std::string &ip, const size_t port) : INetwork(ip, port)
-        {
-        }
-
-        virtual std::unordered_map<int, ClientInfo> &getClients()
-        {
-            return _clients;
+          public:
+            virtual ~IServer() = default;
+            virtual Async::AsyncUnorderedMap<int, IClient *> &getClients() = 0;
+            virtual IServer &onConnect(const std::function<void(IServer *, int clientFD)> &_func) = 0;
+            virtual IServer &onDisconnect(const std::function<void(IServer *, int clientFD)> &_func) = 0;
+            virtual IClient &getClientInfo(int clientID) = 0;
+            virtual IServer &run() = 0;
+            virtual IServer &asyncRun() = 0;
+            virtual IServer &stop() = 0;
+            virtual IServer &setClientBuilder(const std::function<IClient *(struct sockaddr_in in, unsigned fd)> &func) = 0;
+            virtual IServer &clientDeleted(unsigned id) = 0;
+            virtual IClient &operator[](int id) = 0;
         };
-
-        virtual IServer &onConnect(const std::function<void(IServer *, int clientFD)> &_func)
-        {
-            _first_connect = _func;
-            return *this;
-        }
-
-        virtual IServer &
-        onReceive(const std::function<void(IServer *, int clientFD, const char *msg)> &_func)
-        {
-            _on_received = _func;
-            return *this;
-        }
-
-        virtual IServer &
-        onDisconnect(const std::function<void(IServer *, int clientFD)> &_func)
-        {
-            _on_disconnect = _func;
-            return *this;
-        }
-
-        virtual ClientInfo &getClientInfo(int clientID)
-        {
-            return _clients[clientID];
-        }
-
-        virtual IServer &Send(int clientFD, const char *msg) = 0;
-
-        virtual IServer &run() = 0;
-
-//        const int operator[](const size_t id)
-//        {
-//            if (_clients.find(id) == _clients.end())
-//                return -1;
-//            else
-//                return _clients[id].fd;
-//        }
-        //TODO CHANGE SEND PROTO TO ONLY ACCEPT FD, THEN USE THIS TO BETTER ACCESS AND JUST server->Send(ID_CLIENT, "YOLO);
-    };
+    }
 }
 
 #endif //ALFRED_ISERVER_HPP

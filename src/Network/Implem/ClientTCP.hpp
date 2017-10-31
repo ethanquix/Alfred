@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <Logger/Logger.hpp>
@@ -17,6 +18,7 @@
 #include <Network/AClient.hpp>
 #include <Network/exceptions/BindFailed.hpp>
 #include <cstring>
+#include <Random/Random.hpp>
 
 namespace Alfred
 {
@@ -36,6 +38,7 @@ namespace Alfred
             fd_set _rdfs = {};
             struct InfoNetwork _info;
             std::thread *_asyncListenThread;
+            ClientInfo _clientInfo;
 
           private:
             void _bind()
@@ -61,6 +64,17 @@ namespace Alfred
                 }
             }
 
+            IClient &prepare()
+            {
+                _info.ip = _ip;
+                _info.port = _port;
+                _clientInfo.ip = _info.ip;
+                _clientInfo.port = _info.port;
+                _bind();
+                _isBind = true;
+                return *this;
+            }
+
           public:
 
             ClientTCP() :
@@ -69,41 +83,43 @@ namespace Alfred
                 _asyncListenThread = nullptr;
             };
 
+            ClientTCP(struct sockaddr_in in, unsigned fd) :
+            AClient()
+            {
+                _asyncListenThread = nullptr;
+                _info.in = in;
+
+                _isBind = true;
+
+                char ip[INET_ADDRSTRLEN];
+                inet_ntop( AF_INET, &in.sin_addr, ip, INET_ADDRSTRLEN );
+                _info.ip = std::string(ip);
+                _info.port = in.sin_port;
+            }
+
             IClient &Connect() override
             {
                 AClient::Connect();
-                _info.ip = _ip;
-                _info.port = _port;
-                _bind();
-                _isBind = true;
-                return *this;
+                return prepare();
             }
 
             IClient &Connect(unsigned port) override
             {
                 AClient::Connect(port);
-                _info.ip = _ip;
-                _info.port = _port;
-                _bind();
-                _isBind = true;
-                return *this;
+                return prepare();
             }
 
             IClient &Connect(const std::string &ip, const unsigned port) override
             {
                 AClient::Connect(ip, port);
-                _info.ip = ip;
-                _info.port = port;
-                _bind();
-                _isBind = true;
-                return *this;
+                return prepare();
             }
 
             int readXChar(void *buf, unsigned size)
             {
                 int ret = read(_info.fd, buf, size);
                 if (ret <= 0)
-                    _on_disconnect("Read failed");
+                    _on_disconnect("Read failed", _info.fd);
                 return ret;
             }
 
@@ -115,10 +131,11 @@ namespace Alfred
 
                 char *tmp = new char[_bufferSize];
                 int bytesRead;
-                unsigned i = 0;
+                unsigned i;
 
                 while (true)
                 {
+                    i = 0;
                     while (i < curMaxSize)
                     {
                         if (savedBuffer[i] == target)
@@ -135,7 +152,7 @@ namespace Alfred
 
                     bytesRead = read(_info.fd, tmp, _bufferSize);
                     if (bytesRead <= 0)
-                        _on_disconnect("Error during read at read until");
+                        _on_disconnect("Error during read at read until", _info.fd);
                     if (std::realloc(savedBuffer, (curMaxSize + bytesRead) * sizeof(char)) == NULL)
                         LOG.fatal("Realloc failed");
                     std::strncpy(&(savedBuffer[curMaxSize]), tmp, bytesRead);
@@ -154,7 +171,7 @@ namespace Alfred
                     FD_SET(_info.fd, &_rdfs);
                     retval = select(_info.fd + 1, &_rdfs, NULL, NULL, NULL);
                     if (retval == -1) {
-                        _on_disconnect("Select failed");
+                        _on_disconnect("Select failed", _info.fd);
                         _stop = true;
                     } else if (retval >= 0)
                         onReceived();
@@ -175,6 +192,11 @@ namespace Alfred
                 return *this;
             }
 
+            ClientInfo &getInfos() override
+            {
+                return _clientInfo;
+            }
+
             ~ClientTCP() override
             {
                 _stop = true;
@@ -182,6 +204,7 @@ namespace Alfred
                     _asyncListenThread->join();
                 }
             }
+
         };
     }
 }

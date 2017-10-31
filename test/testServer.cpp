@@ -9,39 +9,27 @@
 */
 
 #include <vector>
-#include "INetwork.hpp"
-#include "ISerializer.hpp"
-#include "../src/Network/Serializer/BasicSerializer.hpp"
 #include "Implem/ServerTCP.hpp"
-
-struct Test
-{
-    int a;
-    int b;
-    std::vector<std::string> *c;
-};
-
-void conn(Alfred::IServer *serv, int clientID)
-{
-    serv->Send(clientID, "t ki");
-}
+#include "testServerClient.hpp"
+#include "Network/premade/ClientPremade.hpp"
 
 int main()
 {
-    Alfred::ServerTCP tcp;
+    Alfred::Network::IServer *server = new Alfred::Network::ServerTCP(8000);
 
-    tcp.onConnect(conn);
+    server->setClientBuilder([&] (struct sockaddr_in in, unsigned fd) -> Alfred::Network::IClient * {
+        auto tmp = new testServerClient(in, fd);
 
-    tcp.onReceive([](Alfred::IServer *serv, int clientID, const char *msg) -> void {
-        LOG.log("Le client m'a envoyé: " + std::string(msg));
-        serv->Send(clientID, (std::string("Hey Madame, tu m'a dit: ") + msg).c_str());
+        tmp->setTransferDataCallback(Alfred::Network::Premade::basic_string_displayer);
+        tmp->onDisconnect([&] (const std::string &reason, unsigned id) {
+            LOG.log("DC: " + reason);
+            server->clientDeleted(id);
+        });
+        return tmp;
     });
 
-    tcp.onDisconnect([](Alfred::IServer *serv, int clientID) {
-        LOG.debug("Wesh y'a " + std::to_string(serv->getClientInfo(clientID).getID()) + " qui s'est déconnecté");
-    });
-
-    tcp.run();
+    server->run();
+}
 //    auto tmp = new char[sizeof(Test)];
 //    Alfred::BasicSerializer<Test *, char *> s;
 //    auto *test = new Test();
@@ -63,4 +51,3 @@ int main()
 //
 //    for (const auto &it : *(final->c))
 //        std::cout << it << std::endl;
-}

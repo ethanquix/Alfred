@@ -12,16 +12,17 @@
 
 #include <functional>
 #include <exception>
+#include "config.hpp"
 
 namespace Alfred
 {
     namespace Network
     {
-
-        constexpr static char DEFAULT_IP[] = "localhost";
-        constexpr static unsigned DEFAULT_PORT = 8000;
-        constexpr static bool KEEP_ALIVE = true;
-        constexpr static unsigned BUFFER_SIZE = 1024;
+        struct ClientInfo
+        {
+            unsigned port;
+            std::string ip;
+        };
 
         class IClient
         {
@@ -36,9 +37,11 @@ namespace Alfred
             virtual IClient &onReceived() = 0;
             virtual IClient &setTransferDataCallback(const std::function<void(IClient *, void *, unsigned)> &func) = 0;
             virtual IClient &transferData(IClient *, void *, unsigned) = 0;
-            virtual IClient &onDisconnect(std::function<void(const std::string &)> func) = 0;
+            virtual IClient &onDisconnect(std::function<void(const std::string &, unsigned id)> func) = 0;
             virtual IClient &Stop() = 0;
             virtual IClient &setBufferSize(unsigned) = 0;
+            virtual ClientInfo &getInfos() = 0;
+            virtual IClient &waitUntilDisconnect() = 0;
         };
     }
 }

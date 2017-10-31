@@ -18,7 +18,7 @@ namespace Alfred
             unsigned _bufferSize;
 
             std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a onReceived function"); };
-            std::function<void(const std::string &)> _on_disconnect = [](const std::string &) { LOG.fatal("You need to set a on disconnect function"); };
+            std::function<void(const std::string &, unsigned)> _on_disconnect = [](const std::string &, unsigned) { LOG.fatal("You need to set a on disconnect function"); };
 
           public:
             AClient()
@@ -66,7 +66,7 @@ namespace Alfred
                 return *this;
             }
 
-            IClient &onDisconnect(std::function<void(const std::string &)> func) override
+            IClient &onDisconnect(std::function<void(const std::string &, unsigned)> func) override
             {
                 _on_disconnect = func;
                 return *this;
@@ -75,6 +75,12 @@ namespace Alfred
             IClient &Stop() override
             {
                 _stop = true;
+                return *this;
+            }
+
+            IClient &waitUntilDisconnect() override
+            {
+                while (!_stop);
                 return *this;
             }
 

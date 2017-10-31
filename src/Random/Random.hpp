@@ -18,17 +18,18 @@ namespace Alfred
 {
     class Random
     {
-    public:
+      public:
         static const std::string &string(const size_t max)
         {
-            const std::string VALID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            std::default_random_engine generator;
-            std::uniform_int_distribution<int> distribution(0, VALID_CHARS.size() - 1);
-            auto out = new std::string();
-            std::generate_n(std::back_inserter(*out), max, [&]() {
-                return VALID_CHARS[distribution(generator)];
-            });
-            return *out;
+            auto randchar = []() -> char
+            {
+                const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+                const size_t max_index = (sizeof(charset) - 1);
+                return charset[ rand() % max_index ];
+            };
+            auto str = new std::string(max ,0);
+            std::generate_n( str->begin(), max, randchar );
+            return *str;
         }
 
         static const int randint(size_t min, size_t max)

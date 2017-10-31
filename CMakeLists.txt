@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp src/config.hpp src/Utils/Defer.hpp)
+set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp src/config.hpp src/Utils/Defer.hpp src/Async/AsyncUnorderedMap.hpp)
 
 set(SOURCE_TIMER ${SOURCE_UTILS} src/Timer/Timer.hpp)
 
@@ -19,7 +19,7 @@ set(SOURCE_PROMISE ${SOURCE_UTILS} src/Promise/Promise.hpp src/Network/Implem/Se
 set(SOURCE_LOGGER ${SOURCE_UTILS} src/Logger/Logger.hpp)
 
 #set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp src/Network/Implem/ServerTCP.hpp src/Network/Implem/ClientTCP.hpp src/Network/ClientInfo.hpp src/Network/AClient.hpp src/Network/exceptions/BindFailed.hpp)
-set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/Implem/ClientTCP.hpp src/Network/AClient.hpp src/Network/exceptions/BindFailed.hpp)
+set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/Implem/ClientTCP.hpp src/Network/AClient.hpp src/Network/exceptions/BindFailed.hpp src/Network/IServer.hpp src/Network/Implem/ServerTCP.hpp src/Network/AServer.hpp src/Network/premade/ClientPremade.hpp)
 
 set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 
@@ -32,7 +32,7 @@ set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/EventManager/EventManager.hpp src/E
 set(SOURCE_RANDOM ${SOURCE_UTILS} src/Random/Random.hpp)
 
 
-include_directories(src/ src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle src/Math src/InfiniteList src/EventManager src/Random)
+include_directories(src/ src/Timer src/Utils src/Promise src/Logger src/Network src/Merkle src/Math src/InfiniteList src/EventManager src/Random src/Async)
 
 
 
@@ -45,7 +45,7 @@ target_link_libraries(test_Promise Threads::Threads)
 
 add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
-add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp)
+add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp test/testServerClient.hpp)
 target_link_libraries(test_Server Threads::Threads)
 
 add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)

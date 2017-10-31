@@ -15,7 +15,13 @@ int main()
     Alfred::Network::IClient *client = new testClient();
 
     client->Connect(8000);
-    client->Listen();
+
+    client->setTransferDataCallback([&] (Alfred::Network::IClient *c, void *msg, unsigned size) {
+        LOG.warning("Msg " + std::string((char *)msg, size + 1));
+    });
+
+    client->AsyncListen();
+    client->waitUntilDisconnect();
 
     delete(client);
 }
@@ -28,10 +34,6 @@ Alfred::Network::IClient &testClient::onReceived()
 //    LOG.warning(std::to_string(readXChar(out, 2)));
 //    out[3]  = '\0';
     int ret = readUntil(out, 'A');
-
-    LOG.warning("Ret : " + std::to_string(ret));
-    std::string final(out, ret + 1);
-
-    LOG.warning("Msg " + final);
+    transferData(this, out, ret);
     return *this;
 }

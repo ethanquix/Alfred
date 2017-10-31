@@ -13,5 +13,7 @@
 
 int main()
 {
-    std::cout << Alfred::Random::string(400) << std::endl;
+    std::cout << Alfred::Random::string(40) << std::endl;
+    std::cout << Alfred::Random::string(40) << std::endl;
+    std::cout << Alfred::Random::string(40) << std::endl;
 }
