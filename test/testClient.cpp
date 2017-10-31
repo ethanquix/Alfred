@@ -8,23 +8,30 @@
 ** Last update Sat Sep 16 17:58:26 2017 Dimitri Wyzlic
 */
 
-#include <Implem/ClientTCP.hpp>
+#include "testClient.hpp"
 
 int main()
 {
-    Alfred::IClient *client = new Alfred::ClientTCP;
+    Alfred::Network::IClient *client = new testClient();
 
-    client->onReceived([](Alfred::IClient *c, const char *msg) {
-        std::cout << "I received: " << msg << std::endl;
-//        c->Send("The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code. The problem is in your server side code.\n");
-        c->Send("bonjour monsieur\0");
-        sleep(1);
-//        c->stop();
-    });
+    client->Connect(8000);
+    client->Listen();
 
-    client->Connect();
+    delete(client);
+}
 
-    //TODO THREAD SAFE ETC...
-    //TODO HANDLE MULTIPLE PACKET AND SIZE
-    client->sendThenListen("hey");
+testClient::testClient() = default;
+
+Alfred::Network::IClient &testClient::onReceived()
+{
+    auto *out = new char[3];
+//    LOG.warning(std::to_string(readXChar(out, 2)));
+//    out[3]  = '\0';
+    int ret = readUntil(out, 'A');
+
+    LOG.warning("Ret : " + std::to_string(ret));
+    std::string final(out, ret + 1);
+
+    LOG.warning("Msg " + final);
+    return *this;
 }

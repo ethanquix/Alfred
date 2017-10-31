@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.7)
 project(Alfred)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STRICT_ANSI__")
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp src/config.hpp)
+set(SOURCE_UTILS src/Utils/Singleton.hpp src/Utils/NonCopyable.hpp src/config.hpp src/Utils/Defer.hpp)
 
 set(SOURCE_TIMER ${SOURCE_UTILS} src/Timer/Timer.hpp)
 
@@ -13,7 +18,8 @@ set(SOURCE_PROMISE ${SOURCE_UTILS} src/Promise/Promise.hpp src/Network/Implem/Se
 
 set(SOURCE_LOGGER ${SOURCE_UTILS} src/Logger/Logger.hpp)
 
-set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/INetwork.hpp src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp src/Network/Implem/ServerTCP.hpp src/Network/Implem/ClientTCP.hpp src/Network/ClientInfo.hpp)
+#set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/IServer.hpp src/Network/Implem/ServerTCP.hpp src/Network/Implem/ClientTCP.hpp src/Network/ClientInfo.hpp src/Network/AClient.hpp src/Network/exceptions/BindFailed.hpp)
+set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/Network/ISerializer.hpp src/Network/Serializer/BasicSerializer.hpp src/Network/IClient.hpp src/Network/Implem/ClientTCP.hpp src/Network/AClient.hpp src/Network/exceptions/BindFailed.hpp)
 
 set(SOURCE_MERKLE ${SOURCE_UTILS} ${SOURCE_LOGGER} src/Merkle/Merkle.hpp)
 
@@ -35,13 +41,15 @@ include_directories(src/ src/Timer src/Utils src/Promise src/Logger src/Network 
 add_executable(test_Timer ${SOURCE_TIMER} test/testTimer.cpp)
 
 add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
-target_link_libraries(test_Promise pthread)
+target_link_libraries(test_Promise Threads::Threads)
 
 add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
 add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp)
+target_link_libraries(test_Server Threads::Threads)
 
-add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp)
+add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)
+target_link_libraries(test_Client Threads::Threads)
 
 add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
 

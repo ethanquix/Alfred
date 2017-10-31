@@ -15,10 +15,11 @@
 #include <unordered_map>
 #include <functional>
 #include "INetwork.hpp"
+#include "ClientInfo.hpp"
 
 namespace Alfred
 {
-    class IServer : public INetwork
+    class IServer
     {
     protected:
         std::unordered_map<int, ClientInfo> _clients;

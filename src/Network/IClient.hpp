@@ -8,56 +8,37 @@
 ** Last update Fri Sep 08 15:55:35 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_ICLIENT_HPP
-#define ALFRED_ICLIENT_HPP
+#pragma once
 
 #include <functional>
 #include <exception>
-#include "INetwork.hpp"
 
 namespace Alfred
 {
-    class IClient : public INetwork
+    namespace Network
     {
-    protected:
-        std::function<void(IClient *, const char *msg)> _onReceived = [](IClient *, const char *msg) {};
-        std::function<void()> _on_disconnect = []() {};
 
-    public:
-        IClient() : INetwork()
+        constexpr static char DEFAULT_IP[] = "localhost";
+        constexpr static unsigned DEFAULT_PORT = 8000;
+        constexpr static bool KEEP_ALIVE = true;
+        constexpr static unsigned BUFFER_SIZE = 1024;
+
+        class IClient
         {
-        }
-
-        explicit IClient(const size_t port) : INetwork(port)
-        {
-        }
-
-        IClient(const std::string &ip, const size_t port) : INetwork(ip, port)
-        {
-        }
-
-        virtual IClient &Connect() = 0;
-        virtual IClient &Connect(const std::string &ip, size_t port) = 0;
-
-        virtual IClient &Send(const char *msg) = 0;
-
-        virtual IClient &Listen() = 0;
-
-        virtual IClient &sendThenListen(const char *msg) = 0;
-
-        virtual IClient &onReceived(const std::function<void(IClient *, const char *)> &func)
-        {
-            _onReceived = func;
-            return *this;
-        }
-
-        virtual IClient &onDisconnect(std::function<void()> func)
-        {
-            _on_disconnect = func;
-            return *this;
-        }
-//Et la send qui est virtual oklm
-    };
+          public:
+            virtual ~IClient() = default;
+            virtual IClient &Connect() = 0;
+            virtual IClient &Connect(unsigned port) = 0;
+            virtual IClient &Connect(const std::string &ip, unsigned port) = 0;
+            virtual IClient &Send(void *msg, unsigned size) = 0;
+            virtual IClient &Listen() = 0;
+            virtual IClient &AsyncListen() = 0;
+            virtual IClient &onReceived() = 0;
+            virtual IClient &setTransferDataCallback(const std::function<void(IClient *, void *, unsigned)> &func) = 0;
+            virtual IClient &transferData(IClient *, void *, unsigned) = 0;
+            virtual IClient &onDisconnect(std::function<void(const std::string &)> func) = 0;
+            virtual IClient &Stop() = 0;
+            virtual IClient &setBufferSize(unsigned) = 0;
+        };
+    }
 }
-
-#endif //ALFRED_ICLIENT_HPP
