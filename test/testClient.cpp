@@ -26,9 +26,7 @@ int main()
     delete(client);
 }
 
-testClient::testClient() = default;
-
-Alfred::Network::IClient &testClient::onReceived()
+Alfred::Network::IClient &testClient::setOnReceived()
 {
     auto *out = new char[3];
 //    LOG.warning(std::to_string(readXChar(out, 2)));

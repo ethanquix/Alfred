@@ -1,8 +1,9 @@
 #pragma once
 
-#include <thread>
 #include "IClient.hpp"
 #include "Logger.hpp"
+#include <thread>
+#include <string>
 
 namespace Alfred
 {
@@ -16,7 +17,7 @@ namespace Alfred
             bool _stop;
             unsigned _bufferSize;
 
-            std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a onReceived function"); };
+            std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a setOnReceived function"); };
             std::function<void(const std::string &, unsigned)> _on_disconnect = [](const std::string &, unsigned) { LOG.fatal("You need to set a on disconnect function"); };
 
           public:
@@ -34,7 +35,7 @@ namespace Alfred
 
             IClient &Connect() override
             {
-                _clientInfo.ip = DEFAULT_IP;
+                _clientInfo.ip = "0.0.0.0";
                 _clientInfo.port = DEFAULT_PORT;
                 return *this;
             }
@@ -65,7 +66,7 @@ namespace Alfred
                 return *this;
             }
 
-            IClient &onDisconnect(std::function<void(const std::string &, unsigned)> func) override
+            IClient &setOnDisconnect(std::function<void(const std::string &, unsigned)> func) override
             {
                 _on_disconnect = func;
                 return *this;

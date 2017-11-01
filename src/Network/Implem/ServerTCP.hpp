@@ -27,7 +27,6 @@ namespace Alfred
         {
           private:
             InfoNetwork _info;
-            ClientInfo _clientInfo;
             fd_set _rfds;
             socklen_t _sizeCurrentClient = sizeof(struct sockaddr_in);
             std::thread *_asyncListenThread;
@@ -64,13 +63,9 @@ namespace Alfred
                 while (++index < FD_SETSIZE) {
                     if (FD_ISSET(index, &_rfds)) {
                         if (index == _info.fd) {
-                            LOG.log("[SERVER] New client");
                             //New client
                             _accept();
                         }
-//                        else {
-//                            _clients[index]->onReceived();
-//                        }
                     }
                 }
             }
@@ -80,14 +75,12 @@ namespace Alfred
             ServerTCP() :
                 AServer()
             {
-                _clientInfo.port = _port; //TODO REMOVE THE BASE INFO STRUCT
                 _bind();
             }
 
             explicit ServerTCP(unsigned port) :
                 AServer(port)
             {
-                _clientInfo.port = port;
                 _bind();
             }
 

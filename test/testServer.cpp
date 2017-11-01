@@ -21,7 +21,8 @@ int main()
         auto tmp = new testServerClient(in, fd);
 
         tmp->setTransferDataCallback(Alfred::Network::Premade::basic_string_displayer);
-        tmp->onDisconnect([&] (const std::string &reason, unsigned id) {
+
+        tmp->setOnDisconnect([&](const std::string &reason, unsigned id) {
             LOG.log("DC: " + reason);
             server->clientDeleted(id);
         });

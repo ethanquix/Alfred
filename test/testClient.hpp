@@ -5,10 +5,11 @@
 class testClient : public Alfred::Network::ClientTCP
 {
   public:
-    testClient();
+    testClient() : ClientTCP() {
 
+    };
   protected:
-    Alfred::Network::IClient &onReceived() override;
+    Alfred::Network::IClient &setOnReceived() override;
 
 };
 

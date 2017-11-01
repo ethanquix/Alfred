@@ -8,10 +8,7 @@
 ** Last update Mon Sep 18 01:23:13 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_CONFIG_HPP
-#define ALFRED_CONFIG_HPP
-
-#include <glob.h>
+#pragma once
 
 namespace Alfred
 {
@@ -30,7 +27,4 @@ namespace Alfred
 }
 
 //Server
-
 #define PLACEHOLDER_TRANSFER_DATA_CALLBACK Alfred::Network::IClient *client, void *msg, unsigned size
-
-#endif //ALFRED_CONFIG_HPP

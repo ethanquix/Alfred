@@ -28,7 +28,6 @@ namespace Alfred
             virtual ~IServer() = default;
             virtual Async::AsyncUnorderedMap<int, IClient *> &getClients() = 0;
             virtual IServer &onConnect(const std::function<void(IServer *, int clientFD)> &_func) = 0;
-            virtual IServer &onDisconnect(const std::function<void(IServer *, int clientFD)> &_func) = 0;
             virtual IClient &getClientInfo(int clientID) = 0;
             virtual IServer &run() = 0;
             virtual IServer &asyncRun() = 0;

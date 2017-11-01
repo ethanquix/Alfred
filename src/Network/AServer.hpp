@@ -10,27 +10,27 @@ namespace Alfred
         class AServer : public IServer
         {
           protected:
-            unsigned _port;
+            ClientInfo _clientInfo;
             bool _isBind;
             bool _stop;
 
             Async::AsyncUnorderedMap<int, IClient *> _clients;
             std::function<void(IServer *, int clientFD)> _first_connect = [](IServer *, int clientFD) {};
-            std::function<void(IServer *, int clientFD, const char *)> _on_received = [](IServer *, int clientFD, const char *) {};
-            std::function<void(IServer *, int clientFD)> _on_disconnect = [](IServer *, int clientFD) {};
             std::function<IClient *(struct sockaddr_in in, unsigned fd)> _clientBuilder;
 
           public:
             AServer()
             {
-                _port = DEFAULT_PORT;
+                _clientInfo.ip = DEFAULT_IP;
+                _clientInfo.port = DEFAULT_PORT;
                 _isBind = false;
                 _stop = false;
             }
 
             explicit AServer(unsigned port)
             {
-                _port = port;
+                _clientInfo.ip = DEFAULT_IP;
+                _clientInfo.port = port;
                 _isBind = false;
                 _stop = false;
             }
@@ -69,12 +69,6 @@ namespace Alfred
             IServer &onConnect(const std::function<void(IServer *, int)> &_func) override
             {
                 _first_connect = _func;
-                return *this;
-            }
-
-            IServer &onDisconnect(const std::function<void(IServer *, int)> &_func) override
-            {
-                _on_disconnect = _func;
                 return *this;
             }
 

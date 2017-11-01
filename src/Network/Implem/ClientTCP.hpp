@@ -36,7 +36,6 @@ namespace Alfred
             fd_set _rdfs = {};
             struct InfoNetwork _info;
             std::thread *_asyncListenThread;
-            ClientInfo _clientInfo;
 
             char *_savedBuffer = new char[_bufferSize];
             int _savedBytesRead = 0;
@@ -45,7 +44,9 @@ namespace Alfred
           private:
             void _bind()
             {
-                _info.in.sin_addr.s_addr = INADDR_ANY;
+                _info.in.sin_addr.s_addr = inet_addr(_clientInfo.ip.c_str());
+                if (_info.in.sin_addr.s_addr == (u_long)INADDR_NONE)
+                    LOG.fatal("Bad ip");
                 _info.in.sin_family = AF_INET;
                 _info.in.sin_port = htons(_clientInfo.port);
                 _info.fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
@@ -179,7 +180,7 @@ namespace Alfred
                         _on_disconnect("Select failed", _info.fd);
                         _stop = true;
                     } else if (retval >= 0)
-                        onReceived();
+                        setOnReceived();
                 }
                 close(_info.fd);
                 return *this;

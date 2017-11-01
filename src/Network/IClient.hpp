@@ -35,10 +35,10 @@ namespace Alfred
             virtual IClient &Send(void *msg, unsigned size) = 0;
             virtual IClient &Listen() = 0;
             virtual IClient &AsyncListen() = 0;
-            virtual IClient &onReceived() = 0;
+            virtual IClient &setOnReceived() = 0;
             virtual IClient &setTransferDataCallback(const std::function<void(IClient *, void *, unsigned)> &func) = 0;
             virtual IClient &transferData(IClient *, void *, unsigned) = 0;
-            virtual IClient &onDisconnect(std::function<void(const std::string &, unsigned id)> func) = 0;
+            virtual IClient &setOnDisconnect(std::function<void(const std::string &, unsigned id)> func) = 0;
             virtual IClient &Stop() = 0;
             virtual IClient &setBufferSize(unsigned) = 0;
             virtual ClientInfo &getInfos() = 0;

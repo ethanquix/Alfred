@@ -16,6 +16,12 @@ namespace Alfred
             std::function<void()> _func;
 
           public:
+            static void *operator new(size_t) = delete;
+            static void *operator new[](size_t) = delete;
+
+            Defer &operator=(const Defer &) = delete;
+            Defer(const Defer &) = delete;
+
             explicit Defer(std::function<void()> _func)
             { this->_func = _func; }
 
