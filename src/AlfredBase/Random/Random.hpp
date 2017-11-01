@@ -10,9 +10,10 @@
 
 #pragma once
 
+#include "AlfredBase/config.hpp"
+
 #include <algorithm>
 #include <random>
-#include <config.hpp>
 
 namespace Alfred
 {

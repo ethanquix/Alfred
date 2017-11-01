@@ -12,7 +12,7 @@
 
 #include <functional>
 #include <exception>
-#include "config.hpp"
+#include "AlfredBase/config.hpp"
 
 namespace Alfred
 {

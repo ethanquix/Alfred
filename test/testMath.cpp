@@ -8,7 +8,7 @@
 ** Last update Wed Aug 23 20:00:33 2017 Dimitri Wyzlic
 */
 
-#include "Math.hpp"
+#include "AlfredBase/Math/Math.hpp"
 
 int main()
 {

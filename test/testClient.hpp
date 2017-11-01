@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Network/Implem/ClientTCP.hpp>
+#include <AlfredBase/Network/Implem/ClientTCP.hpp>
 
 class testClient : public Alfred::Network::ClientTCP
 {

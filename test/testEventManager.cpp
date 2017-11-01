@@ -18,7 +18,7 @@
 ** Last update Wed Apr 19 15:49:58 2017 Dimitri Wyzlic
 */
 
-#include "EventManager.hpp"
+#include "AlfredBase/EventManager/EventManager.hpp"
 
 class A
 {

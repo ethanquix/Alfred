@@ -11,12 +11,12 @@
 #ifndef ALFRED_ISERVER_HPP
 #define ALFRED_ISERVER_HPP
 
+#include "AlfredBase/Async/AsyncUnorderedMap.hpp"
+#include "AlfredBase/Network/IClient.hpp"
 #include <unordered_map>
 #include <unordered_map>
 #include <functional>
 #include <netinet/in.h>
-#include "IClient.hpp"
-#include "AsyncUnorderedMap.hpp"
 
 namespace Alfred
 {

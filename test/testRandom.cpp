@@ -9,7 +9,7 @@
 */
 
 #include <iostream>
-#include "Random.hpp"
+#include "AlfredBase/Random/Random.hpp"
 
 int main()
 {

@@ -8,8 +8,8 @@
 ** Last update Thu Aug 31 20:23:44 2017 Dimitri Wyzlic
 */
 
-#include "InfiniteList.hpp"
-#include "premade/InfiniteListPremade.hpp"
+#include "AlfredBase/Infinite/InfiniteList.hpp"
+#include "AlfredBase/Infinite/premade/InfiniteListPremade.hpp"
 
 void calc_primeNumber_to(int max);
 void calc_square_primeNumber_num(int max);

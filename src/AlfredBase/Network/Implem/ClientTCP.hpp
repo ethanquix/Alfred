@@ -10,15 +10,16 @@
 
 #pragma once
 
+#include "AlfredBase/Logger/Logger.hpp"
+#include "AlfredBase/Network/exceptions/BindFailed.hpp"
+#include "AlfredBase/Network/AClient.hpp"
+#include "AlfredBase/Random/Random.hpp"
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <Logger/Logger.hpp>
 #include <unistd.h>
-#include <Network/AClient.hpp>
-#include <Network/exceptions/BindFailed.hpp>
 #include <cstring>
-#include <Random/Random.hpp>
 
 namespace Alfred
 {

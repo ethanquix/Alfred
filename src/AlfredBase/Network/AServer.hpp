@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Logger/Logger.hpp>
-#include "IServer.hpp"
+#include "AlfredBase/Logger/Logger.hpp"
+#include "AlfredBase/Network/IServer.hpp"
 
 namespace Alfred
 {

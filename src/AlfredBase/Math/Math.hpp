@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "Matrix.hpp"
-#include "Fraction.hpp"
+#include "AlfredBase/Math/Matrix.hpp"
+#include "AlfredBase/Math/Fraction.hpp"
 
 namespace Alfred
 {

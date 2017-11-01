@@ -9,9 +9,9 @@
 */
 
 #include <vector>
-#include "Implem/ServerTCP.hpp"
+#include "AlfredBase/Network/Implem/ServerTCP.hpp"
 #include "testServerClient.hpp"
-#include "Network/premade/ClientPremade.hpp"
+#include "AlfredBase/Network/premade/ClientPremade.hpp"
 
 int main()
 {

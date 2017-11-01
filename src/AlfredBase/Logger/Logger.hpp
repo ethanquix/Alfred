@@ -16,7 +16,7 @@
 #include <iomanip>
 #include <map>
 #include <assert.h>
-#include "Singleton.hpp"
+#include "AlfredBase/Utils/Singleton.hpp"
 
 namespace Alfred
 {

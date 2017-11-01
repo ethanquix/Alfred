@@ -8,7 +8,7 @@
 ** Last update Tue May 16 20:06:34 2017 Dimitri Wyzlic
 */
 
-#include "../src/Logger/Logger.hpp"
+#include "AlfredBase/Logger/Logger.hpp"
 
 int main()
 {

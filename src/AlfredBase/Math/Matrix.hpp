@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "Logger.hpp"
-#include "MatrixException.hpp"
+#include "AlfredBase/Logger/Logger.hpp"
+#include "AlfredBase/Math/MatrixException.hpp"
 
 #include <array>
 #include <vector>

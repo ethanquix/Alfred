@@ -10,14 +10,15 @@
 
 #pragma once
 
-#include "AServer.hpp"
-#include "ClientTCP.hpp"
+#include "AlfredBase/Network/AServer.hpp"
+#include "AlfredBase/Network/Implem/ClientTCP.hpp"
+#include "AlfredBase/Network/exceptions/BindFailed.hpp"
+
 #include <sys/socket.h>
 #include <cstring>
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <Network/exceptions/BindFailed.hpp>
 
 namespace Alfred
 {

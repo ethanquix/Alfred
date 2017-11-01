@@ -9,7 +9,7 @@
 */
 
 #include <iostream>
-#include "../src/Timer/Timer.hpp"
+#include "AlfredBase/Timer/Timer.hpp"
 
 void funcUpdate(const std::string &str) {
     std::cout << str << std::endl;

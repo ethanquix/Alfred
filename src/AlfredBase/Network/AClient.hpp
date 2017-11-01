@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IClient.hpp"
-#include "Logger.hpp"
+#include "AlfredBase/Network/IClient.hpp"
+#include "AlfredBase/Logger/Logger.hpp"
 #include <thread>
 #include <string>
 

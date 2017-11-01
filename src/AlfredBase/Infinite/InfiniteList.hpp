@@ -15,7 +15,7 @@
 //I am currently working on a functionnal streams implementation
 //But this is just an experimentation
 
-#include "Logger.hpp"
+#include "AlfredBase/Logger/Logger.hpp"
 #include <vector>
 #include <functional>
 #include <ostream>
@@ -306,6 +306,6 @@ namespace Alfred
                 __execute();
                 return _list.size();
             }
-        }; //Class InfiniteList
+        }; //Class Infinite
     }
 } //Namespace Alfred;

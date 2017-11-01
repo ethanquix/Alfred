@@ -1,6 +1,6 @@
 #pragma once
 
-#include <InfiniteList/InfiniteList.hpp>
+#include "AlfredBase/Infinite/InfiniteList.hpp"
 
 namespace Alfred
 {
