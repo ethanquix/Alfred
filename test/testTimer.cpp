@@ -15,12 +15,23 @@ void funcUpdate(const std::string &str) {
     std::cout << str << std::endl;
 }
 
+void funcUpdateAsync(const std::string &str) {
+    std::cout << "Async: " << str << std::endl;
+}
+
+void testAsync()
+{
+    Alfred::Time::Timer *a = new Alfred::Time::Timer(3, funcUpdateAsync);
+    a->asyncStart();
+}
+
 int main()
 {
-    Alfred::Timer t(3, funcUpdate);
+    testAsync();
+    Alfred::Time::Timer t(3, funcUpdate);
     t.addCheckpoint(2, "salut", [] () {std::cout << "Yop" << std::endl;});
     t.deleteCheckpoint("salut");
     t.start();
-    while (!t.update());
+    while (t.update()); //or t.run();
     return (0);
 }

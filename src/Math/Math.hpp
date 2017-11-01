@@ -8,8 +8,7 @@
 ** Last update Wed Aug 23 20:00:53 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_MATH_HPP
-#define ALFRED_MATH_HPP
+#pragma once
 
 #include "Matrix.hpp"
 #include "Fraction.hpp"
@@ -17,5 +16,3 @@
 namespace Alfred
 {
 } //Namespace Alfred
-
-#endif //ALFRED_MATH_HPP

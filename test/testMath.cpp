@@ -12,7 +12,12 @@
 
 int main()
 {
-    auto a = Alfred::MakeFraction(5, 3.14);
-    auto b = Alfred::MakeFraction(a, 4);
+    Alfred::Matrix::Matrix<int> matrix(2, 2);
+    matrix.setMatrix(1, 2, 3, 4);
+
+    std::cout << matrix.dot(matrix) << std::endl;
+
+    auto a = Alfred::Math::MakeFraction(5, 3.14);
+    auto b = Alfred::Math::MakeFraction(a, 4);
     std::cout << static_cast<float>(b) << std::endl; // -> 0.398089
 }

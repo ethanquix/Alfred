@@ -12,7 +12,7 @@
 
 namespace Alfred
 {
-//Server
+    //Server
     constexpr size_t MAX_SIZE_IP = 16;
 
     namespace Network
@@ -23,6 +23,12 @@ namespace Alfred
         constexpr static unsigned BUFFER_SIZE = 1024;
         constexpr static unsigned MAX_ID = 1000000;
         constexpr static int INDICATOR_DISCONNECT = -1;
+    }
+
+    //Random
+    namespace Random
+    {
+        constexpr static char RANDOM_STRING_CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     }
 }
 

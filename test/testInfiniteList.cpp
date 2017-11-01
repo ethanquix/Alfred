@@ -9,12 +9,13 @@
 */
 
 #include "InfiniteList.hpp"
+#include "premade/InfiniteListPremade.hpp"
 
 void calc_primeNumber_to(int max);
 void calc_square_primeNumber_num(int max);
 void calc_fibo(int max);
 
-int next(Alfred::InfiniteList<int> &cur)
+int next(Alfred::Infinite::InfiniteList<int> &cur)
 {
     return cur.getIdx();
 }
@@ -35,7 +36,7 @@ std::string test(int x)
 
 int main()
 {
-    Alfred::InfiniteList<int> l(0);
+    Alfred::Infinite::InfiniteList<int> l(0);
     l.setNextFunc(next);
 
     std::function<std::string(int)> to_str_func = test;
@@ -49,24 +50,24 @@ int main()
 
 void calc_primeNumber_to(int max)
 {
-    Alfred::InfiniteList<int> l(0);
-    l.setNextFunc(Alfred::module_Counter);
+    Alfred::Infinite::InfiniteList<int> l(0);
+    l.setNextFunc(Alfred::Infinite::Premade::premade_Counter);
     std::cout << l.filter(isPrime).enumerate([max](int x) -> bool { return x > max; }) << std::endl;
 }
 
 void calc_square_primeNumber_num(int max)
 {
-    Alfred::InfiniteList<int> l(0);
-    l.setNextFunc(Alfred::module_Counter);
+    Alfred::Infinite::InfiniteList<int> l(0);
+    l.setNextFunc(Alfred::Infinite::Premade::premade_Counter);
     std::cout << l.filter(isPrime).map([](int x) -> int { return x * x; }).limit(max) << std::endl;
 }
 
 void calc_fibo(int max)
 {
-    Alfred::InfiniteList<int> l(0);
+    Alfred::Infinite::InfiniteList<int> l(0);
     l.setNext(1);
 
-    l.setNextFunc(Alfred::module_Fibonnacci);
+    l.setNextFunc(Alfred::Infinite::Premade::premade_Fibonnacci);
     l.get(max);
     std::cout << l << std::endl;
 }

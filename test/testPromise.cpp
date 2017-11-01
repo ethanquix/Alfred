@@ -1,4 +1,4 @@
-#include "../src/Promise/Promise.hpp"
+#include "Async/Promise.hpp"
 #include <iostream>
 #include <unistd.h>
 
@@ -11,12 +11,9 @@ int test(int i)
 
 int main()
 {
-    int a = 3;
-    int b = 4;
-
     std::function<int(int)> f = test;
 
-    Alfred::Promise<int, int> p([&p](int) -> int { p.resolve(4); });
+    Alfred::Async::Promise<int, int> p([&p](int) -> int { p.resolve(4); });
     std::cout << "Hey" << std::endl;
 
     p.then(test).then(test).then(test).then(test).then(test).then(test).then(test);

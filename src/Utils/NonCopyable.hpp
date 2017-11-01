@@ -13,19 +13,22 @@
 
 namespace Alfred
 {
-    class NonCopyable
+    namespace Utils
     {
-    public:
-        NonCopyable() = default;
-        virtual ~NonCopyable() = default;
+        class NonCopyable
+        {
+          public:
+            NonCopyable() = default;
+            virtual ~NonCopyable() = default;
 
-        NonCopyable(NonCopyable const &) = delete;
+            NonCopyable(NonCopyable const &) = delete;
 
-        NonCopyable(NonCopyable &&) = delete;
+            NonCopyable(NonCopyable &&) = delete;
 
-        NonCopyable &operator=(const NonCopyable &) = delete;
+            NonCopyable &operator=(const NonCopyable &) = delete;
 
-        NonCopyable &operator=(NonCopyable &&) = delete;
-    };
+            NonCopyable &operator=(NonCopyable &&) = delete;
+        };
+    }
 }
 #endif //ALFRED_NONCOPYABLE_HPP

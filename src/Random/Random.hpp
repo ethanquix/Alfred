@@ -8,27 +8,24 @@
 ** Last update Mon Sep 18 01:18:28 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_RANDOM_HPP
-#define ALFRED_RANDOM_HPP
+#pragma once
 
 #include <algorithm>
 #include <random>
+#include <config.hpp>
 
 namespace Alfred
 {
-    class Random
+    namespace Random
     {
-      public:
         static const std::string &string(const size_t max)
         {
-            auto randchar = []() -> char
-            {
-                const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-                const size_t max_index = (sizeof(charset) - 1);
-                return charset[ rand() % max_index ];
+            auto randchar = []() -> char {
+                const size_t max_index = (sizeof(RANDOM_STRING_CHARS) - 1);
+                return RANDOM_STRING_CHARS[rand() % max_index];
             };
-            auto str = new std::string(max ,0);
-            std::generate_n( str->begin(), max, randchar );
+            auto str = new std::string(max, 0);
+            std::generate_n(str->begin(), max, randchar);
             return *str;
         }
 
@@ -37,9 +34,7 @@ namespace Alfred
             std::random_device rd;
             std::mt19937 rng(rd());
             std::uniform_int_distribution<int> uni(min, max);
-            return(uni(rng));
+            return (uni(rng));
         }
-    };
+    }
 }
-
-#endif //ALFRED_RANDOM_HPP

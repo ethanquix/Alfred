@@ -8,8 +8,7 @@
 ** Last update Fri Mar 17 02:22:03 2017 Dimitri Wyzlic
 */
 
-#ifndef CPP_ARCADE_EVENTMANAGER_HPP
-#define CPP_ARCADE_EVENTMANAGER_HPP
+#pragma once
 
 #include <map>
 #include <vector>
@@ -192,4 +191,3 @@ namespace Alfred
         };
     }
 }
-#endif //CPP_ARCADE_EVENTMANAGER_HPP

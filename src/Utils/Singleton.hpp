@@ -15,14 +15,17 @@
 
 namespace Alfred
 {
-    template <typename T>
-    struct Singleton : public NonCopyable
+    namespace Utils
     {
-        static T &getSingleton()
+        template <typename T>
+        struct Singleton : public NonCopyable
         {
-            static T _singletonValue;
-            return _singletonValue;
-        }
-    };
+            static T &getSingleton()
+            {
+                static T _singletonValue;
+                return _singletonValue;
+            }
+        };
+    }
 }
 #endif //ALFRED_SINGLETON_HPP

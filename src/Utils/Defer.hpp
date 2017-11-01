@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include "Singleton.hpp"
 
 #define TOKENPASTE_(x, y) x ## y
 #define TOKENPASTE(x, y) TOKENPASTE_(x, y)
@@ -10,7 +11,7 @@ namespace Alfred
 {
     namespace Utils
     {
-        class Defer
+        class Defer : public NonCopyable
         {
           private:
             std::function<void()> _func;
@@ -18,9 +19,6 @@ namespace Alfred
           public:
             static void *operator new(size_t) = delete;
             static void *operator new[](size_t) = delete;
-
-            Defer &operator=(const Defer &) = delete;
-            Defer(const Defer &) = delete;
 
             explicit Defer(std::function<void()> _func)
             { this->_func = _func; }

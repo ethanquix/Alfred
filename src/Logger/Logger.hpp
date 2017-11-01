@@ -8,8 +8,7 @@
 ** Last update Thu May 04 03:26:19 2017 Dimitri Wyzlic
 */
 
-#ifndef ALFRED_LOGGER_HPP
-#define ALFRED_LOGGER_HPP
+#pragma once
 
 #include <iostream>
 #include <chrono>
@@ -33,7 +32,7 @@ namespace Alfred
         { return msg.c_str(); }
     };
 
-    class Logger : public Singleton<Logger>
+    class Logger : public Utils::Singleton<Logger>
     {
         //Var
     private:
@@ -73,6 +72,13 @@ namespace Alfred
 
         template <typename T>
         inline void log(T str)
+        {
+            std::cerr << "INFO - " << getTime() << str << std::endl;
+            std::flush(std::cerr);
+        }
+
+        template <typename T>
+        inline void info(T str)
         {
             std::cerr << "INFO - " << getTime() << str << std::endl;
             std::flush(std::cerr);
@@ -152,5 +158,3 @@ namespace Alfred
 } //Alfred Namespace
 
 #define LOG Alfred::Logger::getSingleton()
-
-#endif //ALFRED_LOGGER_HPP

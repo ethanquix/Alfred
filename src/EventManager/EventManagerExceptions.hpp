@@ -8,8 +8,7 @@
 ** Last update Fri Mar 17 03:28:06 2017 Dimitri Wyzlic
 */
 
-#ifndef CPP_ARCADE_EXCEPTIONS_HPP
-#define CPP_ARCADE_EXCEPTIONS_HPP
+#pragma once
 
 #include <exception>
 #include <string>
@@ -43,5 +42,3 @@ public:
     }
 
 };
-
-#endif /* !CPP_ARCADE_EXCEPTIONS_HPP */
