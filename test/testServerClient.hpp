@@ -8,10 +8,10 @@ class testServerClient : public Alfred::Network::ClientTCP
     Alfred::Network::IClient &onReceived() override
     {
         auto *out = new char[3];
-//    LOG.warning(std::to_string(readXChar(out, 2)));
-//    out[3]  = '\0';
         int ret = readUntil(out, 'A');
-        transferData(this, out, ret);
+        if (ret != Alfred::Network::INDICATOR_DISCONNECT)
+            transferData(this, out, ret);
+//        int ret = readXChar(out, 2);
         return *this;
     }
 

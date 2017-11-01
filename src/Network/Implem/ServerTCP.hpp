@@ -27,6 +27,7 @@ namespace Alfred
         {
           private:
             InfoNetwork _info;
+            ClientInfo _clientInfo;
             fd_set _rfds;
             socklen_t _sizeCurrentClient = sizeof(struct sockaddr_in);
             std::thread *_asyncListenThread;
@@ -35,13 +36,13 @@ namespace Alfred
             {
                 _info.in.sin_addr.s_addr = INADDR_ANY;
                 _info.in.sin_family = AF_INET;
-                _info.in.sin_port = htons(_info.port);
+                _info.in.sin_port = htons(_clientInfo.port);
                 _info.fd = socket(AF_INET, SOCK_STREAM, getprotobyname("TCP")->p_proto);
                 if (_info.fd == -1)
                     LOG.fatal("Socket creation error"); //TODO add perror
                 if (bind(_info.fd, (const struct sockaddr *)(&_info.in), sizeof(_info.in)) == -1)
-                    throw BindFailed(_info.ip, _info.port);
-                if ((listen(_info.fd, _info.port)) == -1)
+                    throw BindFailed(_clientInfo.ip, _clientInfo.port);
+                if ((listen(_info.fd, _clientInfo.port)) == -1)
                     LOG.fatal("Listen failed");
             }
 
@@ -50,11 +51,11 @@ namespace Alfred
                 struct sockaddr_in in;
 
                 int fd = accept(_info.fd, (struct sockaddr *)&(in), &_sizeCurrentClient);
-                _clients.async_at(fd) = _clientBuilder(in, fd);
-                LOG.log("[SERVER] New client " + _clients.async_at(fd)->getInfos().ip + " port: " +
-                        std::to_string(_clients.async_at(fd)->getInfos().port));
+                _clients[fd] = _clientBuilder(in, fd);
+                LOG.log("[SERVER] New client " + _clients[fd]->getInfos().ip + " port: " +
+                        std::to_string(_clients[fd]->getInfos().port));
                 _first_connect(this, fd);
-//                _clients[fd]->AsyncListen();
+                _clients[fd]->AsyncListen();
             }
 
             void select_check()
@@ -63,22 +64,13 @@ namespace Alfred
                 while (++index < FD_SETSIZE) {
                     if (FD_ISSET(index, &_rfds)) {
                         if (index == _info.fd) {
-                            LOG.log("hey");
-
+                            LOG.log("[SERVER] New client");
                             //New client
                             _accept();
-                        } else {
-                            _clients.async_at(index)->onReceived();
-                        //Returning client
-                        //Balek le client s'en occupe comme un grand
-//                            _currentClient.fd = index;
-//                            tmp.in = _currentClient.in;
-//                            tmp.fd = _currentClient.fd;
-                        //Handle
-//                            const char *msg = _receive();
-//                            if (msg != nullptr)
-//                                _on_received(this, tmp.fd, msg);
                         }
+//                        else {
+//                            _clients[index]->onReceived();
+//                        }
                     }
                 }
             }
@@ -88,14 +80,14 @@ namespace Alfred
             ServerTCP() :
                 AServer()
             {
-                _info.port = _port; //TODO REMOVE THE BASE INFO STRUCT
+                _clientInfo.port = _port; //TODO REMOVE THE BASE INFO STRUCT
                 _bind();
             }
 
             explicit ServerTCP(unsigned port) :
                 AServer(port)
             {
-                _info.port = port;
+                _clientInfo.port = port;
                 _bind();
             }
 

@@ -11,8 +11,7 @@ namespace Alfred
         class AClient : public IClient
         {
           protected:
-            unsigned _port;
-            std::string _ip;
+            ClientInfo _clientInfo;
             bool _isBind;
             bool _stop;
             unsigned _bufferSize;
@@ -35,22 +34,22 @@ namespace Alfred
 
             IClient &Connect() override
             {
-                _ip = DEFAULT_IP;
-                _port = DEFAULT_PORT;
+                _clientInfo.ip = DEFAULT_IP;
+                _clientInfo.port = DEFAULT_PORT;
                 return *this;
             }
 
             IClient &Connect(unsigned port) override
             {
-                _ip = DEFAULT_IP;
-                this->_port = port;
+                _clientInfo.ip = DEFAULT_IP;
+                _clientInfo.port = port;
                 return *this;
             }
 
             IClient &Connect(const std::string &ip, unsigned port) override
             {
-                this->_ip = ip;
-                this->_port = port;
+                _clientInfo.ip = ip;
+                _clientInfo.port = port;
                 return *this;
             }
 

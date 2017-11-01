@@ -25,6 +25,7 @@ namespace Alfred
         constexpr static bool KEEP_ALIVE = true;
         constexpr static unsigned BUFFER_SIZE = 1024;
         constexpr static unsigned MAX_ID = 1000000;
+        constexpr static int INDICATOR_DISCONNECT = -1;
     }
 }
 

@@ -30,6 +30,17 @@ int main()
 
     server->run();
 }
+
+
+
+
+
+
+
+
+
+
+
 //    auto tmp = new char[sizeof(Test)];
 //    Alfred::BasicSerializer<Test *, char *> s;
 //    auto *test = new Test();

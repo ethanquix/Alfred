@@ -22,6 +22,7 @@ namespace Alfred
         {
             unsigned port;
             std::string ip;
+            unsigned id;
         };
 
         class IClient

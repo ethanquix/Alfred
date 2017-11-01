@@ -15,14 +15,6 @@ namespace Alfred
 
           public:
 
-            T &async_at(const S &key)
-            {
-                map_mutex.lock();
-                T *ret = &this->at(key);
-                map_mutex.unlock();
-                return *ret;
-            }
-
             AsyncUnorderedMap &async_erase(const S &key)
             {
                 map_mutex.lock();

@@ -11,7 +11,7 @@ namespace Alfred
         {
             void basic_string_displayer(PLACEHOLDER_TRANSFER_DATA_CALLBACK)
             {
-                LOG.log("[CLIENT] Received from " + client->getInfos().ip + " port: " + std::to_string(client->getInfos().port) + " msg: " + std::string((char *)msg, size));
+                LOG.log("[CLIENT] Received from id: " + std::to_string(client->getInfos().id) + " ip: " + client->getInfos().ip + " port: " + std::to_string(client->getInfos().port) + " msg: " + std::string((char *)msg, size));
             }
 
         }
