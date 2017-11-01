@@ -64,7 +64,7 @@ add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp)
 
 add_library(AlfredBase INTERFACE)
 
-target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/AlfredBase>)
 
 target_link_libraries(AlfredBase INTERFACE Threads::Threads)
 
@@ -77,7 +77,7 @@ install(TARGETS AlfredBase EXPORT AlfredBase
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
 
-install(DIRECTORY src DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY src/AlfredBase DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
