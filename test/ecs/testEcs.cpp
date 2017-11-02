@@ -10,24 +10,35 @@
 #include "AlfredBase/Ecs/Manager.hpp"
 #include "ComponentPosition.hpp"
 
+// TODO IDEA
+// put destroy entities in a "garbage" vector. And delete them at the refresh. So the refresh func don't have to cross all the list everytime
+// Implement multithreading
+//
+//
+//
+
+
 int main()
 {
-    auto ecs = new Alfred::Ecs::Manager();
+    auto e = Alfred::Ecs::Manager::getSingleton().addEntity();
 
-    auto &e(ecs->addEntity());
-    e.addComponent<ComponentPosition>();
-    std::cout << "Has component position " << e.hasComponent<ComponentPosition>() << std::endl;
-    std::cout << "Has component vector (false) " << e.hasComponent<std::vector<int>>() << std::endl;
+    e->addComponent<Component::ComponentPosition>();
+    e->addComponent<Component::Acceleration>();
 
-    std::cout << "Has component position " << e.hasComponent<ComponentPosition, ComponentPosition>() << std::endl;
-    std::cout << "Has component vector (false) " << e.hasComponent<std::vector<int>, ComponentPosition>() << std::endl;
+    std::cout << "Has component position " << e->hasComponent<Component::ComponentPosition>() << std::endl;
+    std::cout << "Has component vector (false) " << e->hasComponent<std::vector<int>>() << std::endl;
+    std::cout << "Has component position " << e->hasComponent<Component::ComponentPosition, Component::Acceleration>() << std::endl;
+    std::cout << "Has component vector (false) " << e->hasComponent<std::vector<int>, Component::ComponentPosition>() << std::endl;
+
+    Alfred::Ecs::Manager::getSingleton().print();
 
     return (0);
 
     while (1)
     {
-        ecs->update();
-        std::cout << e.getComponent<ComponentPosition>().getX() << std::endl;
+//        Alfred::Ecs::Manager::getSingleton().update();
+//        Alfred::Ecs::Manager::getSingleton().refresh();
+        Alfred::Ecs::Manager::getSingleton().print();
     }
 
     return (0);

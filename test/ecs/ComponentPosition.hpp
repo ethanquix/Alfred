@@ -11,44 +11,54 @@
 
 #include "AlfredBase/Ecs/Manager.hpp"
 
-class ComponentPosition : public Alfred::Ecs::Component
+namespace Component
 {
-  private:
-    int _x;
-    int _y;
-
-  public:
-    void init() override
+    class ComponentPosition : public Alfred::Ecs::Component
     {
-        _x = 0;
-        _y = 0;
-    }
+      public:
+        int _x;
+        int _y;
 
-    void update() override
+        void init() override
+        {
+            _x = 0;
+            _y = 0;
+        }
+
+        void update() override
+        {
+            std::cout << "X: " << _x << "\nY: " << _y << std::endl;
+        }
+
+        void print() override
+        {
+            std::cout << "Position" << std::endl;
+        }
+    };
+
+    class Acceleration : public Alfred::Ecs::Component
     {
-        _x++;
-        _y++;
-    }
+      public:
+        int _grav;
 
-    int getX() const
-    {
-        return _x;
-    }
+        void init() override
+        {
+            _grav = 9;
+        }
 
-    void setX(int x)
-    {
-        _x = x;
-    }
+        void update() override
+        {
+            Alfred::Ecs::Manager::getSingleton().for_each_matching<ComponentPosition, Acceleration>([&] (Alfred::Ecs::Entity &e) {
+                e.getComponent<ComponentPosition>()._x += _grav;
+                e.getComponent<ComponentPosition>()._y += _grav / 2;
+            });
+        }
 
-    int getY() const
-    {
-        return _y;
-    }
+        void print() override
+        {
+            std::cout << "Acceleration" << std::endl;
+        }
+    };
 
-    void setY(int y)
-    {
-        _y = y;
-    }
-};
-
+}
 

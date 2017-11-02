@@ -20,13 +20,11 @@
 #include <iostream>
 #include "AlfredBase/config.hpp"
 #include "AlfredBase/Utils/Singleton.hpp"
-#include "AlfredBase/Ecs/Entity.hpp"
 
 namespace Alfred
 {
     namespace Ecs
     {
-
         class Component;
         class Entity;
         class Manager;
@@ -49,24 +47,28 @@ namespace Alfred
             return typeID;
         }
 
-
         class Component
         {
           public:
             Entity *entity;
 
-            virtual void init() {}
-            virtual void update() {}
-            virtual void draw() {}
+            virtual void init()
+            {}
 
-            virtual ~Component() {}
+            virtual void update()
+            {}
+
+            virtual void print() = 0;
+
+            virtual ~Component()
+            {}
         };
 
         class Entity
         {
           private:
             bool _active = true;
-            std::vector<std::unique_ptr<Component>> _components;
+            std::vector<Component *> _components;
 
             ComponentArray _componentArray;
             ComponentBitSet _componentBitSet;
@@ -76,20 +78,22 @@ namespace Alfred
             {
                 for (auto &c : _components)
                     c->update();
-                for (auto &c : _components)
-                    c->draw();
             }
-
-            void draw() {};
 
             bool isActive() const
             {
                 return _active;
             }
 
-            void destroy ()
+            void destroy()
             {
                 _active = false;
+            }
+
+            void print()
+            {
+                for (auto &c : _components)
+                    c->print();
             }
 
           private:
@@ -103,7 +107,7 @@ namespace Alfred
             template <typename T, typename ...Others>
             struct RecHelper
             {
-                static bool hasCompHelper(const Entity& e)
+                static bool hasCompHelper(const Entity &e)
                 {
                     return e._hasComponent<T>() && RecHelper<Others...>::hasCompHelper(e);
                 }
@@ -112,7 +116,7 @@ namespace Alfred
             template <typename T>
             struct RecHelper<T>
             {
-                static bool hasCompHelper(const Entity& e)
+                static bool hasCompHelper(const Entity &e)
                 {
                     return e._hasComponent<T>();
                 }
@@ -128,12 +132,11 @@ namespace Alfred
             }
 
             template <typename T, typename... TArgs>
-            T& addComponent(TArgs &&... mArgs)
+            T &addComponent(TArgs &&... mArgs)
             {
                 T *c(new T(std::forward<TArgs>(mArgs)...));
                 c->entity = this;
-                std::unique_ptr<Component> uniquePtr{c};
-                _components.emplace_back(std::move(uniquePtr));
+                _components.emplace_back(c);
 
                 _componentArray[getComponentTypeID<T>()] = c;
                 _componentBitSet[getComponentTypeID<T>()] = true;
@@ -145,44 +148,62 @@ namespace Alfred
             template <typename T>
             T &getComponent() const
             {
+                if (_componentBitSet[getComponentTypeID<T>()] == 0)
+                    std::cout << "ERROR TRYING TO ACCESS BAD COMPONENT"
+                              << std::endl; //TODO replace this by custom exception
                 auto ptr(_componentArray[getComponentTypeID<T>()]);
                 return *static_cast<T *>(ptr);
             }
-
         };
 
-        class Manager : Alfred::Utils::Singleton<Manager>
+        class Manager : public Alfred::Utils::Singleton<Manager>
         {
           private:
-            std::vector<std::unique_ptr<Entity>> _entities;
+            std::vector<Entity> _entities;
 
           public:
+
             void update()
             {
                 for (auto &e :  _entities)
-                    e->update();
-            }
-
-            void draw()
-            {
-                for (auto &e :  _entities)
-                    e->draw();
+                    e.update();
             }
 
             void refresh()
             {
                 _entities.erase(std::remove_if(std::begin(_entities), std::end(_entities),
-                [] (const std::unique_ptr<Entity> &e) {
-                    return !e->isActive();
-                }), std::end(_entities));
+                                               [](const Entity &e) {
+                                                   return !e.isActive();
+                                               }), std::end(_entities));
             }
 
-            Entity &addEntity()
+            Entity *addEntity() //TODO need to do this again
             {
-                Entity *e = new Entity();
-                std::unique_ptr<Entity> uniquePtr{e};
-                _entities.emplace_back(std::move(uniquePtr));
-                return *e;
+                _entities.emplace_back();
+                return &_entities.back();
+            }
+
+            const unsigned nbEntities() const
+            {
+                return _entities.size();
+            }
+
+            template <typename ...Types, typename Fctor>
+            void for_each_matching(const Fctor& f)
+            {
+                std::for_each(_entities.begin(), _entities.end(), [&f](Entity& et)
+                {
+                    if (et.template hasComponent<Types...>())
+                    {
+                        f(et);
+                    }
+                });
+            }
+
+            void print()
+            {
+                for (auto &it: _entities)
+                    it.print();
             }
         };
     }
