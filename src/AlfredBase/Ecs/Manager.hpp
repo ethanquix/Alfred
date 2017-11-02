@@ -29,6 +29,7 @@ namespace Alfred
 
         class Component;
         class Entity;
+        class Manager;
 
         using ComponentID = std::size_t;
         using ComponentBitSet = std::bitset<MAX_COMPONENTS>;
@@ -91,10 +92,39 @@ namespace Alfred
                 _active = false;
             }
 
+          private:
+            /** <metaprogramming mess> */
             template <typename T>
-            bool hasComponent() const
+            bool _hasComponent() const
             {
                 return _componentBitSet[getComponentTypeID<T>()];
+            }
+
+            template <typename T, typename ...Others>
+            struct RecHelper
+            {
+                static bool hasCompHelper(const Entity& e)
+                {
+                    return e._hasComponent<T>() && RecHelper<Others...>::hasCompHelper(e);
+                }
+            };
+
+            template <typename T>
+            struct RecHelper<T>
+            {
+                static bool hasCompHelper(const Entity& e)
+                {
+                    return e._hasComponent<T>();
+                }
+            };
+            /** </metaprogramming mess> */
+
+          public:
+
+            template <typename ...Types>
+            bool hasComponent() const
+            {
+                return RecHelper<Types...>::hasCompHelper(*this);
             }
 
             template <typename T, typename... TArgs>

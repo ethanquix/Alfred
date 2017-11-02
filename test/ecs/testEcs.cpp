@@ -16,6 +16,13 @@ int main()
 
     auto &e(ecs->addEntity());
     e.addComponent<ComponentPosition>();
+    std::cout << "Has component position " << e.hasComponent<ComponentPosition>() << std::endl;
+    std::cout << "Has component vector (false) " << e.hasComponent<std::vector<int>>() << std::endl;
+
+    std::cout << "Has component position " << e.hasComponent<ComponentPosition, ComponentPosition>() << std::endl;
+    std::cout << "Has component vector (false) " << e.hasComponent<std::vector<int>, ComponentPosition>() << std::endl;
+
+    return (0);
 
     while (1)
     {
