@@ -30,6 +30,8 @@ set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManage
 
 set(SOURCE_RANDOM ${SOURCE_UTILS} src/AlfredBase/Random/Random.hpp)
 
+set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/Manager.hpp src/AlfredBase/Ecs/System.hpp src/AlfredBase/Ecs/IComponentStorage.hpp src/AlfredBase/Ecs/Component.hpp)
+
 
 include_directories(src)
 
@@ -59,6 +61,8 @@ add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/testEventManager.c
 add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
 
 add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp)
+
+add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
 
 #--------- LIBRARY ---------#
 

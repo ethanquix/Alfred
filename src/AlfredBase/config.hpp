@@ -13,8 +13,6 @@
 namespace Alfred
 {
     //Server
-    constexpr size_t MAX_SIZE_IP = 16;
-
     namespace Network
     {
         constexpr static char DEFAULT_IP[] = "0.0.0.0";
@@ -29,6 +27,11 @@ namespace Alfred
     namespace Random
     {
         constexpr static char RANDOM_STRING_CHARS[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    }
+
+    namespace Ecs
+    {
+        constexpr static unsigned MAX_COMPONENTS = 100;
     }
 }
 
