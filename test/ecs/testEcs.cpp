@@ -7,6 +7,7 @@
 
 // testEcs.cpp created 02/11/17
 
+#include <unistd.h>
 #include "AlfredBase/Ecs/Manager.hpp"
 #include "ComponentPosition.hpp"
 
@@ -21,6 +22,7 @@
 int main()
 {
     auto e = Alfred::Ecs::Manager::getSingleton().addEntity();
+    auto x = Alfred::Ecs::Manager::getSingleton().addEntity();
 
     e->addComponent<Component::ComponentPosition>();
     e->addComponent<Component::Acceleration>();
@@ -32,13 +34,14 @@ int main()
 
     Alfred::Ecs::Manager::getSingleton().print();
 
-    return (0);
+//    return (0);
 
     while (1)
     {
 //        Alfred::Ecs::Manager::getSingleton().update();
 //        Alfred::Ecs::Manager::getSingleton().refresh();
         Alfred::Ecs::Manager::getSingleton().print();
+        usleep(2000000);
     }
 
     return (0);

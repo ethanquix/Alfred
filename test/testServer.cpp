@@ -29,6 +29,7 @@ int main()
         return tmp;
     });
 
+//    server->setAsyncClient(true);
     server->run();
 }
 

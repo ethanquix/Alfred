@@ -18,6 +18,8 @@
 #include <memory>
 #include <ostream>
 #include <iostream>
+#include <map>
+#include "AlfredBase/Utils/Counter.hpp"
 #include "AlfredBase/config.hpp"
 #include "AlfredBase/Utils/Singleton.hpp"
 
@@ -73,7 +75,15 @@ namespace Alfred
             ComponentArray _componentArray;
             ComponentBitSet _componentBitSet;
 
+            unsigned _idx;
+
           public:
+            Entity(unsigned int idx) :
+                _idx(idx)
+            {
+                _components.resize(100);
+            }
+
             void update()
             {
                 for (auto &c : _components)
@@ -92,8 +102,16 @@ namespace Alfred
 
             void print()
             {
+                std::cout << "ID: " << _idx << std::endl;
                 for (auto &c : _components)
+                {
                     c->print();
+                }
+            }
+
+            const unsigned getID() const
+            {
+                return _idx;
             }
 
           private:
@@ -160,6 +178,7 @@ namespace Alfred
         {
           private:
             std::vector<Entity> _entities;
+            std::map<unsigned, Entity *> _idxID_Entitie;
 
           public:
 
@@ -172,14 +191,23 @@ namespace Alfred
             void refresh()
             {
                 _entities.erase(std::remove_if(std::begin(_entities), std::end(_entities),
-                                               [](const Entity &e) {
-                                                   return !e.isActive();
+                                               [&](const Entity &e) {
+                                                   if (!e.isActive()) {
+                                                       _idxID_Entitie[e.getID()] = nullptr;
+                                                       return false;
+                                                   }
+                                                   return true;
                                                }), std::end(_entities));
             }
 
             Entity *addEntity() //TODO need to do this again
             {
-                _entities.emplace_back();
+                unsigned tmpIDX = Alfred::Utils::Counter<Manager>();
+
+                _entities.emplace_back(tmpIDX);
+
+                _idxID_Entitie[tmpIDX] = &_entities.back();
+
                 return &_entities.back();
             }
 
@@ -200,13 +228,27 @@ namespace Alfred
                 });
             }
 
+            template <typename Fctor>
+            void for_each_all(const Fctor& f)
+            {
+                std::for_each(_entities.begin(), _entities.end(), [&f](Entity& et)
+                {
+                    f(et);
+                });
+            }
+
             void print()
             {
                 for (auto &it: _entities)
                     it.print();
             }
+
+            Entity *getEntity(unsigned idx)
+            {
+                if (_idxID_Entitie[idx] == nullptr)
+                    throw std::runtime_error("TODO CUSTOM EXEC NOT FOUND ENTITIE IN GET ENTITIE"); //TODO
+                return _idxID_Entitie[idx];
+            }
         };
     }
 }
-
-

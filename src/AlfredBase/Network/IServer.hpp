@@ -31,6 +31,7 @@ namespace Alfred
             virtual IClient &getClientInfo(int clientID) = 0;
             virtual IServer &run() = 0;
             virtual IServer &asyncRun() = 0;
+            virtual IServer &setAsyncClient(bool) = 0;
             virtual IServer &stop() = 0;
             virtual IServer &setClientBuilder(const std::function<IClient *(struct sockaddr_in in, unsigned fd)> &func) = 0;
             virtual IServer &clientDeleted(unsigned id) = 0;

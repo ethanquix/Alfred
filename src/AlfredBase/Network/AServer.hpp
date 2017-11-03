@@ -13,6 +13,7 @@ namespace Alfred
             ClientInfo _clientInfo;
             bool _isBind;
             bool _stop;
+            bool _asyncClient;
 
             Async::AsyncUnorderedMap<int, IClient *> _clients;
             std::function<void(IServer *, int clientFD)> _first_connect = [](IServer *, int clientFD) {};
@@ -25,6 +26,7 @@ namespace Alfred
                 _clientInfo.port = DEFAULT_PORT;
                 _isBind = false;
                 _stop = false;
+                _asyncClient = false;
             }
 
             explicit AServer(unsigned port)
@@ -33,6 +35,7 @@ namespace Alfred
                 _clientInfo.port = port;
                 _isBind = false;
                 _stop = false;
+                _asyncClient = false;
             }
 
             Async::AsyncUnorderedMap<int, IClient *> &getClients() override
@@ -78,6 +81,11 @@ namespace Alfred
                     LOG.error("[SERVER] Client doesnt exist when deleting it: " + std::to_string(id));
                 _clients.async_erase(id);
                 return *this;
+            }
+
+            IServer &setAsyncClient(bool async) override
+            {
+                _asyncClient = async;
             }
         };
     }

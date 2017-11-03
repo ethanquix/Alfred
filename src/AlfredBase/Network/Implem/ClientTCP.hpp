@@ -181,7 +181,7 @@ namespace Alfred
                         _on_disconnect("Select failed", _info.fd);
                         _stop = true;
                     } else if (retval >= 0)
-                        setOnReceived();
+                        onNewMessage();
                 }
                 close(_info.fd);
                 return *this;

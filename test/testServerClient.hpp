@@ -5,7 +5,7 @@
 class testServerClient : public Alfred::Network::ClientTCP
 {
   public:
-    Alfred::Network::IClient &setOnReceived() override
+    Alfred::Network::IClient &onNewMessage() override
     {
         auto *out = new char[3];
         int ret = readUntil(out, 'A');

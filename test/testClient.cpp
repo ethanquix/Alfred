@@ -26,8 +26,7 @@ int main()
     delete(client);
 }
 
-Alfred::Network::IClient &testClient::setOnReceived()
-{
+Alfred::Network::IClient &testClient::onNewMessage(){
     auto *out = new char[3];
 //    LOG.warning(std::to_string(readXChar(out, 2)));
 //    out[3]  = '\0';

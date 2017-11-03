@@ -55,7 +55,8 @@ namespace Alfred
                 LOG.log("[SERVER] New client " + _clients[fd]->getInfos().ip + " port: " +
                         std::to_string(_clients[fd]->getInfos().port));
                 _first_connect(this, fd);
-                _clients[fd]->AsyncListen();
+                if (_asyncClient)
+                    _clients[fd]->AsyncListen();
             }
 
             void select_check()
@@ -66,6 +67,8 @@ namespace Alfred
                         if (index == _info.fd) {
                             //New client
                             _accept();
+                        } else {
+                            _clients[index]->onNewMessage();
                         }
                     }
                 }

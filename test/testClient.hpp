@@ -9,7 +9,7 @@ class testClient : public Alfred::Network::ClientTCP
 
     };
   protected:
-    Alfred::Network::IClient &setOnReceived() override;
+    Alfred::Network::IClient &onNewMessage() override;
 
 };
 
