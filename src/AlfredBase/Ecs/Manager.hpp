@@ -19,6 +19,8 @@
 #include <ostream>
 #include <iostream>
 #include <map>
+#include <AlfredBase/Logger/Logger.hpp>
+#include <AlfredBase/Utils/MapSingleton.hpp>
 #include "AlfredBase/Utils/Counter.hpp"
 #include "AlfredBase/config.hpp"
 #include "AlfredBase/Utils/Singleton.hpp"
@@ -30,42 +32,49 @@ namespace Alfred
     namespace Ecs
     {
         class Component;
+
         class Entity;
+
         class Manager;
 
         class System
         {
-            //TODO entity vector (map ?)
           public:
+            Entity *entity;
+
+            virtual void update() = 0;
+
+            virtual void print() = 0;
+
+            virtual ~System()
+            {}
         };
 
+
+#if ECS_MULTIMAP_SINGLETON
+        class Manager : public Alfred::Utils::MapSingleton<std::string, Manager>
+#else
         class Manager : public Alfred::Utils::Singleton<Manager>
+#endif
         {
           private:
-            std::vector<std::unique_ptr<Entity>> _entities;
-            std::map<unsigned, Entity *> _idxID_Entitie;
+            std::vector<Entity> _entities;
+            std::vector<System *> _system;
+
+            SystemArray _systemArray;
+            SystemBitSet _systemBitSet;
 
           public:
             Manager()
             {
-//                _entities.reserve(ENTITIES_RESERVED);
-            }
-
-            void update()
-            {
-                for (auto &e :  _entities)
-                    e->update();
+                _entities.reserve(ENTITIES_RESERVED);
             }
 
             void refresh()
             {
                 _entities.erase(std::remove_if(std::begin(_entities), std::end(_entities),
-                                               [&](const std::unique_ptr<Entity> &e) {
-                                                   if (!e->isActive()) {
-                                                       _idxID_Entitie.erase(e->getID());
-                                                       return false;
-                                                   }
-                                                   return true;
+                                               [&](const Entity &e) {
+                                                   return !e.isActive();
                                                }), std::end(_entities));
             }
 
@@ -77,11 +86,9 @@ namespace Alfred
             {
                 unsigned tmpIDX = Alfred::Utils::Counter<Entity>();
 
-                _entities.emplace_back(new Entity(tmpIDX));
+                _entities.emplace_back(tmpIDX);
 
-                _idxID_Entitie[tmpIDX] = _entities.back().get();
-
-                return _entities.back().get();
+                return &_entities.back();
             }
 
             const unsigned nbEntities() const
@@ -89,48 +96,63 @@ namespace Alfred
                 return _entities.size();
             }
 
-            Entity* getEntityByID(unsigned id)
+            Entity *getEntityByID(unsigned id)
             {
-                auto it = std::find_if(_entities.begin(), _entities.end(), [id](const std::unique_ptr<Entity>& et)
-                {
-                    return et->getID() == id;
+                auto it = std::find_if(_entities.begin(), _entities.end(), [id](const Entity &et) {
+                    return et.getID() == id;
                 });
 
-                return (*it).get();
+                return &(*it);
             }
 
             template <typename ...Types, typename Fctor>
-            void for_each_matching(const Fctor& f)
+            void for_each_matching(const Fctor &f)
             {
-                std::for_each(_entities.begin(), _entities.end(), [&f](std::unique_ptr<Entity>& et)
-                {
-                    if (et.get()->template hasComponent<Types...>())
-                    {
+                std::for_each(_entities.begin(), _entities.end(), [&f](Entity &et) {
+                    if (et.template hasComponent<Types...>()) {
                         f(et);
                     }
                 });
             }
 
             template <typename Fctor>
-            void for_each_all(const Fctor& f)
+            void for_each_all(const Fctor &f)
             {
-                std::for_each(_entities.begin(), _entities.end(), [&f](Entity& et)
-                {
+                std::for_each(_entities.begin(), _entities.end(), [&f](Entity &et) {
                     f(et);
                 });
             }
 
+            template <typename T, typename... TArgs>
+            void addSystem(TArgs &&... args)
+            {
+                T *s(new T(std::forward<TArgs>(args)...));
+
+                _systemArray[getSystemTypeID<T>()] = s;
+                _systemBitSet[getSystemTypeID<T>()] = true;
+
+                _system.push_back(s);
+            }
+
             void print()
             {
+                LOG.log("Entities: ");
                 for (auto &it: _entities)
+                    it.print();
+
+                LOG.log("Systems: ");
+                for (auto &it: _system)
                     it->print();
             }
 
-            Entity *getEntity(unsigned idx)
+            template <typename T>
+            void updateSystem()
             {
-                if (_idxID_Entitie[idx] == nullptr)
-                    throw std::runtime_error("TODO CUSTOM EXEC NOT FOUND ENTITIE IN GET ENTITIE"); //TODO
-                return _idxID_Entitie[idx];
+                if (_systemBitSet[getSystemTypeID<T>()] == 0)
+                    std::cout << "ERROR TRYING TO ACCESS BAD SYSTEM"
+                              << std::endl; //TODO replace this by custom exception
+                auto ptr(_systemArray[getSystemTypeID<T>()]);
+                ptr->update();
             }
         };
     }

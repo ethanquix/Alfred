@@ -25,9 +25,6 @@ namespace Alfred
             virtual void init()
             {}
 
-            virtual void update()
-            {}
-
             virtual void print() = 0;
 
             virtual ~Component()

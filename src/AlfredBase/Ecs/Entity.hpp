@@ -34,12 +34,6 @@ namespace Alfred
                 _idx(idx)
             {}
 
-            void update()
-            {
-                for (auto &c : _components)
-                    c->update();
-            }
-
             bool isActive() const
             {
                 return _active;
@@ -52,7 +46,8 @@ namespace Alfred
 
             void print()
             {
-                std::cout << "ID: " << _idx << std::endl;
+                LOG.log("\tID: " + std::to_string(_idx));
+                LOG.log("\t\tComponents: ");
                 for (auto &c : _components)
                 {
                     c->print();

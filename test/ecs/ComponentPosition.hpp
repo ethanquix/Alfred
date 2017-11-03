@@ -25,14 +25,9 @@ namespace Component
             _y = 0;
         }
 
-        void update() override
-        {
-            std::cout << "X: " << _x << "\nY: " << _y << std::endl;
-        }
-
         void print() override
         {
-            std::cout << "Position" << std::endl;
+            LOG.log("\t\tPosition " + std::to_string(_x) + " " + std::to_string(_y));
         }
     };
 
@@ -46,19 +41,30 @@ namespace Component
             _grav = 9;
         }
 
+        void print() override
+        {
+            LOG.log("\t\tAcceleration " + std::to_string(_grav));
+        }
+    };
+}
+
+namespace System
+{
+    class Movement : public Alfred::Ecs::System
+    {
+      public:
         void update() override
         {
-            Alfred::Ecs::Manager::getSingleton().for_each_matching<ComponentPosition, Acceleration>([&] (std::unique_ptr<Alfred::Ecs::Entity> &e) {
-                e->getComponent<ComponentPosition>()._x += _grav;
-                e->getComponent<ComponentPosition>()._y += _grav / 2;
+            Alfred::Ecs::Manager::getSingleton().for_each_matching<Component::ComponentPosition, Component::Acceleration>([&] (Alfred::Ecs::Entity &e) {
+                e.getComponent<Component::ComponentPosition>()._x += e.getComponent<Component::Acceleration>()._grav;
+                e.getComponent<Component::ComponentPosition>()._y += e.getComponent<Component::Acceleration>()._grav / 2;
             });
         }
 
         void print() override
         {
-            std::cout << "Acceleration" << std::endl;
+            LOG.log("\t\tMovement system");
         }
     };
-
 }
 
