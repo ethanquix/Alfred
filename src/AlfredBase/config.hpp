@@ -31,7 +31,8 @@ namespace Alfred
 
     namespace Ecs
     {
-        constexpr static unsigned MAX_COMPONENTS = 100;
+        constexpr static unsigned MAX_COMPONENTS = 50;
+        constexpr static unsigned ENTITIES_RESERVED = 1000;
     }
 }
 

@@ -66,6 +66,12 @@ namespace Alfred
             {}
         };
 
+        class System
+        {
+            //TODO entity vector (map ?)
+          public:
+        };
+
         class Entity
         {
           private:
@@ -80,9 +86,7 @@ namespace Alfred
           public:
             Entity(unsigned int idx) :
                 _idx(idx)
-            {
-                _components.resize(100);
-            }
+            {}
 
             void update()
             {
@@ -181,6 +185,10 @@ namespace Alfred
             std::map<unsigned, Entity *> _idxID_Entitie;
 
           public:
+            Manager()
+            {
+                _entities.reserve(ENTITIES_RESERVED);
+            }
 
             void update()
             {
@@ -193,16 +201,20 @@ namespace Alfred
                 _entities.erase(std::remove_if(std::begin(_entities), std::end(_entities),
                                                [&](const Entity &e) {
                                                    if (!e.isActive()) {
-                                                       _idxID_Entitie[e.getID()] = nullptr;
+                                                       _idxID_Entitie.erase(e.getID());
                                                        return false;
                                                    }
                                                    return true;
                                                }), std::end(_entities));
             }
 
-            Entity *addEntity() //TODO need to do this again
+            /**
+             * @brief Create an entity
+             * @return Return a pointer to the entity. WARNING this pointer is only available for a short duration, so you should better use it quickly !!!
+             */
+            Entity *addEntity()
             {
-                unsigned tmpIDX = Alfred::Utils::Counter<Manager>();
+                unsigned tmpIDX = Alfred::Utils::Counter<Entity>();
 
                 _entities.emplace_back(tmpIDX);
 
@@ -214,6 +226,16 @@ namespace Alfred
             const unsigned nbEntities() const
             {
                 return _entities.size();
+            }
+
+            Entity* getEntityByID(unsigned id)
+            {
+                auto it = std::find_if(_entities.begin(), _entities.end(), [id](const Entity& et)
+                {
+                    return et.getID() == id;
+                });
+
+                return &(*it);
             }
 
             template <typename ...Types, typename Fctor>

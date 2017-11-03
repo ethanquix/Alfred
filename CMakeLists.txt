@@ -12,7 +12,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_UTILS src/AlfredBase/Utils/Singleton.hpp src/AlfredBase/Utils/NonCopyable.hpp src/AlfredBase/config.hpp src/AlfredBase/Utils/Defer.hpp src/AlfredBase/Async/AsyncUnorderedMap.hpp src/AlfredBase/Utils/Counter.hpp)
+set(SOURCE_UTILS src/AlfredBase/Utils/Singleton.hpp src/AlfredBase/Utils/NonCopyable.hpp src/AlfredBase/config.hpp src/AlfredBase/Utils/Defer.hpp src/AlfredBase/Async/AsyncUnorderedMap.hpp src/AlfredBase/Utils/Counter.hpp src/AlfredBase/Utils/MapSingleton.hpp)
 
 set(SOURCE_TIMER ${SOURCE_UTILS} src/AlfredBase/Timer/Timer.hpp)
 
