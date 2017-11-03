@@ -48,9 +48,9 @@ namespace Component
 
         void update() override
         {
-            Alfred::Ecs::Manager::getSingleton().for_each_matching<ComponentPosition, Acceleration>([&] (Alfred::Ecs::Entity &e) {
-                e.getComponent<ComponentPosition>()._x += _grav;
-                e.getComponent<ComponentPosition>()._y += _grav / 2;
+            Alfred::Ecs::Manager::getSingleton().for_each_matching<ComponentPosition, Acceleration>([&] (std::unique_ptr<Alfred::Ecs::Entity> &e) {
+                e->getComponent<ComponentPosition>()._x += _grav;
+                e->getComponent<ComponentPosition>()._y += _grav / 2;
             });
         }
 
