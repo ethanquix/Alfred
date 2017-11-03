@@ -403,3 +403,6 @@ flycheck_*.el
 *.sln
 *.vcxproj
 *.filters
+build
+cmake-build-debug
+cmake-build-release
