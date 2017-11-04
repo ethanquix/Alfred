@@ -82,7 +82,7 @@ add_test(Ecs test_Ecs)
 
 add_library(AlfredBase INTERFACE)
 
-target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/AlfredBase>)
+target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/AlfredBase> $<INSTALL_INTERFACE:src/>)
 
 target_link_libraries(AlfredBase INTERFACE Threads::Threads)
 
@@ -90,7 +90,7 @@ target_compile_features(AlfredBase
         INTERFACE cxx_auto_type cxx_variadic_templates)
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS AlfredBase EXPORT AlfredBase
+install(TARGETS AlfredBase EXPORT AlfredBaseConfig
         ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
@@ -100,7 +100,7 @@ install(DIRECTORY src/AlfredBase DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT AlfredBase DESTINATION share/AlfredBase/cmake)
+install(EXPORT AlfredBaseConfig DESTINATION share/AlfredBase/cmake)
 
 # This makes the project importable from the build directory
-export(TARGETS AlfredBase FILE AlfredBase.cmake)
+export(TARGETS AlfredBase FILE AlfredBaseConfig.cmake)
