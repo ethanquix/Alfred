@@ -10,10 +10,15 @@ namespace Alfred
         template <typename K, typename T>
         struct MapSingleton : public NonCopyable
         {
-            static T &getSingleton(K key)
+            inline static T &getSingleton(K key)
             {
                 static std::unordered_map<K, T> _singletonValue;
                 return _singletonValue[key];
+            }
+
+            static T &get(K key)
+            {
+                return getSingleton(key);
             }
         };
     }

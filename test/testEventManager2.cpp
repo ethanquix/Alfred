@@ -1,22 +1,11 @@
-/*
-** test.cpp for EventManager in /home/wyzlic_a/delivery/EventManager/test.cpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Fri Apr 21 04:45:02 2017 Dimitri Wyzlic
-** Last update Fri Apr 21 04:45:02 2017 Dimitri Wyzlic
-*/
+//      ___  _  __              _   _____
+//    / _ \| |/ _|            | | |  ___|
+//   / /_\ \ | |_ _ __ ___  __| | | |__  ___ ___ 
+//  |  _  | |  _| '__/ _ \/ _` | |  __|/ __/ __|
+//  | | | | | | | | |  __/ (_| | | |__| (__\__ \
+//  \_| |_/_|_| |_|  \___|\__,_| \____/\___|___/
 
-/*
-** evManager.cpp for plazza in /home/wyzlic_a/delivery/plazza/evManager.cpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Apr 19 15:49:58 2017 Dimitri Wyzlic
-** Last update Wed Apr 19 15:49:58 2017 Dimitri Wyzlic
-*/
+// testEventManager2.cpp created 03/11/17
 
 #include <iostream>
 #include "AlfredBase/EventManager/EventManager.hpp"

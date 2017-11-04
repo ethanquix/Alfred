@@ -1,193 +1,96 @@
-/*
-** EventManager.hpp for cpp_arcade in /home/wyzlic_a/delivery/cpp_arcade/EventManager.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Fri Mar 17 02:22:03 2017 Dimitri Wyzlic
-** Last update Fri Mar 17 02:22:03 2017 Dimitri Wyzlic
-*/
+//      ___  _  __              _   _____
+//    / _ \| |/ _|            | | |  ___|
+//   / /_\ \ | |_ _ __ ___  __| | | |__  ___ ___
+//  |  _  | |  _| '__/ _ \/ _` | |  __|/ __/ __|
+//  | | | | | | | | |  __/ (_| | | |__| (__\__ \
+//  \_| |_/_|_| |_|  \___|\__,_| \____/\___|___/
+
+// EventManager.hpp created 03/11/17
 
 #pragma once
 
-#include <map>
-#include <vector>
 #include <unordered_map>
-#include <iostream>
-#include "EventManagerExceptions.hpp"
+#include <string>
+#include <functional>
+#include <vector>
+#include <AlfredBase/Utils/Singleton.hpp>
+#include "AlfredBase/EventManager/EventManagerExceptions.hpp"
 
 namespace Alfred
 {
     namespace EventManager
     {
-        class IWatcher
+        namespace { class ___event_helper {};
+
+        template <typename Ret, typename ...Params>
+        class ___Event : public ___event_helper
         {
-        public:
-            virtual void execute(std::string arg) = 0;
-        };
+            std::vector<std::function<Ret(Params...)>> _watchers;
 
-        /**
-         * @details Watcher is here to watch change and handle callback when needed
-         * @tparam T is the class given with the event
-         * @var callback is the callback to be call from the class given
-         */
-        template <typename T>
-        class Watcher : public IWatcher
-        {
-            using _func = void (T::*)(std::string &);
-
-        public:
-            T *obj;
-            _func callback;
-
-            Watcher(T *obj, _func callback) :
-                obj(obj),
-                callback(callback)
-            {}
-
-            void execute(std::string arg) override
-            { (obj->*callback)(arg); }
-        };
-
-        class Event
-        {
-            std::vector<IWatcher *> _watchers;
-
-        public:
-            size_t fired{0};
-
-            Event() = default;
-
-            template <typename T>
-            /**
-             * Add a watcher to the map
-             * @param obj Event Class
-             * @param func Callback Function
-             */
-            void addWatcher(T *obj, void (T::*func)(std::string &))
+          public:
+            void addWatchers(const std::function<Ret(Params...)> &_func)
             {
-                _watchers.push_back(new Watcher<T>(obj, func));
+                _watchers.push_back(_func);
             }
 
-            /*
-             * Loop all watcher and execute their callback(s)
-             */
-            void execute(std::string &arg)
+            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type execute(Params &&... args)
             {
-                fired += 1;
-                for (auto &watcher : _watchers)
-                    watcher->execute(arg);
+                if constexpr (!std::is_same<void, Ret>::value) {
+                    std::vector<Ret> ret;
+                    for (const auto &it: _watchers) {
+                        ret.push_back(it(args...));
+                    }
+                    return ret;
+                }
+                else {
+                    for (const auto &it: _watchers) {
+                        it(args...);
+                    }
+                }
             }
         };
+        }
 
-        class Manager
+        class Manager : public Alfred::Utils::Singleton<Manager>
         {
-            using EventsMap = std::unordered_map<std::string, Event *>;
+            std::unordered_map<std::string, ___event_helper *> _events;
 
-            EventsMap _events;
-
-        private:
-            Manager() = default;
-
-        public:
-            /**
-             * Use this to always get the same Manager
-             * @return
-             */
-            static Manager *control()
+          public:
+            template <typename Ret, typename ...Params>
+            void addEvent(const std::string &name)
             {
-                static Manager cur;
-                return &cur;
-            }
-
-            /**
-             * Check if the name doenst already exist and add an Event
-             * @param name
-             */
-            void createEvent(std::string name)
-            {
-                EventsMap::const_iterator it;
-
-                it = _events.find(name);
-                if (it != _events.end())
+                if (_events.count(name) > 0)
                     throw EventNameExist(name);
-                _events.insert(std::pair<std::string, Event *>(name, new Event()));
+                _events[name] = new ___Event<Ret, Params...>();
             }
 
-            /**
-             * Watch an event
-             * @param name Name of event
-             * @param obj Class of event to call callback from
-             * @param func Callback
-             * @return success or failure
-             * We do not raise exception here because we can use that to know if an event exist
-             */
-            template <typename Class>
-            bool watch(const std::string &name, Class *obj, void (Class::*func)(std::string &))
-            {
-                EventsMap::const_iterator it;
-
-                it = _events.find(name);
-                if (it == _events.end())
-                    createEvent(name);
-                it = _events.find(name);
-                if (it == _events.end())
-                    throw std::runtime_error("Event unknown error during event creation");
-                it->second->addWatcher(obj, func);
-                return true;
-            }
-
-            /**
-             * Execute all event watcher from name
-             * @param name
-             */
-            void fire(const std::string &name, std::string arg = "")
-            {
-                EventsMap::const_iterator it;
-
-                it = _events.find(name);
-                if (it != _events.end())
-                    it->second->execute(arg);
-                else
-                    throw EventDontExist(name);
-            }
-
-            /**
-             * Delete an event
-             * @param name name of the event to delete
-             */
             void deleteEvent(const std::string &name)
             {
-                EventsMap::const_iterator it;
-
-                it = _events.find(name);
-                if (it != _events.end())
-                    _events.erase(it);
-                else
-                    throw EventDontExist(name);
+                _events.erase(name);
             }
 
-            /*
-             * Clear all events
-             */
             void clear()
             {
                 _events.clear();
             }
 
-            /**
-             * Dump all the name of all the events
-             */
-            void dump()
+            template <typename Ret, typename ...Args>
+            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type fire(const std::string &name, Args &&... args)
             {
-                if (_events.empty()) {
-                    std::cout << "No event found" << std::endl;
-                    return;
-                }
-                for (const auto &it : _events)
-                    std::cout << "Event in manager -> " << it.first << " fired [" << it.second->fired << "] times"
-                              << std::endl;
+                if (_events.count(name) <= 0)
+                    throw EventDontExist(name);
+                return static_cast<___Event<Ret, Args...> *>(_events[name])->execute(std::forward<Args>(args)...);
+            }
+
+            template <typename Ret, typename ...Params, typename Fctor>
+            void listen(const std::string &name, const Fctor &func)
+            {
+                if (_events.count(name) <= 0)
+                    throw EventDontExist(name);
+                static_cast<___Event<Ret, Params...> *>(_events[name])->addWatchers(func);
             }
         };
     }
 }
+
+

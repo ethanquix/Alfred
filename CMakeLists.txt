@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STRICT_ANSI__")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_UTILS src/AlfredBase/Utils/Singleton.hpp src/AlfredBase/Utils/NonCopyable.hpp src/AlfredBase/config.hpp src/AlfredBase/Utils/Defer.hpp src/AlfredBase/Async/AsyncUnorderedMap.hpp src/AlfredBase/Utils/Counter.hpp src/AlfredBase/Utils/MapSingleton.hpp)
 
@@ -26,12 +26,12 @@ set(SOURCE_MATH ${SOURCE_UTILS} src/AlfredBase/Math/Math.hpp src/AlfredBase/Math
 
 set(SOURCE_INFINITE_LIST ${SOURCE_UTILS} src/AlfredBase/Infinite/InfiniteList.hpp src/AlfredBase/Infinite/premade/InfiniteListPremade.hpp)
 
-set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManager.hpp src/AlfredBase/EventManager/EventManagerExceptions.hpp)
+#set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManagerString.hpp src/AlfredBase/EventManager/EventManagerExceptions.hpp src/AlfredBase/EventManager/EventManager.hpp)
+set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManagerExceptions.hpp src/AlfredBase/EventManager/EventManager.hpp)
 
 set(SOURCE_RANDOM ${SOURCE_UTILS} src/AlfredBase/Random/Random.hpp)
 
 set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/Manager.hpp src/AlfredBase/Ecs/System.hpp src/AlfredBase/Ecs/IComponentStorage.hpp src/AlfredBase/Ecs/Component.hpp src/AlfredBase/Ecs/EcsCounter.hpp)
-
 
 include_directories(src)
 
@@ -63,6 +63,9 @@ add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
 add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Timer/SimpleTimer.hpp)
 
 add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
+
+enable_testing()
+add_test(a test_EventManager)
 
 #--------- LIBRARY ---------#
 

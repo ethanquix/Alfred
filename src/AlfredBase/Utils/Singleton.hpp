@@ -20,10 +20,15 @@ namespace Alfred
         template <typename T>
         struct Singleton : public NonCopyable
         {
-            static T &getSingleton()
+            inline static T &getSingleton()
             {
                 static T _singletonValue;
                 return _singletonValue;
+            }
+
+            static T &get()
+            {
+                return getSingleton();
             }
         };
     }
