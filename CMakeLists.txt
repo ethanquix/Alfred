@@ -64,8 +64,19 @@ add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Time
 
 add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
 
+#--------- TESTING ---------#
 enable_testing()
-add_test(a test_EventManager)
+add_test(Timer test_Timer)
+add_test(Promise test_Promise)
+add_test(Logger test_Logger)
+#add_test(Server test_Server)
+#add_test(Client test_Client)
+add_test(Math test_Math)
+add_test(InfiniteList test_InfiniteList)
+add_test(EventManager test_EventManager)
+add_test(Random test_Random)
+add_test(Defer test_Defer)
+add_test(Ecs test_Ecs)
 
 #--------- LIBRARY ---------#
 
