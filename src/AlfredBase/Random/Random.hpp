@@ -12,6 +12,7 @@
 
 #include "AlfredBase/config.hpp"
 
+#include <string>
 #include <algorithm>
 #include <random>
 
@@ -21,19 +22,19 @@ namespace Alfred
     {
         static const std::string &string(const size_t max)
         {
-            auto randchar = []() -> char {
-                const size_t max_index = (sizeof(RANDOM_STRING_CHARS) - 1);
-                return RANDOM_STRING_CHARS[rand() % max_index];
-            };
-            auto str = new std::string(max, 0);
-            std::generate_n(str->begin(), max, randchar);
-            return *str;
+            auto *ret = new std::string();
+
+            std::mt19937_64 gen{std::random_device()()};
+            std::uniform_int_distribution<size_t> dist{0, sizeof(RANDOM_STRING_CHARS) - 1};
+            std::generate_n(std::back_inserter(*ret), max, [&] { return RANDOM_STRING_CHARS[dist(gen)]; });
+            return *ret;
         }
 
         static const int randint(size_t min, size_t max)
         {
             std::random_device rd;
             std::mt19937 rng(rd());
+#pragma warning(disable:4267)
             std::uniform_int_distribution<int> uni(min, max);
             return (uni(rng));
         }

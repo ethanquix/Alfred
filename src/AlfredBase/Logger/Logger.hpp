@@ -140,12 +140,6 @@ namespace Alfred
             throw LoggerFatal(str);
         }
 
-        template <typename T>
-        void info(T str)
-        {
-            log(str);
-        }
-
         void timer_start(const std::string &name, const std::string &desc = "")
         {
             _timers[name].first = std::clock();

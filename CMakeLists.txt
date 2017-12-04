@@ -16,15 +16,18 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
-endif(MSVC)
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MT")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+endif (MSVC)
 
 set(SOURCE_UTILS src/AlfredBase/Utils/Singleton.hpp src/AlfredBase/Utils/NonCopyable.hpp src/AlfredBase/config.hpp src/AlfredBase/Utils/Defer.hpp src/AlfredBase/Async/AsyncUnorderedMap.hpp src/AlfredBase/Utils/Counter.hpp src/AlfredBase/Utils/MapSingleton.hpp)
 
 set(SOURCE_TIMER ${SOURCE_UTILS} src/AlfredBase/Timer/Timer.hpp)
 
-set(SOURCE_PROMISE ${SOURCE_UTILS} src/AlfredBase/Async/Promise.hpp src/AlfredBase/Network/Implem/ServerTCP.hpp)
+#/!\ Disabled because need rework (capture during initialization
+#set(SOURCE_PROMISE ${SOURCE_UTILS} src/AlfredBase/Async/Promise.hpp src/AlfredBase/Network/Implem/ServerTCP.hpp)
 
 set(SOURCE_LOGGER ${SOURCE_UTILS} src/AlfredBase/Logger/Logger.hpp)
 
@@ -34,7 +37,6 @@ set(SOURCE_MATH ${SOURCE_UTILS} src/AlfredBase/Math/Math.hpp src/AlfredBase/Math
 
 set(SOURCE_INFINITE_LIST ${SOURCE_UTILS} src/AlfredBase/Infinite/InfiniteList.hpp src/AlfredBase/Infinite/premade/InfiniteListPremade.hpp)
 
-#set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManagerString.hpp src/AlfredBase/EventManager/EventManagerExceptions.hpp src/AlfredBase/EventManager/EventManager.hpp)
 set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManagerExceptions.hpp src/AlfredBase/EventManager/EventManager.hpp)
 
 set(SOURCE_RANDOM ${SOURCE_UTILS} src/AlfredBase/Random/Random.hpp)
@@ -49,8 +51,9 @@ include_directories(src)
 add_executable(test_Timer ${SOURCE_TIMER} test/testTimer.cpp)
 target_link_libraries(test_Timer Threads::Threads)
 
-add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
-target_link_libraries(test_Promise Threads::Threads)
+#Disabled (see above)
+#add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
+#target_link_libraries(test_Promise Threads::Threads)
 
 add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
@@ -75,7 +78,7 @@ add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPos
 #--------- TESTING ---------#
 enable_testing()
 add_test(Timer test_Timer)
-add_test(Promise test_Promise)
+#add_test(Promise test_Promise) #Disabled see above
 add_test(Logger test_Logger)
 #add_test(Server test_Server)
 #add_test(Client test_Client)
@@ -99,9 +102,9 @@ target_compile_features(AlfredBase
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS AlfredBase EXPORT AlfredBaseConfig
-        ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
 
 install(DIRECTORY src/AlfredBase DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

@@ -13,11 +13,11 @@
 int main()
 {
     LOG.log("yop");
-    LOG.log(Alfred::Logger::DEBUG, "yop");
-    LOG.log(Alfred::Logger::INFO, "yop");
-    LOG.log(Alfred::Logger::WARNING, "yop");
-    LOG.log(Alfred::Logger::ERROR, "yop");
-    LOG.log(Alfred::Logger::FATAL, "yop");
+    LOG.log(Alfred::Logger::LOG_DEBUG, "yop");
+    LOG.log(Alfred::Logger::LOG_INFO, "yop");
+    LOG.log(Alfred::Logger::LOG_WARNING, "yop");
+    LOG.log(Alfred::Logger::LOG_ERROR, "yop");
+    LOG.log(Alfred::Logger::LOG_FATAL, "yop");
     LOG.timer_start("yop", "il sert a rien");
     LOG.timer_fire("yop");
 }

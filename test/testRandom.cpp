@@ -8,6 +8,7 @@
 ** Last update Mon Sep 18 01:18:43 2017 Dimitri Wyzlic
 */
 
+#include <string>
 #include <iostream>
 #include "AlfredBase/Random/Random.hpp"
 

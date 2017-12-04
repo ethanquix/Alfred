@@ -217,6 +217,7 @@ namespace Alfred
 
             //All the above updateXXX function are here to prevent if branch and optimise for the CPU (avoid lot of JMP)
 
+#pragma warning(disable:4244)
             /**
              * Check if time is over and return the result
              * Call _onTick or _onEnd depending of the situation

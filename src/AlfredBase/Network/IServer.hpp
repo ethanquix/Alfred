@@ -16,7 +16,13 @@
 #include <unordered_map>
 #include <unordered_map>
 #include <functional>
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <windows.h>
+#else
 #include <netinet/in.h>
+#endif
 
 namespace Alfred
 {
