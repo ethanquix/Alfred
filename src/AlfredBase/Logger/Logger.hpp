@@ -18,6 +18,8 @@
 #include <assert.h>
 #include "AlfredBase/Utils/Singleton.hpp"
 
+#pragma warning(disable:4996)
+
 namespace Alfred
 {
     class LoggerFatal : public std::exception
@@ -41,15 +43,15 @@ namespace Alfred
     public:
         enum level
         {
-            DEBUG = 0,
-            INFO,
-            WARNING,
-            ERROR,
-            FATAL
+            LOG_DEBUG = 0,
+            LOG_INFO,
+            LOG_WARNING,
+            LOG_ERROR,
+            LOG_FATAL
         };
 
     private:
-        const std::string getTime()
+        std::string getTime()
         {
             auto in_time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
@@ -89,21 +91,22 @@ namespace Alfred
         {
             switch (level) {
 #if DEBUG_MODE
-                case DEBUG:
+                case LOG_DEBUG:
                     log_format("DEBUG - ", "\033[34m", str);
                     break;
 #endif
                 default:
-                case INFO:
+		  break;
+                case LOG_INFO:
                     log(str);
                     break;
-                case WARNING:
+                case LOG_WARNING:
                     log_format("WARNING - ", "\033[33m", str);
                     break;
-                case ERROR:
+                case LOG_ERROR:
                     log_format("ERROR - ", "\033[31m", str);
                     break;
-                case FATAL:
+                case LOG_FATAL:
                     log_format("FATAL - ", "\033[1;4;31m", str);
                     throw LoggerFatal(str);
                     break;
@@ -135,6 +138,12 @@ namespace Alfred
         {
             log_format("FATAL - ", "\033[1;4;31m", str);
             throw LoggerFatal(str);
+        }
+
+        template <typename T>
+        void info(T str)
+        {
+            log(str);
         }
 
         void timer_start(const std::string &name, const std::string &desc = "")

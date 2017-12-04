@@ -38,7 +38,7 @@ namespace Alfred
                 _dim(std::to_string(LINES) + "x" + std::to_string(COLS))
             {
                 if (LINES * COLS == 0)
-                    LOG.log(Logger::FATAL, "Can not make 0 sized matrix");
+                    LOG.log(Logger::LOG_FATAL, "Can not make 0 sized matrix");
                 _matrix.resize(LINES);
                 for (size_t i = 0; i < LINES; ++i) {
                     _matrix[i].resize(COLS);
