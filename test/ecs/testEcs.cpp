@@ -7,7 +7,10 @@
 
 // testEcs.cpp created 02/11/17
 
+#ifndef _WIN32
 #include <unistd.h>
+#endif
+
 #include "AlfredBase/Ecs/Manager.hpp"
 #include "ComponentPosition.hpp"
 
@@ -36,15 +39,12 @@ int main()
 
 //    return (0);
 
-    while (1)
-    {
+    while (1) {
         Alfred::Ecs::Manager::getSingleton().updateSystem<System::Movement>();
         Alfred::Ecs::Manager::getSingleton().refresh();
         Alfred::Ecs::Manager::getSingleton().print();
 //        Alfred::Ecs::Manager::getSingleton().getEntityByID(e->getID())->destroy();
         return (0);
-        usleep(2000000);
     }
-
     return (0);
 }

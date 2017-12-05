@@ -15,11 +15,24 @@
 #include "AlfredBase/Network/AClient.hpp"
 #include "AlfredBase/Random/Random.hpp"
 
+#ifdef _WIN32
+
+#include <Ws2tcpip.h>
+#include <io.h>
+#include <winsock2.h>
+#include <windows.h>
+
+#else
+#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#endif
+
 #include <cstring>
+
+#pragma warning(disable:4244)
 
 namespace Alfred
 {
@@ -27,7 +40,12 @@ namespace Alfred
     {
         struct InfoNetwork
         {
+#ifdef _WIN32
+            SOCKET fd;
+#else
             int fd;
+
+#endif
             struct sockaddr_in in;
         };
 
@@ -61,8 +79,7 @@ namespace Alfred
             void deplaceChar(char **from, unsigned start, unsigned end)
             {
                 unsigned i = 0;
-                while (start < end)
-                {
+                while (start < end) {
                     (*from)[i] = (*from)[start];
                     i += 1;
                     start += 1;
@@ -85,7 +102,7 @@ namespace Alfred
             };
 
             ClientTCP(struct sockaddr_in in, unsigned fd) :
-            AClient()
+                AClient()
             {
                 _asyncListenThread = nullptr;
                 _info.in = in;
@@ -94,7 +111,7 @@ namespace Alfred
                 _isBind = true;
 
                 char ip[INET_ADDRSTRLEN];
-                inet_ntop( AF_INET, &in.sin_addr, ip, INET_ADDRSTRLEN );
+                inet_ntop(AF_INET, &in.sin_addr, ip, INET_ADDRSTRLEN);
                 _clientInfo.ip = std::string(ip);
                 _clientInfo.port = in.sin_port;
                 _clientInfo.id = fd;
@@ -121,8 +138,7 @@ namespace Alfred
             int readXChar(void *buf, unsigned size)
             {
                 int ret = read(_info.fd, buf, size);
-                if (ret <= 0)
-                {
+                if (ret <= 0) {
                     _on_disconnect("Read failed", _info.fd);
                     _stop = true;
                     return INDICATOR_DISCONNECT;
@@ -136,13 +152,10 @@ namespace Alfred
                 int bytesRead;
                 unsigned i;
 
-                while (true)
-                {
+                while (true) {
                     i = 0;
-                    while (i < _curMaxSize)
-                    {
-                        if (_savedBuffer[i] == target)
-                        {
+                    while (i < _curMaxSize) {
+                        if (_savedBuffer[i] == target) {
                             if (std::realloc(buf, (i + 1) * sizeof(char)) == NULL)
                                 LOG.fatal("Realloc failed");
                             std::strncpy((char *)buf, _savedBuffer, i + 1);
@@ -154,8 +167,7 @@ namespace Alfred
                     }
 
                     bytesRead = read(_info.fd, tmp, _bufferSize);
-                    if (bytesRead <= 0)
-                    {
+                    if (bytesRead <= 0) {
                         _on_disconnect("Error during read at read until", _info.fd);
                         _stop = true;
                         return INDICATOR_DISCONNECT;
@@ -211,7 +223,6 @@ namespace Alfred
                     _asyncListenThread->join();
                 }
             }
-
         };
     }
 }

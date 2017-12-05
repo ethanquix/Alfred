@@ -91,6 +91,7 @@ namespace Alfred
                 return &_entities.back();
             }
 
+#pragma warning(disable:4267)
             const unsigned nbEntities() const
             {
                 return _entities.size();

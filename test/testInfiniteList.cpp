@@ -15,6 +15,7 @@ void calc_primeNumber_to(int max);
 void calc_square_primeNumber_num(int max);
 void calc_fibo(int max);
 
+#pragma warning(disable:4267)
 int next(Alfred::Infinite::InfiniteList<int> &cur)
 {
     return cur.getIdx();

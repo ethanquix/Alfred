@@ -59,9 +59,15 @@ add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
 
 add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp test/testServerClient.hpp)
 target_link_libraries(test_Server Threads::Threads)
+if(WIN32)
+    target_link_libraries(test_Server wsock32 ws2_32)
+endif()
 
 add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)
 target_link_libraries(test_Client Threads::Threads)
+if(WIN32)
+    target_link_libraries(test_Client wsock32 ws2_32)
+endif()
 
 add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
 
@@ -75,20 +81,6 @@ add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Time
 
 add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
 
-#--------- TESTING ---------#
-enable_testing()
-add_test(Timer test_Timer)
-#add_test(Promise test_Promise) #Disabled see above
-add_test(Logger test_Logger)
-#add_test(Server test_Server)
-#add_test(Client test_Client)
-add_test(Math test_Math)
-add_test(InfiniteList test_InfiniteList)
-add_test(EventManager test_EventManager)
-add_test(Random test_Random)
-add_test(Defer test_Defer)
-add_test(Ecs test_Ecs)
-
 #--------- LIBRARY ---------#
 
 add_library(AlfredBase INTERFACE)
@@ -99,6 +91,25 @@ target_link_libraries(AlfredBase INTERFACE Threads::Threads)
 
 target_compile_features(AlfredBase
         INTERFACE cxx_auto_type cxx_variadic_templates)
+
+if(WIN32)
+    target_link_libraries(AlfredBase INTERFACE wsock32 ws2_32)
+endif()
+
+#--------- TESTING ---------#
+
+#enable_testing()
+#
+#file(GLOB TEST_SRC
+#        ${PROJECT_SOURCE_DIR}/test/*.cpp
+#        ${PROJECT_SOURCE_DIR}/File/*.hpp
+#        )
+#
+#add_executable(AlfredBase_TEST ${TEST_SRC})
+#target_link_libraries(AlfredBase_TEST AlfredBase)
+#add_test(all AlfredBase_TEST)
+
+#--------- INSTALL ---------#
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
 install(TARGETS AlfredBase EXPORT AlfredBaseConfig

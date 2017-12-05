@@ -12,6 +12,13 @@
 
 #include <functional>
 #include <exception>
+
+#ifdef _WIN32
+
+#include <WinSock2.h>
+
+#endif
+
 #include "AlfredBase/config.hpp"
 
 namespace Alfred
@@ -22,7 +29,12 @@ namespace Alfred
         {
             unsigned port;
             std::string ip;
+#ifdef _WIN32
+            SOCKET id;
+#else
             unsigned id;
+
+#endif
         };
 
         class IClient

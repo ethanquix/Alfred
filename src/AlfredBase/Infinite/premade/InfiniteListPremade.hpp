@@ -8,6 +8,7 @@ namespace Alfred
     {
         namespace Premade
         {
+#pragma warning(disable:4267)
             int premade_Counter(Alfred::Infinite::InfiniteList<int> &cur)
             {
                 return cur.getIdx();

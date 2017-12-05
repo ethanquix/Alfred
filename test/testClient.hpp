@@ -6,10 +6,9 @@ class testClient : public Alfred::Network::ClientTCP
 {
   public:
     testClient() : ClientTCP() {
-
     };
+
   protected:
     Alfred::Network::IClient &onNewMessage() override;
-
 };
 

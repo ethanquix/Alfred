@@ -86,6 +86,7 @@ namespace Alfred
             IServer &setAsyncClient(bool async) override
             {
                 _asyncClient = async;
+                return *this;
             }
         };
     }
