@@ -8,13 +8,16 @@
 ** Last update Mon Sep 18 01:18:43 2017 Dimitri Wyzlic
 */
 
-#include <string>
-#include <iostream>
+#include <gtest/gtest.h>
 #include "AlfredBase/Random/Random.hpp"
 
-int main()
+TEST(Random, String)
 {
-    std::cout << Alfred::Random::string(40) << std::endl;
-    std::cout << Alfred::Random::string(40) << std::endl;
-    std::cout << Alfred::Random::string(40) << std::endl;
+    const std::string &a = Alfred::Random::string(20);
+    const std::string &b = Alfred::Random::string(20);
+
+    ASSERT_EQ(a.size(), 20);
+    ASSERT_EQ(b.size(), 20);
+
+    ASSERT_NE(a, b);
 }

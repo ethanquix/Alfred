@@ -41,45 +41,45 @@ set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManage
 
 set(SOURCE_RANDOM ${SOURCE_UTILS} src/AlfredBase/Random/Random.hpp)
 
-set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/Manager.hpp src/AlfredBase/Ecs/System.hpp src/AlfredBase/Ecs/IComponentStorage.hpp src/AlfredBase/Ecs/Component.hpp src/AlfredBase/Ecs/EcsCounter.hpp)
+set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/Manager.hpp src/AlfredBase/Ecs/Component.hpp src/AlfredBase/Ecs/EcsCounter.hpp)
 
 include_directories(src)
 
 
 #--------- TESTS ---------#
 
-add_executable(test_Timer ${SOURCE_TIMER} test/testTimer.cpp)
-target_link_libraries(test_Timer Threads::Threads)
-
-#Disabled (see above)
-#add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
-#target_link_libraries(test_Promise Threads::Threads)
-
-add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
-
-add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp test/testServerClient.hpp)
-target_link_libraries(test_Server Threads::Threads)
-if(WIN32)
-    target_link_libraries(test_Server wsock32 ws2_32)
-endif()
-
-add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)
-target_link_libraries(test_Client Threads::Threads)
-if(WIN32)
-    target_link_libraries(test_Client wsock32 ws2_32)
-endif()
-
-add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
-
-add_executable(test_InfiniteList ${SOURCE_INFINITE_LIST} test/testInfiniteList.cpp)
-
-add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/testEventManager.cpp)
-
-add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
-
-add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Timer/SimpleTimer.hpp)
-
-add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
+#add_executable(test_Timer ${SOURCE_TIMER} test/testTimer.cpp)
+#target_link_libraries(test_Timer Threads::Threads)
+#
+##Disabled (see above)
+##add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
+##target_link_libraries(test_Promise Threads::Threads)
+#
+#add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
+#
+#add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp test/testServerClient.hpp)
+#target_link_libraries(test_Server Threads::Threads)
+#if(WIN32)
+#    target_link_libraries(test_Server wsock32 ws2_32)
+#endif()
+#
+#add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)
+#target_link_libraries(test_Client Threads::Threads)
+#if(WIN32)
+#    target_link_libraries(test_Client wsock32 ws2_32)
+#endif()
+#
+#add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
+#
+#add_executable(test_InfiniteList ${SOURCE_INFINITE_LIST} test/testInfiniteList.cpp)
+#
+#add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/testEventManager.cpp)
+#
+#add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
+#
+#add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Timer/SimpleTimer.hpp)
+#
+#add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
 
 #--------- LIBRARY ---------#
 
@@ -98,16 +98,19 @@ endif()
 
 #--------- TESTING ---------#
 
-#enable_testing()
-#
-#file(GLOB TEST_SRC
-#        ${PROJECT_SOURCE_DIR}/test/*.cpp
-#        ${PROJECT_SOURCE_DIR}/File/*.hpp
-#        )
-#
-#add_executable(AlfredBase_TEST ${TEST_SRC})
-#target_link_libraries(AlfredBase_TEST AlfredBase)
-#add_test(all AlfredBase_TEST)
+add_subdirectory(test/googletest)
+
+enable_testing()
+
+file(GLOB TEST_SRC
+        ${PROJECT_SOURCE_DIR}/test/*.cpp
+        ${PROJECT_SOURCE_DIR}/File/*.hpp
+        )
+
+add_executable(AlfredBase_TEST ${TEST_SRC})
+#add_executable(AlfredBase_TEST test/testDefer.cpp test/main.cpp)
+target_link_libraries(AlfredBase_TEST AlfredBase gtest)
+add_test(all AlfredBase_TEST)
 
 #--------- INSTALL ---------#
 
