@@ -15,7 +15,7 @@
 #include <sstream>
 #include <iomanip>
 #include <map>
-#include <assert.h>
+#include <cassert>
 #include "AlfredBase/Utils/Singleton.hpp"
 
 #pragma warning(disable:4996)
