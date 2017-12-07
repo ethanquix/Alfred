@@ -8,49 +8,56 @@
 ** Last update Fri Apr 21 04:45:02 2017 Dimitri Wyzlic
 */
 
-/*
-** evManager.cpp for plazza in /home/wyzlic_a/delivery/plazza/evManager.cpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Apr 19 15:49:58 2017 Dimitri Wyzlic
-** Last update Wed Apr 19 15:49:58 2017 Dimitri Wyzlic
-*/
-
+#include <gtest/gtest.h>
 #include <iostream>
 #include "AlfredBase/EventManager/EventManager.hpp"
 
+static std::string verif = "";
+
 void display(std::string x)
 {
-    std::cout << "Je dois ecrire un truc " << x << std::endl;
+    verif += x;
 }
 
-int main()
+TEST(EventManager, Return)
 {
     Alfred::EventManager::Manager m;
+    int ret = 0;
 
-    std::function<void(std::string)> function = display;
+    m.addEvent<void, std::string>("test event return");
 
-    m.addEvent<void, std::string>("two");
-    m.addEvent<int, int>("test ret");
-
-    m.listen<int, int>("test ret", [] (int x) -> int {
-        std::cout << "RESULT: " << x << std::endl;
+    m.listen<int, int>("test event return", [&] (int x) -> int {
+        ret += x;
         return 1;
     });
 
-    m.listen<int, int>("test ret", [] (int x) -> int {
-        std::cout << "RESULT: " << x << std::endl;
+    m.listen<int, int>("test event return", [&] (int x) -> int {
+        ret += x;
         return 2;
     });
 
-    m.listen<void, std::string>("two", display);
-    m.listen<void, std::string>("two", function);
-    m.listen<void, std::string>("two", [] (std::string x) -> void { display(x); });
+    m.fire<void, std::string>("two", "a");
+    auto retOfCallback = m.fire<int, int>("test event return", 1);
 
-    m.fire<void, std::string>("two", "ma string");
-    auto ret = m.fire<int, int>("test ret", 1);
-    for (const auto &it: ret)
-        std::cout << it << std::endl;
+    ASSERT_EQ(ret, 2);
+
+    for (const auto &it: retOfCallback)
+        ret += it;
+
+    ASSERT_EQ(ret, 5);
+}
+
+TEST(EventManager, Call)
+{
+    Alfred::EventManager::Manager m;
+
+    m.addEvent<int, int>("test event call");
+
+    std::function<void(std::string)> function = display;
+
+    m.listen<void, std::string>("test event call", display);
+    m.listen<void, std::string>("test event call", function);
+    m.listen<void, std::string>("test event call", [] (std::string x) -> void { display(x); });
+
+    ASSERT_EQ(verif, "aaa");
 }

@@ -195,17 +195,17 @@ namespace Alfred
                 return *this;
             }
 
-            InfiniteList<T> &map(std::function<T(T elem)> func)
+            InfiniteList<T> &map(std::function<T(T elem)> &&func)
             {
                 _map.push_back(func);
                 _todo.push_back(ILO_MAP);
                 return *this;
             }
 
-            template <typename X>
-            InfiniteList<X> &map_to(std::function<X(T elem)> func, size_t max)
+            template<typename Fctor>
+            auto map_to(Fctor func, size_t max)
             {
-                std::vector<X> list;
+                std::vector<decltype(func({}))> list;
 
                 get(max - 1);
 
@@ -215,7 +215,7 @@ namespace Alfred
                     else
                         list.push_back(func(elem));
 
-                auto out = new InfiniteList<X>(list);
+                auto out = new InfiniteList<decltype(func({}))>(list);
                 return *out;
             }
 
@@ -299,6 +299,11 @@ namespace Alfred
                     precSize = out.size();
                     i++;
                 }
+            }
+
+            const std::vector<T> &extract()
+            {
+                return _list;
             }
 
             const unsigned long count()

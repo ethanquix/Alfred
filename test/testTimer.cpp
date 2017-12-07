@@ -8,14 +8,17 @@
 ** Last update Thu Jun 01 01:09:51 2017 Dimitri Wyzlic
 */
 
+#include <gtest/gtest.h>
 #include <iostream>
 #include "AlfredBase/Timer/Timer.hpp"
 
-void funcUpdate(const std::string &str) {
+void funcUpdate(const std::string &str)
+{
     std::cout << str << std::endl;
 }
 
-void funcUpdateAsync(const std::string &str) {
+void funcUpdateAsync(const std::string &str)
+{
     std::cout << "Async: " << str << std::endl;
 }
 
@@ -25,13 +28,30 @@ void testAsync()
     a->asyncStart();
 }
 
-int main()
+TEST(Timer, checkpoint)
 {
-    testAsync();
-    Alfred::Time::Timer t(3, funcUpdate);
-    t.addCheckpoint(2, "salut", [] () {std::cout << "Yop" << std::endl;});
-    t.deleteCheckpoint("salut");
+    int i = 0;
+
+//    testAsync();
+    Alfred::Time::Timer t(2, funcUpdate);
+    t.addCheckpoint(1, "salut", [&]() {
+        i += 1;;
+    });
+
     t.start();
+
     while (t.update()); //or t.run();
-    return (0);
+
+    ASSERT_EQ(i, 1);
+}
+
+TEST(Timer, CheckpointAlreadyExist)
+{
+    Alfred::Time::Timer t(3, funcUpdate);
+    t.addCheckpoint(2, "salut", []() {});
+
+    ASSERT_THROW(t.addCheckpoint(2, "salut", []() {}),
+                 Alfred::Time::TimerCheckpointAlreadyExist);
+
+    t.start();
 }

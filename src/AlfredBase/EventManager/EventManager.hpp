@@ -16,6 +16,8 @@
 #include <AlfredBase/Utils/Singleton.hpp>
 #include "AlfredBase/EventManager/EventManagerExceptions.hpp"
 
+#pragma GCC diagnostic ignored "-Wsubobject-linkage"
+
 namespace Alfred
 {
     namespace EventManager

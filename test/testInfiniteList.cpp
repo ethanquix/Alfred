@@ -8,18 +8,14 @@
 ** Last update Thu Aug 31 20:23:44 2017 Dimitri Wyzlic
 */
 
+#include <gtest/gtest.h>
+
 #include "AlfredBase/Infinite/InfiniteList.hpp"
 #include "AlfredBase/Infinite/premade/InfiniteListPremade.hpp"
 
 void calc_primeNumber_to(int max);
 void calc_square_primeNumber_num(int max);
 void calc_fibo(int max);
-
-#pragma warning(disable:4267)
-int next(Alfred::Infinite::InfiniteList<int> &cur)
-{
-    return cur.getIdx();
-}
 
 bool isPrime(int x)
 {
@@ -30,45 +26,63 @@ bool isPrime(int x)
     return true;
 }
 
-std::string test(int x)
-{
-    return std::to_string(x) + "bonjour";
-}
-
-int main()
-{
-    Alfred::Infinite::InfiniteList<int> l(0);
-    l.setNextFunc(next);
-
-    std::function<std::string(int)> to_str_func = test;
-
-    std::cout << l.map_to(to_str_func, 10).map([](std::string x) -> std::string { return x + "_aurevoir"; }).end();
-    //Above line will throw if .limit(>10) because it will need to access next function but not defined
-    calc_primeNumber_to(11);
-    calc_square_primeNumber_num(11);
-    calc_fibo(10);
-}
-
-void calc_primeNumber_to(int max)
+TEST(InfiniteList, Counter)
 {
     Alfred::Infinite::InfiniteList<int> l(0);
     l.setNextFunc(Alfred::Infinite::Premade::premade_Counter);
-    std::cout << l.filter(isPrime).enumerate([max](int x) -> bool { return x > max; }) << std::endl;
+
+    auto list  = l
+        .map_to([] (int x) -> std::string { return std::to_string(x); }, 10)
+        .map([](std::string x) -> std::string { return x + " ième nb"; })
+        .end();
+
+    auto out = list.extract();
+    auto verif = std::vector<std::string>({"0 ième nb", "1 ième nb", "2 ième nb", "3 ième nb", "4 ième nb", "5 ième nb", "6 ième nb", "7 ième nb"});
+
+    ASSERT_EQ(verif, out);
 }
 
-void calc_square_primeNumber_num(int max)
+TEST(InfiniteList, PrimeNumber)
 {
     Alfred::Infinite::InfiniteList<int> l(0);
     l.setNextFunc(Alfred::Infinite::Premade::premade_Counter);
-    std::cout << l.filter(isPrime).map([](int x) -> int { return x * x; }).limit(max) << std::endl;
+
+    l
+        .filter(isPrime)
+        .enumerate([](int x) -> bool { return x > 100; });
+
+    auto out = l.extract();
+    auto verif = std::vector<int>({0, 1, 2, 3, 5, 7});
+
+    ASSERT_EQ(verif, out);
 }
 
-void calc_fibo(int max)
+TEST(InfiniteList, SquarePrimeNumber)
+{
+    Alfred::Infinite::InfiniteList<int> l(0);
+    l.setNextFunc(Alfred::Infinite::Premade::premade_Counter);
+
+    l
+        .filter(isPrime)
+        .map([](int x) -> int { return x * x; })
+        .limit(10);
+
+    auto out = l.extract();
+    auto verif = std::vector<int>({0, 1, 4, 9, 25, 49});
+
+    ASSERT_EQ(verif, out);
+}
+
+TEST(InfiniteList, Fibonnacci)
 {
     Alfred::Infinite::InfiniteList<int> l(0);
     l.setNext(1);
 
     l.setNextFunc(Alfred::Infinite::Premade::premade_Fibonnacci);
-    l.get(max);
-    std::cout << l << std::endl;
+    l.get(6);
+
+    auto out = l.extract();
+    auto verif = std::vector<int>({0, 1, 1, 2, 3, 5});
+
+    ASSERT_EQ(verif, out);
 }
