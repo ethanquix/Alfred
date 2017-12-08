@@ -7,10 +7,7 @@
 
 // testEcs.cpp created 02/11/17
 
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-
+#include <gtest/gtest.h>
 #include "AlfredBase/Ecs/Manager.hpp"
 #include "ComponentPosition.hpp"
 
@@ -22,7 +19,7 @@
 //
 
 
-int main()
+TEST(Ecs, First)
 {
     auto e = Alfred::Ecs::Manager::getSingleton().addEntity();
 
@@ -42,7 +39,7 @@ int main()
         Alfred::Ecs::Manager::getSingleton().refresh();
         Alfred::Ecs::Manager::getSingleton().print();
 //        Alfred::Ecs::Manager::getSingleton().getEntityByID(e->getID())->destroy();
-        return (0);
+        return;
     }
-    return (0);
+    return;
 }

@@ -105,6 +105,9 @@ enable_testing()
 file(GLOB TEST_SRC
         ${PROJECT_SOURCE_DIR}/test/*.cpp
         ${PROJECT_SOURCE_DIR}/test/*.hpp
+
+        ${PROJECT_SOURCE_DIR}/test/ecs/*.cpp
+        ${PROJECT_SOURCE_DIR}/test/ecs/*.hpp
         )
 
 add_executable(AlfredBase_TEST ${TEST_SRC})
