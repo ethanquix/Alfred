@@ -79,7 +79,7 @@ namespace Alfred
             const std::string &getDim() const
             { return _dim; }
 
-            const std::vector<T> flatten()
+            const std::vector<T> flatten() const
             {
                 std::vector<T> out;
 
@@ -207,7 +207,7 @@ namespace Alfred
                 return *out;
             };
 
-            const T multiplyDotLineCol(const std::vector<T> &one, const std::vector<T> &two)
+            const T multiplyDotLineCol(const std::vector<T> &one, const std::vector<T> &two) const
             {
                 T out = {};
 
@@ -217,7 +217,45 @@ namespace Alfred
                 return out;
             }
 
-            Matrix &dot(Matrix<T> &other)
+            const T multiplyDotColLine(const std::vector<T> &one, const std::vector<T> &two) const
+            {
+                T out = {};
+
+                for (size_t i = 0; i < _lines; ++i) {
+                    out += one[i] * two[i];
+                }
+                return out;
+            }
+
+            template <typename X>
+            Matrix<T> &dot(const std::vector<X> &other)
+            {
+                auto out = new Matrix<T>(this->getLinesNumber(), 1);
+
+                if (_cols != other.size())
+                    throw MatrixBadShape(_dim, std::to_string(other.size()) + "x1", std::string("dot product"));
+
+                for (size_t i = 0; i < _lines; i++)
+                {
+                    out->set(i, 0, multiplyDotLineCol(getLine(i), other));
+                }
+                return *out;
+            }
+
+            Matrix<T> &dot(T &other)
+            {
+                auto out = new Matrix<T>(this->getLinesNumber(), 1);
+
+                if (_cols != 1)
+                    throw MatrixBadShape(_dim, other.getDim(), std::string("dot product"));
+
+                for (size_t i = 0; i < _lines; i++)
+                        out->set(i, 0, multiplyDotLineCol(getLine(i), other));
+
+                return *out;
+            }
+
+            Matrix<T> &dot(Matrix<T> &other)
             {
                 auto out = new Matrix<T>(this->getLinesNumber(), other.getColsNumber());
 
@@ -261,6 +299,42 @@ namespace Alfred
                 return *this;
             }
 
+            Matrix(const std::vector<T> &x)
+            {
+                _cols = x.size();
+                _lines = 1;
+                _dim = std::to_string(_lines) + "x" + std::to_string(_cols);
+
+                _matrix.resize(1);
+                _matrix[0].resize(x.size());
+
+                size_t i = 0;
+                for (const auto &it : x)
+                {
+                    _matrix[0][i] = it;
+                    i += 1;
+                }
+            }
+
+            Matrix<T> &operator=(const std::vector<T> &x)
+            {
+                _cols = x.size();
+                _lines = 1;
+                _dim = std::to_string(_lines) + "x" + std::to_string(_cols);
+
+                _matrix.resize(1);
+                _matrix[0].resize(x.size());
+
+                size_t i = 0;
+                for (const auto &it : x)
+                {
+                    _matrix[0][i] = it;
+                    i += 1;
+                }
+
+                return *this;
+            }
+
             template <typename X>
             Matrix<T> operator*(X x)
             {
@@ -286,7 +360,19 @@ namespace Alfred
                 return *this;
             }
 
-            Matrix<T> operator+(Matrix<T> x)
+            Matrix<T> operator+(const Matrix<T> &x)
+            {
+                if (getShape() != x.getShape())
+                    throw MatrixBadShape(_dim, x.getDim(), "addition");
+                for (size_t i = 0; i < _lines; ++i) {
+                    for (size_t j = 0; j < _cols; ++j) {
+                        _matrix[i][j] += x.get(i, j);
+                    }
+                }
+                return *this;
+            }
+
+            Matrix<T> operator+=(const Matrix<T> &x)
             {
                 if (getShape() != x.getShape())
                     throw MatrixBadShape(_dim, x.getDim(), "addition");
@@ -368,5 +454,21 @@ namespace Alfred
                 return os;
             }
         }; //Class Matrix
+
+        template <typename T>
+        std::vector<T> dot(const std::vector<T> &v, const Matrix<T> &m)
+        {
+            std::vector<T> out;
+            out.resize(m.getColsNumber());
+
+            if (v.size() != m.getLinesNumber())
+                throw MatrixBadShape(std::to_string(v.size()), m.getDim(), std::string("dot product"));
+
+            for (size_t i = 0; i < m.getColsNumber(); i++)
+            {
+                out[i] = m.multiplyDotColLine(v, m.getCol(i));
+            }
+            return out;
+        }
     }
 } //Namespace Alfred
