@@ -33,11 +33,11 @@ TEST(InfiniteList, Counter)
 
     auto list  = l
         .map_to([] (int x) -> std::string { return std::to_string(x); }, 10)
-        .map([](std::string x) -> std::string { return x + " ième nb"; })
+        .map([](std::string x) -> std::string { return x + " ieme nb"; })
         .end();
 
     auto out = list.extract();
-    auto verif = std::vector<std::string>({"0 ième nb", "1 ième nb", "2 ième nb", "3 ième nb", "4 ième nb", "5 ième nb", "6 ième nb", "7 ième nb"});
+    auto verif = std::vector<std::string>({"0 ieme nb", "1 ieme nb", "2 ieme nb", "3 ieme nb", "4 ieme nb", "5 ieme nb", "6 ieme nb", "7 ieme nb", "8 ieme nb", "9 ieme nb"});
 
     ASSERT_EQ(verif, out);
 }
@@ -52,7 +52,7 @@ TEST(InfiniteList, PrimeNumber)
         .enumerate([](int x) -> bool { return x > 100; });
 
     auto out = l.extract();
-    auto verif = std::vector<int>({0, 1, 2, 3, 5, 7});
+    auto verif = std::vector<int>({ 0, 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 });
 
     ASSERT_EQ(verif, out);
 }
@@ -82,7 +82,7 @@ TEST(InfiniteList, Fibonnacci)
     l.get(6);
 
     auto out = l.extract();
-    auto verif = std::vector<int>({0, 1, 1, 2, 3, 5});
+    auto verif = std::vector<int>({0, 1, 1, 2, 3, 5, 8});
 
     ASSERT_EQ(verif, out);
 }

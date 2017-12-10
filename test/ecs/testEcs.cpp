@@ -19,27 +19,31 @@
 //
 
 
-TEST(Ecs, First)
+TEST(Ecs, ComponentTest)
 {
     auto e = Alfred::Ecs::Manager::getSingleton().addEntity();
 
+    auto eID = e->getID();
     e->addComponent<Component::ComponentPosition>();
     e->addComponent<Component::Acceleration>();
 
     std::cout << "Has component position " << e->hasComponent<Component::ComponentPosition>() << std::endl;
     std::cout << "Has component vector (false) " << e->hasComponent<std::vector<int>>() << std::endl;
-    std::cout << "Has component position " << e->hasComponent<Component::ComponentPosition, Component::Acceleration>() << std::endl;
-    std::cout << "Has component vector (false) " << e->hasComponent<std::vector<int>, Component::ComponentPosition>() << std::endl;
+    std::cout << "Has component position " << e->hasComponent<Component::ComponentPosition, Component::Acceleration>()
+              << std::endl;
+    std::cout << "Has component vector (false) " << e->hasComponent<std::vector<int>, Component::ComponentPosition>()
+              << std::endl;
 
     Alfred::Ecs::Manager::getSingleton().addSystem<System::Movement>();
-    Alfred::Ecs::Manager::getSingleton().print();
+//    Alfred::Ecs::Manager::getSingleton().print();
 
-    while (1) {
-        Alfred::Ecs::Manager::getSingleton().updateSystem<System::Movement>();
-        Alfred::Ecs::Manager::getSingleton().refresh();
-        Alfred::Ecs::Manager::getSingleton().print();
-//        Alfred::Ecs::Manager::getSingleton().getEntityByID(e->getID())->destroy();
-        return;
-    }
+    Alfred::Ecs::Manager::getSingleton().updateSystem<System::Movement>();
+
+    ASSERT_TRUE(Alfred::Ecs::Manager::getSingleton().getEntityByID(eID)->hasComponent<Component::ComponentPosition>());
+    ASSERT_TRUE(Alfred::Ecs::Manager::getSingleton().getEntityByID(eID)->hasComponent<Component::Acceleration>());
+    ASSERT_EQ(Alfred::Ecs::Manager::getSingleton().getEntityByID(eID)->getComponent<Component::ComponentPosition>()._x, 9);
+
+//    Alfred::Ecs::Manager::getSingleton().refresh();
+//    Alfred::Ecs::Manager::getSingleton().print();
     return;
 }

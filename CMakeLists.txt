@@ -45,42 +45,6 @@ set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/
 
 include_directories(src)
 
-
-#--------- TESTS ---------#
-
-#add_executable(test_Timer ${SOURCE_TIMER} test/testTimer.cpp)
-#target_link_libraries(test_Timer Threads::Threads)
-#
-##Disabled (see above)
-##add_executable(test_Promise ${SOURCE_PROMISE} test/testPromise.cpp)
-##target_link_libraries(test_Promise Threads::Threads)
-#
-#add_executable(test_Logger ${SOURCE_LOGGER} test/testLogger.cpp)
-#
-#add_executable(test_Server ${SOURCE_NETWORK} test/testServer.cpp test/testServerClient.hpp)
-#target_link_libraries(test_Server Threads::Threads)
-#if(WIN32)
-#    target_link_libraries(test_Server wsock32 ws2_32)
-#endif()
-#
-#add_executable(test_Client ${SOURCE_NETWORK} test/testClient.cpp test/testClient.hpp)
-#target_link_libraries(test_Client Threads::Threads)
-#if(WIN32)
-#    target_link_libraries(test_Client wsock32 ws2_32)
-#endif()
-#
-#add_executable(test_Math ${SOURCE_MATH} test/testMath.cpp)
-#
-#add_executable(test_InfiniteList ${SOURCE_INFINITE_LIST} test/testInfiniteList.cpp)
-#
-#add_executable(test_EventManager ${SOURCE_EVENT_MANAGER} test/testEventManager.cpp)
-#
-#add_executable(test_Random ${SOURCE_RANDOM} test/testRandom.cpp)
-#
-#add_executable(test_Defer ${SOURCE_UTILS} test/testDefer.cpp src/AlfredBase/Timer/SimpleTimer.hpp)
-#
-#add_executable(test_Ecs ${SOURCE_ECS} test/ecs/testEcs.cpp test/ecs/ComponentPosition.hpp)
-
 #--------- LIBRARY ---------#
 
 add_library(AlfredBase INTERFACE)
@@ -98,22 +62,31 @@ endif()
 
 #--------- TESTING ---------#
 
-add_subdirectory(test/googletest)
+if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
 
-enable_testing()
+    add_subdirectory(test/googletest)
 
-file(GLOB TEST_SRC
-        ${PROJECT_SOURCE_DIR}/test/*.cpp
-        ${PROJECT_SOURCE_DIR}/test/*.hpp
+    enable_testing()
 
-        ${PROJECT_SOURCE_DIR}/test/ecs/*.cpp
-        ${PROJECT_SOURCE_DIR}/test/ecs/*.hpp
-        )
+    file(GLOB TEST_SRC
+            ${PROJECT_SOURCE_DIR}/test/*.cpp
+            ${PROJECT_SOURCE_DIR}/test/*.hpp
 
-add_executable(AlfredBase_TEST ${TEST_SRC})
-#add_executable(AlfredBase_TEST test/testDefer.cpp test/main.cpp)
-target_link_libraries(AlfredBase_TEST AlfredBase gtest)
-add_test(all AlfredBase_TEST)
+            ${PROJECT_SOURCE_DIR}/test/ecs/*.cpp
+            ${PROJECT_SOURCE_DIR}/test/ecs/*.hpp
+            )
+
+    add_executable(AlfredBase_TEST ${TEST_SRC})
+    #add_executable(AlfredBase_TEST test/testDefer.cpp test/main.cpp)
+    target_link_libraries(AlfredBase_TEST AlfredBase gtest)
+    add_test(all AlfredBase_TEST)
+
+else()
+
+    message("No googletest folder found un /test/googletest. Please clone it using submodules")
+
+endif()
+
 
 #--------- INSTALL ---------#
 

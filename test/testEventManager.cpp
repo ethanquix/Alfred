@@ -36,7 +36,6 @@ TEST(EventManager, Return)
         return 2;
     });
 
-    m.fire<void, std::string>("two", "a");
     auto retOfCallback = m.fire<int, int>("test event return", 1);
 
     ASSERT_EQ(ret, 2);
@@ -58,6 +57,10 @@ TEST(EventManager, Call)
     m.listen<void, std::string>("test event call", display);
     m.listen<void, std::string>("test event call", function);
     m.listen<void, std::string>("test event call", [] (std::string x) -> void { display(x); });
+
+    std::string a = "a";
+
+    m.fire<void, std::string>("test event call", a);
 
     ASSERT_EQ(verif, "aaa");
 }

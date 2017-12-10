@@ -35,7 +35,7 @@ namespace Alfred
                 _watchers.push_back(_func);
             }
 
-            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type execute(Params &&... args)
+            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type execute(Params ... args)
             {
                 if constexpr (!std::is_same<void, Ret>::value) {
                     std::vector<Ret> ret;
@@ -77,11 +77,12 @@ namespace Alfred
             }
 
             template <typename Ret, typename ...Args>
-            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type fire(const std::string &name, Args &&... args)
+            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type
+            fire(const std::string &name, const Args... args)
             {
                 if (_events.count(name) <= 0)
                     throw EventDontExist(name);
-                return static_cast<___Event<Ret, Args...> *>(_events[name])->execute(std::forward<Args>(args)...);
+                return static_cast<___Event<Ret, Args...> *>(_events[name])->execute(args...);
             }
 
             template <typename Ret, typename ...Params, typename Fctor>
