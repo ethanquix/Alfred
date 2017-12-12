@@ -22,27 +22,6 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
 endif (MSVC)
 
-set(SOURCE_UTILS src/AlfredBase/Utils/Singleton.hpp src/AlfredBase/Utils/NonCopyable.hpp src/AlfredBase/config.hpp src/AlfredBase/Utils/Defer.hpp src/AlfredBase/Async/AsyncUnorderedMap.hpp src/AlfredBase/Utils/Counter.hpp src/AlfredBase/Utils/MapSingleton.hpp)
-
-set(SOURCE_TIMER ${SOURCE_UTILS} src/AlfredBase/Timer/Timer.hpp)
-
-#/!\ Disabled because need rework (capture during initialization
-#set(SOURCE_PROMISE ${SOURCE_UTILS} src/AlfredBase/Async/Promise.hpp src/AlfredBase/Network/Implem/ServerTCP.hpp)
-
-set(SOURCE_LOGGER ${SOURCE_UTILS} src/AlfredBase/Logger/Logger.hpp)
-
-set(SOURCE_NETWORK ${SOURCE_UTILS} ${SOURCE_LOGGER} ${SOURCE_RANDOM} src/AlfredBase/Network/ISerializer.hpp src/AlfredBase/Network/Serializer/BasicSerializer.hpp src/AlfredBase/Network/IClient.hpp src/AlfredBase/Network/Implem/ClientTCP.hpp src/AlfredBase/Network/AClient.hpp src/AlfredBase/Network/exceptions/BindFailed.hpp src/AlfredBase/Network/IServer.hpp src/AlfredBase/Network/Implem/ServerTCP.hpp src/AlfredBase/Network/AServer.hpp src/AlfredBase/Network/premade/ClientPremade.hpp)
-
-set(SOURCE_MATH ${SOURCE_UTILS} src/AlfredBase/Math/Math.hpp src/AlfredBase/Math/Matrix.hpp src/AlfredBase/Math/MatrixException.hpp src/AlfredBase/Math/Fraction.hpp)
-
-set(SOURCE_INFINITE_LIST ${SOURCE_UTILS} src/AlfredBase/Infinite/InfiniteList.hpp src/AlfredBase/Infinite/premade/InfiniteListPremade.hpp)
-
-set(SOURCE_EVENT_MANAGER ${SOURCE_UTILS} src/AlfredBase/EventManager/EventManagerExceptions.hpp src/AlfredBase/EventManager/EventManager.hpp)
-
-set(SOURCE_RANDOM ${SOURCE_UTILS} src/AlfredBase/Random/Random.hpp)
-
-set(SOURCE_ECS ${SOURCE_UTILS} src/AlfredBase/Ecs/Entity.hpp src/AlfredBase/Ecs/Manager.hpp src/AlfredBase/Ecs/Component.hpp src/AlfredBase/Ecs/EcsCounter.hpp)
-
 include_directories(src)
 
 #--------- LIBRARY ---------#
@@ -77,7 +56,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
             )
 
     add_executable(AlfredBase_TEST ${TEST_SRC})
-    #add_executable(AlfredBase_TEST test/testDefer.cpp test/main.cpp)
     target_link_libraries(AlfredBase_TEST AlfredBase gtest)
     add_test(all AlfredBase_TEST)
 
