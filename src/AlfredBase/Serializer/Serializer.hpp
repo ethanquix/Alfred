@@ -66,7 +66,7 @@ class YOLO : public Alfred::Serializer::ISerializer<Alfred::Serializer::StringSe
   public:
     YOLO()
     {
-        a = "MA STRING";
+        a = "salut";
         b = 42;
         c = 13.37;
     }
@@ -81,6 +81,7 @@ class YOLO : public Alfred::Serializer::ISerializer<Alfred::Serializer::StringSe
     void deserialize(Alfred::Serializer::StringSerializer &storage) override
     {
         a << storage;
+        b << storage;
     }
 
     std::string getX()
