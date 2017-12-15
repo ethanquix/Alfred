@@ -29,6 +29,7 @@ namespace Alfred
 
             auto getAs()
             {
+                __alfred__storage.prepareSerialization();
                 serialize(__alfred__storage);
                 return __alfred__storage.getData();
             }
@@ -55,48 +56,3 @@ namespace Alfred
         };
     }
 }
-
-class YOLO : public Alfred::Serializer::ISerializer<Alfred::Serializer::StringSerializer, YOLO>
-{
-  private:
-    std::string a;
-    int b;
-    float c;
-
-  public:
-    YOLO()
-    {
-        a = "salut";
-        b = 42;
-        c = 13.37;
-    }
-
-    void serialize(Alfred::Serializer::StringSerializer &storage) override
-    {
-        a >> storage;
-        b >> storage;
-        c >> storage;
-    }
-
-    void deserialize(Alfred::Serializer::StringSerializer &storage) override
-    {
-        a << storage;
-        b << storage;
-    }
-
-    std::string getX()
-    {
-        return a;
-    }
-
-    void setX(const std::string &src)
-    {
-        a = src;
-    }
-
-    friend std::ostream &operator<<(std::ostream &os, const YOLO &yolo)
-    {
-        os << "a: " << yolo.a << " b: " << yolo.b << " c: " << yolo.c;
-        return os;
-    }
-};

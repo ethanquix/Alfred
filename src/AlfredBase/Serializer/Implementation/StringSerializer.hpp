@@ -22,6 +22,12 @@ namespace Alfred
             std::string _data;
 
           public:
+            void prepareSerialization()
+            {
+                _data.clear();
+                _cursorPosition = 0;
+            }
+
             std::string &getData()
             {
                 return _data;
@@ -137,17 +143,71 @@ namespace Alfred
             //float
             friend float operator<<(float &input, StringSerializer &storage)
             {
-                throw std::runtime_error("Not yet supported");
+                unsigned long max = storage._data.size();
+                unsigned long i = storage._cursorPosition + 2;
+                unsigned long bckpI = i;
+                int len;
 
-                return {};
+                if (i >= max)
+                    throw std::runtime_error("Corrupt data");
+
+                if (!storage.verifyIdentifier(__SERIALIZER_STRING_IDENTIFIER_FLOAT, i - 2, 2))
+                    throw std::runtime_error("Bad verification code");
+
+                while (i < max && storage._data[i] != ' ') {
+                    i += 1;
+                }
+
+                if (storage._data[i] != ' ')
+                    throw std::runtime_error("Corrupt data");
+
+                len = std::stoi(storage._data.substr(bckpI, i - bckpI));
+
+                if (i + len >= max)
+                    throw std::runtime_error("Corrupt data");
+
+                i += 1;
+
+                storage._cursorPosition = i + len;
+
+                input = std::stof(storage._data.substr(i, len));
+
+                return input;
             }
 
             //double
             friend float operator<<(double &input, StringSerializer &storage)
             {
-                throw std::runtime_error("Not yet supported");
+                unsigned long max = storage._data.size();
+                unsigned long i = storage._cursorPosition + 2;
+                unsigned long bckpI = i;
+                int len;
 
-                return {};
+                if (i >= max)
+                    throw std::runtime_error("Corrupt data");
+
+                if (!storage.verifyIdentifier(__SERIALIZER_STRING_IDENTIFIER_DOUBLE, i - 2, 2))
+                    throw std::runtime_error("Bad verification code");
+
+                while (i < max && storage._data[i] != ' ') {
+                    i += 1;
+                }
+
+                if (storage._data[i] != ' ')
+                    throw std::runtime_error("Corrupt data");
+
+                len = std::stoi(storage._data.substr(bckpI, i - bckpI));
+
+                if (i + len >= max)
+                    throw std::runtime_error("Corrupt data");
+
+                i += 1;
+
+                storage._cursorPosition = i + len;
+
+                input = std::stod(storage._data.substr(i, len));
+
+                return input;
             }
 
             //UTILS

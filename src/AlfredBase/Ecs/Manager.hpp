@@ -40,7 +40,7 @@ namespace Alfred
         class System
         {
           public:
-            Entity *entity;
+            Entity *entity; //vector of entity ?
 
             virtual void update() = 0;
 
