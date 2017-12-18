@@ -12,7 +12,7 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STRICT_ANSI__")
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3 -W -Wall -Wextra -Wno-comment -Wno-unknown-pragmas -Wno-unused-parameter -Wno-ignored-qualifiers")
 
 set(CMAKE_CXX_STANDARD 17)
 

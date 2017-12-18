@@ -214,7 +214,7 @@ namespace Alfred
 
           private:
 
-            const bool verifyIdentifier(const std::string &waitedID, unsigned long start, unsigned long len)
+            const bool verifyIdentifier(const std::string &waitedID, unsigned long start, unsigned long len) const
             {
                 return _data.substr(start, len) == waitedID;
             }

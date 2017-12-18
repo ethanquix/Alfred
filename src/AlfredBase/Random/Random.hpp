@@ -38,5 +38,26 @@ namespace Alfred
             std::uniform_int_distribution<int> uni(min, max);
             return (uni(rng));
         }
+
+        template <typename X, typename Y>
+        static const X rand(Y min, Y max)
+        {
+            std::random_device rd;
+            std::mt19937 rng(rd());
+#pragma warning(disable:4267)
+            std::uniform_int_distribution<X> uni(min, max);
+            return (uni(rng));
+        };
+
+        template <typename X>
+        static const X rand(X min, X max)
+        {
+            std::random_device rd;
+            std::mt19937 rng(rd());
+#pragma warning(disable:4267)
+            std::uniform_int_distribution<X> uni(min, max);
+            return (uni(rng));
+        }
+
     }
 }

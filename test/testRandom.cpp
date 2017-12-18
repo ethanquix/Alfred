@@ -21,3 +21,8 @@ TEST(Random, String)
 
     ASSERT_NE(a, b);
 }
+
+TEST(Random, Int)
+{
+    ASSERT_EQ(Alfred::Random::randint(0, 0), 0);
+}

@@ -34,7 +34,7 @@ namespace Alfred
 #define ECS_MULTIMAP_SINGLETON false
         constexpr static unsigned MAX_COMPONENTS = 64;
         constexpr static unsigned MAX_SYSTEMS = 64;
-        constexpr static unsigned ENTITIES_RESERVED = 1000;
+        constexpr static unsigned ENTITIES_RESERVED = 10000;
     }
 }
 
