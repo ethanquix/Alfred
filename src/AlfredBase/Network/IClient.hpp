@@ -40,11 +40,13 @@ namespace Alfred
         class IClient
         {
           public:
+            //TODO add pipelines
             virtual ~IClient() = default;
             virtual IClient &Connect() = 0;
             virtual IClient &Connect(unsigned port) = 0;
             virtual IClient &Connect(const std::string &ip, unsigned port) = 0;
             virtual IClient &Send(void *msg, unsigned size) = 0;
+            virtual IClient &SendTo(const std::string &ip, int port, void *msg, unsigned size) = 0;
             virtual IClient &Listen() = 0;
             virtual IClient &AsyncListen() = 0;
             virtual IClient &onNewMessage() = 0;

@@ -12,7 +12,7 @@ find_package(Threads REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STRICT_ANSI__")
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3 -W -Wall -Wextra -Wno-comment -Wno-unknown-pragmas -Wno-unused-parameter -Wno-ignored-qualifiers")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG_MODE -g -ggdb -g3 -W -Wall -Wextra -Wno-comment -Wno-unknown-pragmas -Wno-unused-parameter -Wno-ignored-qualifiers -Wno-unused-function")
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -60,9 +60,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
     add_test(all AlfredBase_TEST)
 
 else()
-
     message("No googletest folder found un /test/googletest. Please clone it using submodules")
-
 endif()
 
 
@@ -83,3 +81,10 @@ install(EXPORT AlfredBaseConfig DESTINATION share/AlfredBase/cmake)
 
 # This makes the project importable from the build directory
 export(TARGETS AlfredBase FILE AlfredBaseConfig.cmake)
+
+# TMP TODO DELETE THIS
+add_executable(udpClientTest test/server/udp/TestClientUDP.cpp test/server/udp/TestClientUDP.hpp)
+target_link_libraries(udpClientTest AlfredBase)
+
+add_executable(udpServerTest test/server/udp/TestServerUDP.cpp test/server/udp/TestServerUDP.hpp)
+target_link_libraries(udpServerTest AlfredBase)

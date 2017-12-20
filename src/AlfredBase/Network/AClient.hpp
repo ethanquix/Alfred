@@ -17,7 +17,7 @@ namespace Alfred
             bool _stop;
             unsigned _bufferSize;
 
-            std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a onNewMessage function"); };
+            std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a transferDataCallback function"); };
             std::function<void(const std::string &, unsigned)> _on_disconnect = [](const std::string &, unsigned) { LOG.fatal("You need to set a on disconnect function"); };
 
           public:

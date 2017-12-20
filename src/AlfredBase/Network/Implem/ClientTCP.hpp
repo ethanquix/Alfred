@@ -185,6 +185,7 @@ namespace Alfred
 
                 if (!_isBind)
                     LOG.fatal("You need to call Connect before calling Listen");
+
                 while (!_stop) {
                     FD_ZERO(&_rdfs);
                     FD_SET(_info.fd, &_rdfs);

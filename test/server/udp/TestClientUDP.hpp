@@ -1,16 +1,10 @@
 #pragma once
 
-#include <AlfredBase/Network/Implem/ClientUDP.hpp>
+#include <AlfredBase/Network/Implem/UDP.hpp>
 
-class testClientUDP : public Alfred::Network::ClientUDP
+class testClientUDP : public Alfred::Network::UDP
 {
   public:
-    testClientUDP() : ClientUDP() {
-    }
-
-    IClient &onNewMessage() override
-    {
-        std::cout << "J'ai recu un message" << std::endl;
-        return *this;
+    testClientUDP() : UDP() {
     }
 };
