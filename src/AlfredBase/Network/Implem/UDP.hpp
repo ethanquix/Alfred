@@ -33,7 +33,9 @@ namespace Alfred
         {
           private:
             struct InfoNetwork _info;
+            ClientInfo _udpInfo;
             std::unordered_map<std::string, struct sockaddr_in> _clients;
+
           private:
             void _bind()
             {
@@ -114,22 +116,31 @@ namespace Alfred
 
                 socklen_t fromlen = sizeof(*udpaddrfrom);
 
+                bool pipelinesBool = true;
+
                 while (!_stop)
                 {
                     while ((bytes = recvfrom(_info.fd, message, BUFFER_SIZE, 0, udpaddrfrom, &fromlen)) != 0)
                     {
                         message[bytes] = '\0';
-                        printf("recv: %s\n", message);
 
                         struct sockaddr_in *tmp = (struct sockaddr_in *) udpaddrfrom;
                         std::string ip = inet_ntoa(tmp->sin_addr);
                         int port = ntohs(tmp->sin_port);
 
-                        //TODO BIG PB RECUP IM (port c le client qui l'envoie)
+                        _udpInfo.ip = ip;
+                        _udpInfo.port = port;
 
-                        std::cout << ip << ":" << port << std::endl;
+                        for (const auto &it : _pipelines)
+                            if (!it.second(this, message, bytes)) {
+                                pipelinesBool = false;
+                                break;
+                            }
 
-                        transferData(this, message, bytes);
+                        if (pipelinesBool)
+                            transferData(this, message, bytes);
+
+                        pipelinesBool = true;
                     }
                 }
                 return *this;
@@ -141,9 +152,13 @@ namespace Alfred
                 return *this;
             }
 
+            /**
+             * @brief Get infos about the current received message
+             * @return
+             */
             ClientInfo &getInfos() override
             {
-                return _clientInfo;
+                return _udpInfo;
             }
 
             IClient &onNewMessage() override

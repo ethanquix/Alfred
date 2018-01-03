@@ -22,6 +22,7 @@ namespace Alfred
         constexpr static unsigned MAX_ID = 1000000;
         constexpr static int INDICATOR_DISCONNECT = -1;
         constexpr static unsigned IDENTIFIER_SIZE = 12;
+        constexpr static unsigned AUTH_HEADER_SIZE = 10;
     }
 
     //Random

@@ -57,6 +57,7 @@ namespace Alfred
             virtual IClient &setBufferSize(unsigned) = 0;
             virtual ClientInfo &getInfos() = 0;
             virtual IClient &waitUntilDisconnect() = 0;
+            virtual IClient &addPipeline(const std::string &name, const std::function<bool(IClient *, void *, unsigned)> &) = 0;
         };
     }
 }

@@ -17,6 +17,8 @@ namespace Alfred
             bool _stop;
             unsigned _bufferSize;
 
+            std::vector<std::pair<std::string, std::function<bool(IClient *, void *, unsigned)>>> _pipelines;
+
             std::function<void(IClient *, void *, unsigned)> _onReceived = [](IClient *, void *, unsigned) { LOG.fatal("You need to set a transferDataCallback function"); };
             std::function<void(const std::string &, unsigned)> _on_disconnect = [](const std::string &, unsigned) { LOG.fatal("You need to set a on disconnect function"); };
 
@@ -87,6 +89,12 @@ namespace Alfred
             IClient &setBufferSize(unsigned bufferSize) override
             {
                 _bufferSize = bufferSize;
+                return *this;
+            }
+
+            IClient &addPipeline(const std::string &name, const std::function<bool(IClient *, void *, unsigned)> &function) override
+            {
+                _pipelines.emplace_back(name, function);
                 return *this;
             }
         };
