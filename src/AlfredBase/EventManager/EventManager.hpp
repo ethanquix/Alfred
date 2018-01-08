@@ -14,6 +14,7 @@
 #include <functional>
 #include <vector>
 #include <AlfredBase/Utils/Singleton.hpp>
+#include <AlfredBase/Utils/MakeFinal.hpp>
 #include "AlfredBase/EventManager/EventManagerExceptions.hpp"
 
 #pragma GCC diagnostic ignored "-Wsubobject-linkage"
@@ -22,38 +23,42 @@ namespace Alfred
 {
     namespace EventManager
     {
-        namespace { class ___event_helper {};
-
-        template <typename Ret, typename ...Params>
-        class ___Event : public ___event_helper
+        namespace
         {
-            std::vector<std::function<Ret(Params...)>> _watchers;
-
-          public:
-            void addWatchers(const std::function<Ret(Params...)> &_func)
+            class ___event_helper
             {
-                _watchers.push_back(_func);
-            }
+            };
 
-            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type execute(Params ... args)
+            template <typename Ret, typename ...Params>
+            class ___Event : public ___event_helper
             {
-                if constexpr (!std::is_same<void, Ret>::value) {
-                    std::vector<Ret> ret;
-                    for (const auto &it: _watchers) {
-                        ret.push_back(it(args...));
-                    }
-                    return ret;
+                std::vector<std::function<Ret(Params...)>> _watchers;
+
+              public:
+                void addWatchers(const std::function<Ret(Params...)> &_func)
+                {
+                    _watchers.push_back(_func);
                 }
-                else {
-                    for (const auto &it: _watchers) {
-                        it(args...);
+
+                typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type
+                execute(Params ... args)
+                {
+                    if constexpr (!std::is_same<void, Ret>::value) {
+                        std::vector<Ret> ret;
+                        for (const auto &it: _watchers) {
+                            ret.push_back(it(args...));
+                        }
+                        return ret;
+                    } else {
+                        for (const auto &it: _watchers) {
+                            it(args...);
+                        }
                     }
                 }
-            }
-        };
+            };
         }
 
-        class Manager : public Alfred::Utils::Singleton<Manager>
+        class Manager : public Alfred::Utils::Singleton<Manager>, virtual public Alfred::Utils::MakeFinal<Manager>
         {
             std::unordered_map<std::string, ___event_helper *> _events;
 
