@@ -82,9 +82,9 @@ install(EXPORT AlfredBaseConfig DESTINATION share/AlfredBase/cmake)
 # This makes the project importable from the build directory
 export(TARGETS AlfredBase FILE AlfredBaseConfig.cmake)
 
-# TMP TODO DELETE THIS
-add_executable(udpClientTest test/server/udp/TestClientUDP.cpp test/server/udp/TestClientUDP.hpp)
-target_link_libraries(udpClientTest AlfredBase)
-
-add_executable(udpServerTest test/server/udp/TestServerUDP.cpp test/server/udp/TestServerUDP.hpp)
-target_link_libraries(udpServerTest AlfredBase)
+## TMP TODO DELETE THIS
+#add_executable(udpClientTest test/server/udp/TestClientUDP.cpp test/server/udp/TestClientUDP.hpp)
+#target_link_libraries(udpClientTest AlfredBase)
+#
+#add_executable(udpServerTest test/server/udp/TestServerUDP.cpp test/server/udp/TestServerUDP.hpp)
+#target_link_libraries(udpServerTest AlfredBase)
