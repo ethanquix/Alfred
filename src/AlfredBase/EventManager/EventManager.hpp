@@ -23,6 +23,8 @@ namespace Alfred
 {
     namespace EventManager
     {
+        using EventListener = int;
+
         namespace
         {
             class ___event_helper
@@ -32,28 +34,35 @@ namespace Alfred
             template <typename Ret, typename ...Params>
             class ___Event : public ___event_helper
             {
-                std::vector<std::function<Ret(Params...)>> _watchers;
+                EventListener _loc = 0;
+                std::map<EventListener, std::function<Ret(Params...)>> _watchers;
 
               public:
-                void addWatchers(const std::function<Ret(Params...)> &_func)
+                EventListener addWatchers(const std::function<Ret(Params...)> &_func)
                 {
-                    _watchers.push_back(_func);
+                    _watchers[_loc++] = _func;
+                    return _loc - 1;
                 }
 
-                typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type
+                auto
                 execute(Params ... args)
                 {
                     if constexpr (!std::is_same<void, Ret>::value) {
                         std::vector<Ret> ret;
                         for (const auto &it: _watchers) {
-                            ret.push_back(it(args...));
+                            ret.push_back(it.second(args...));
                         }
                         return ret;
                     } else {
                         for (const auto &it: _watchers) {
-                            it(args...);
+                            it.second(args...);
                         }
                     }
+                }
+
+                void deleteWatcher(const EventListener i)
+                {
+                    _watchers.erase(i);
                 }
             };
         }
@@ -82,7 +91,7 @@ namespace Alfred
             }
 
             template <typename Ret, typename ...Args>
-            typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type
+            auto
             fire(const std::string &name, const Args... args)
             {
                 if (_events.count(name) <= 0)
@@ -91,12 +100,18 @@ namespace Alfred
             }
 
             template <typename Ret, typename ...Params, typename Fctor>
-            void listen(const std::string &name, const Fctor &func)
+            const EventListener listen(const std::string &name, const Fctor &func)
             {
                 if (_events.count(name) <= 0)
                     throw EventDontExist(name);
-                static_cast<___Event<Ret, Params...> *>(_events[name])->addWatchers(func);
+                return static_cast<___Event<Ret, Params...> *>(_events[name])->addWatchers(func);
             }
+
+            template <typename Ret, typename ...Args>
+            void unlisten(const std::string &name, const EventListener listenerID)
+            {
+                static_cast<___Event<Ret, Args...> *>(_events[name])->deleteWatcher(listenerID);
+            };
         };
     }
 }
