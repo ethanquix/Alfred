@@ -64,3 +64,26 @@ TEST(EventManager, Call)
 
     ASSERT_EQ(verif, "aaa");
 }
+
+TEST(EventManager, unlisten)
+{
+    int i = 0;
+    Alfred::EventManager::EventListener listener;
+
+    Alfred::EventManager::Manager m;
+
+    m.addEvent<void, int *>("test unlisten");
+
+    m.listen<void, int *>("test unlisten", [] (int *ii) -> void {
+        *ii += 1;
+    });
+
+    listener = m.listen<void, int *>("test unlisten", [] (int *ii) -> void {
+        *ii += 1;
+    });
+
+    m.unlisten<void, int *>("test unlisten", listener);
+
+    m.fire<void, int *>("test unlisten", &i);
+    ASSERT_EQ(i, 1);
+}
