@@ -1,15 +1,4 @@
-/*
-** NonCopyable.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/NonCopyable.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Thu Jun 01 02:16:43 2017 Dimitri Wyzlic
-** Last update Thu Jun 01 02:16:43 2017 Dimitri Wyzlic
-*/
-
-#ifndef ALFRED_NONCOPYABLE_HPP
-#define ALFRED_NONCOPYABLE_HPP
+#pragma once
 
 namespace Alfred
 {
@@ -31,4 +20,3 @@ namespace Alfred
         };
     }
 }
-#endif //ALFRED_NONCOPYABLE_HPP

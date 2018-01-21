@@ -1,13 +1,3 @@
-/*
-** ClientTCP.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/ClientTCP.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Sep 13 16:13:32 2017 Dimitri Wyzlic
-** Last update Wed Sep 13 16:13:32 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include "AlfredBase/Logger/Logger.hpp"

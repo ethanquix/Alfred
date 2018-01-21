@@ -1,13 +1,3 @@
-/*
-** config.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/config.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Mon Sep 18 01:23:13 2017 Dimitri Wyzlic
-** Last update Mon Sep 18 01:23:13 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 namespace Alfred

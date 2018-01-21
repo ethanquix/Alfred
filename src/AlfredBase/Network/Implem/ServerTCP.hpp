@@ -1,13 +1,3 @@
-/*
-** UnixServer.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/UnixServer.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Fri Sep 08 16:12:28 2017 Dimitri Wyzlic
-** Last update Fri Sep 08 16:12:28 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #ifdef _WIN32

@@ -1,13 +1,3 @@
-/*
-** Timer.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/Timer.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Apr 26 03:17:28 2017 Dimitri Wyzlic
-** Last update Wed Apr 26 03:17:28 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include <chrono>

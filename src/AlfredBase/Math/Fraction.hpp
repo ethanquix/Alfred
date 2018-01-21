@@ -1,13 +1,3 @@
-/*
-** Fraction.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/Fraction.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Tue Sep 05 15:03:54 2017 Dimitri Wyzlic
-** Last update Tue Sep 05 15:03:54 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include <ostream>

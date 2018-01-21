@@ -1,13 +1,3 @@
-/*
-** MatrixException.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/MatrixException.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Thu Aug 31 20:19:02 2017 Dimitri Wyzlic
-** Last update Thu Aug 31 20:19:02 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include <exception>

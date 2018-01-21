@@ -27,7 +27,7 @@ namespace Alfred
             class ___Event : public ___event_helper
             {
                 EventListener _loc = 0;
-                std::map<EventListener, std::function<Ret(Params...)>> _watchers;
+                std::unordered_map<EventListener, std::function<Ret(Params...)>> _watchers;
 
               public:
                 EventListener addWatchers(const std::function<Ret(Params...)> &_func)

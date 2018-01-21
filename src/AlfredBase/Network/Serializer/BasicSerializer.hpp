@@ -1,13 +1,3 @@
-/*
-** BasicSerializer.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/BasicSerializer.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Jul 12 20:21:13 2017 Dimitri Wyzlic
-** Last update Wed Jul 12 20:21:13 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include <ISerializer.hpp>

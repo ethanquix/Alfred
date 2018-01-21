@@ -1,13 +1,3 @@
-/*
-** Matrix.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/Matrix.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Wed Aug 23 20:02:18 2017 Dimitri Wyzlic
-** Last update Wed Aug 23 20:02:18 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include "AlfredBase/Logger/Logger.hpp"

@@ -1,15 +1,4 @@
-/*
-** Singleton.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/Singleton.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Tue May 30 16:08:04 2017 Dimitri Wyzlic
-** Last update Tue May 30 16:08:04 2017 Dimitri Wyzlic
-*/
-
-#ifndef ALFRED_SINGLETON_HPP
-#define ALFRED_SINGLETON_HPP
+#pragma once
 
 #include "NonCopyable.hpp"
 
@@ -33,4 +22,3 @@ namespace Alfred
         };
     }
 }
-#endif //ALFRED_SINGLETON_HPP

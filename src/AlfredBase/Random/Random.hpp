@@ -1,13 +1,3 @@
-/*
-** Random.hpp for Alfred in /home/wyzlic_a/delivery/Alfred/Random.hpp
-**
-** Made by Dimitri Wyzlic
-** Login   <dimitri1.wyzlic@epitech.eu>
-**
-** Started on  Mon Sep 18 01:18:28 2017 Dimitri Wyzlic
-** Last update Mon Sep 18 01:18:28 2017 Dimitri Wyzlic
-*/
-
 #pragma once
 
 #include "AlfredBase/config.hpp"
