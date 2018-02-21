@@ -52,7 +52,8 @@ namespace Alfred
           _onTick(),
           _onEnd(),
           _update([this]() -> bool { return (updateWithoutCallback()); }),
-          _checkpoint()
+          _checkpoint(),
+          _asyncTimer()
         {};
 
         /**
@@ -61,15 +62,16 @@ namespace Alfred
          * @param _onTick Callback called each second. Signature must be std::function<void(const std::string &)> string is the time beautified
          * @param _onEnd Callback called at the end of the time
          */
-        explicit Timer(int max, std::function<void(const std::string &)> _onTick,
-                       std::function<void()> _onEnd = nullptr) :
+        explicit Timer(int max, std::function<void(const std::string &)> onTick,
+                       std::function<void()> onEnd = nullptr) :
           _max(max),
           precTime(-1),
           timeStart(),
-          _onTick(std::move(_onTick)),
-          _onEnd(std::move(_onEnd)),
+          _onTick(std::move(onTick)),
+          _onEnd(std::move(onEnd)),
           _update([this]() -> bool { return (updateWithCallback()); }),
-          _checkpoint()
+          _checkpoint(),
+          _asyncTimer()
         {};
 
         /**
