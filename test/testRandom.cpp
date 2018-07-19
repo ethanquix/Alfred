@@ -26,3 +26,16 @@ TEST(Random, Int)
 {
     ASSERT_EQ(Alfred::Random::randint(0, 0), 0);
 }
+
+TEST(Random, TrueRandom)
+{
+    auto a = Alfred::Random::randint(0, 1000000);
+    auto b = Alfred::Random::randint(0, 1000000);
+    auto c = Alfred::Random::randint(0, 1000000);
+    auto d = Alfred::Random::randint(0, 1000000);
+
+    ASSERT_NE(a, b);
+    ASSERT_NE(b, c);
+    ASSERT_NE(c, d);
+    ASSERT_NE(d, a);
+}

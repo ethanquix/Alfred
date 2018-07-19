@@ -28,6 +28,21 @@ namespace Alfred
 
         class Manager;
 
+        class SystemDontExist : public std::exception
+        {
+            std::string message;
+        public:
+            SystemDontExist(const std::string& msg)
+                : message(std::string("Error trying to access bad system: ") + msg)
+            {}
+
+            const char* what() const throw() override
+            {
+                return message.c_str();
+            }
+
+        };
+
         class System
         {
           public:
@@ -128,11 +143,11 @@ namespace Alfred
 
             void print()
             {
-                LOG.log("Entities: ");
+                LOG_DEBUG << "Entities: " << LOG_ENDL;
                 for (auto &it: _entities)
                     it.print();
 
-                LOG.log("Systems: ");
+                LOG_DEBUG << "Systems: " << LOG_ENDL;
                 for (auto &it: _system)
                     it->print();
             }
@@ -141,8 +156,7 @@ namespace Alfred
             void updateSystem()
             {
                 if (_systemBitSet[getSystemTypeID<T>()] == 0)
-                    std::cout << "ERROR TRYING TO ACCESS BAD SYSTEM"
-                              << std::endl; //TODO replace this by custom exception
+                    throw SystemDontExist("don't exist");
                 auto ptr(_systemArray[getSystemTypeID<T>()]);
                 ptr->update();
             }

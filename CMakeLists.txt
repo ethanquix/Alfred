@@ -60,9 +60,13 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
     add_test(all AlfredBase_TEST)
 
 else()
-    message("No googletest folder found un /test/googletest. Please clone it using submodules")
+    message("No googletest folder found in /test/googletest. Please clone it using submodules")
 endif()
 
+#--------- EXAMPLES ---------#
+
+add_executable(example_InfiniteList_PrimeNumber examples/InfiniteList/example_InfiniteList_PrimeNumber.cpp)
+target_link_libraries(example_InfiniteList_PrimeNumber AlfredBase gtest)
 
 #--------- INSTALL ---------#
 

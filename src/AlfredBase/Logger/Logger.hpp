@@ -1,153 +1,245 @@
 #pragma once
 
-#include <iostream>
-#include <chrono>
-#include <sstream>
+#include <string>
+#include <future>
+#include <fstream>
 #include <iomanip>
-#include <map>
-#include <cassert>
+#include <sstream>
+#include <iostream>
 #include "AlfredBase/Utils/Singleton.hpp"
 
-#pragma warning(disable:4996)
+static constexpr bool ENABLE_LOGGER = true;
+static constexpr bool DEBUG = true;
+
+enum __CONSOLE_LOG_ENUM
+{
+    CONSOLE_LOG = 0,
+};
+
+#define LOG_SET_CONSOLE Alfred::Logger::get().setOutput(CONSOLE_LOG)
+#define LOG_SET_FILE(path) Alfred::Logger::get().setOutput(path)
+#define LOG_ENABLE_DEBUG Alfred::Logger::get().setDebug(true)
+#define LOG_DISABLE_DEBUG Alfred::Logger::get().setDebug(false)
+#define LOG_DEBUG Alfred::Logger::get().debug(__FUNCTION__, __FILE__, __LINE__)
+#define LOG_SUCCESS Alfred::Logger::get().success(__FUNCTION__, __FILE__, __LINE__)
+#define LOG_INFO Alfred::Logger::get().info(__FUNCTION__, __FILE__, __LINE__)
+#define LOG_WARNING Alfred::Logger::get().warning(__FUNCTION__, __FILE__, __LINE__)
+#define LOG_ERROR Alfred::Logger::get().error(__FUNCTION__, __FILE__, __LINE__)
+#define LOG_FATAL Alfred::Logger::get().fatal(__FUNCTION__, __FILE__, __LINE__)
+//#define LOG_ENDL Logger::get().end()
+#define LOG_ENDL Alfred::Logger::get().log_endl()
+
+static constexpr char DEFAULT_LOG_FILENAME[] = "log_default.log";
+static constexpr char DEFAULT_LOG_TIME_FORMAT[] = "%Hh%M:%S";
+
+class NullBuffer : public std::streambuf
+{
+public:
+    int overflow(int c)
+    { return c; }
+};
 
 namespace Alfred
 {
-    class LoggerFatal : public std::exception
+    class LoggerFatal: public std::exception
     {
-        std::string msg;
+        std::string message;
     public:
-        LoggerFatal(const std::string &msg) :
-            msg(std::string("Fatal Error: ") + msg)
+        LoggerFatal(const std::string& msg)
+            : message(msg)
         {}
 
-        virtual const char *what() const throw()
-        { return msg.c_str(); }
+        const char* what() const throw() override
+        {
+            return message.c_str();
+        }
+
     };
 
     class Logger : public Utils::Singleton<Logger>
     {
-        //Var
     private:
-        std::map<std::string, std::pair<std::clock_t, std::string>> _timers;
-
-    public:
-        enum level
-        {
-            LOG_DEBUG = 0,
-            LOG_INFO,
-            LOG_WARNING,
-            LOG_ERROR,
-            LOG_FATAL
-        };
+        bool _is_fatal = false;
+        std::ostream *_stream;
+        std::ostream _nullStream;
+        std::ostream *_coutStream;
+        std::string _fileName;
+        NullBuffer null_buffer;
+        std::string _dateFormat = DEFAULT_LOG_TIME_FORMAT;
+        bool _isDebug = DEBUG;
+        bool _is_prev_debug = false;
 
     private:
-        std::string getTime()
+
+        const std::string getTime()
         {
+            if (!ENABLE_LOGGER) {
+                return "";
+            }
             auto in_time_t = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
             std::stringstream ss;
-            ss << std::put_time(std::localtime(&in_time_t), "%X");
-            return std::string("[" + ss.str() + "] ");
-        }
 
-        template <typename T>
-        constexpr void log_format(const std::string &begin, const std::string &color, T str)
-        {
-            std::cerr << color
-                      << begin << getTime()
-                      << str
-                      << std::string("\033[0m") << std::endl;
-            std::flush(std::cerr);
+            ss << std::put_time(std::localtime(&in_time_t), _dateFormat.c_str());
+
+            return ss.str();
         }
 
     public:
 
-        template <typename T>
-        inline void log(T str)
+        std::string log_endl()
         {
-            std::cerr << "INFO - " << getTime() << str << std::endl;
-            std::flush(std::cerr);
+            if (_is_prev_debug && !_isDebug) {
+                _is_prev_debug = false;
+                return "";
+            }
+
+            _is_prev_debug = false;
+
+            *_stream << "\033[0m\n" << std::flush;
+
+            if (_is_fatal)
+                throw LoggerFatal("LOG_FATAL Called");
+
+            return "";
         }
 
-        template <typename T>
-        inline void info(T str)
-        {
-            std::cerr << "INFO - " << getTime() << str << std::endl;
-            std::flush(std::cerr);
-        }
+        Logger(const Logger &) = delete;
+        auto operator=(const Logger &) = delete;
 
-        template <typename T>
-        void log(level level, T str)
+        Logger() :
+            _stream((new std::ofstream(DEFAULT_LOG_FILENAME, std::ios_base::out | std::ios_base::trunc))),
+            _nullStream(&null_buffer),
+            _coutStream(&std::cout),
+            _fileName(DEFAULT_LOG_FILENAME),
+            null_buffer()
         {
-            switch (level) {
-#if DEBUG_MODE
-                case LOG_DEBUG:
-                    log_format("DEBUG - ", "\033[34m", str);
-                    break;
-#endif
-                default:
-		  break;
-                case LOG_INFO:
-                    log(str);
-                    break;
-                case LOG_WARNING:
-                    log_format("WARNING - ", "\033[33m", str);
-                    break;
-                case LOG_ERROR:
-                    log_format("ERROR - ", "\033[31m", str);
-                    break;
-                case LOG_FATAL:
-                    log_format("FATAL - ", "\033[1;4;31m", str);
-                    throw LoggerFatal(str);
-                    break;
+            if (!ENABLE_LOGGER) {
+                _stream->setstate(std::ios_base::badbit);
             }
         }
 
-        template <typename T>
-        void error(T str)
+        explicit Logger(const std::string &fileName) :
+            _stream((new std::ofstream(fileName.c_str(), std::ios::trunc))),
+            _nullStream(&null_buffer),
+            _coutStream(&std::cout),
+            _fileName(fileName),
+            null_buffer()
         {
-            log_format("ERROR - ", "\033[31m", str);
+            if (!ENABLE_LOGGER) {
+                _stream->setstate(std::ios_base::badbit);
+            }
         }
 
-        template <typename T>
-        void warning(T str)
+        explicit Logger(const __CONSOLE_LOG_ENUM console) :
+            _stream(&std::cout),
+            _nullStream(&null_buffer),
+            _coutStream(&std::cout),
+            _fileName("console output"),
+            null_buffer()
         {
-            log_format("WARNING - ", "\033[33m", str);
+            if (!ENABLE_LOGGER) {
+                _stream->setstate(std::ios_base::badbit);
+            }
+            (void)console;
         }
 
-        template <typename T>
-        void debug(T str)
+        virtual ~Logger()
         {
-#if DEBUG_MODE
-            log_format("DEBUG - ", "\033[34m", str);
-#endif
         }
 
-        template <typename T>
-        void fatal(T str)
+        void setTimeFormat(const std::string &format)
         {
-            log_format("FATAL - ", "\033[1;4;31m", str);
-            throw LoggerFatal(str);
+            _dateFormat = format;
         }
 
-        void timer_start(const std::string &name, const std::string &desc = "")
+        void setOutput(const __CONSOLE_LOG_ENUM console)
         {
-            _timers[name].first = std::clock();
-            _timers[name].second = desc;
+            (void)console;
+            _fileName = "console output";
+            _stream = _coutStream;
         }
 
-        double timer_fire(const std::string &name)
+        void setOutput(const std::string &filename)
         {
-            //This key don't exist
-            assert(_timers.count(name) == 1);
-            double elapsed = (double(std::clock() - _timers[name].first) / double(CLOCKS_PER_SEC));
-            std::cerr << "TIMER - " << getTime() << name << "\t" << _timers[name].second << ": " << int(elapsed * 1000)
-                      << "ms" << std::endl;
-            std::flush(std::cerr);
-            _timers.erase(name);
-            return elapsed;
+            _fileName = filename;
+            _stream = new std::ofstream(filename.c_str(), std::ios::trunc);
         }
-    }; //Logger Class
-} //Alfred Namespace
 
-#define LOG Alfred::Logger::getSingleton()
+        void setOutput()
+        {
+            _fileName = DEFAULT_LOG_FILENAME;
+            _stream = new std::ofstream(DEFAULT_LOG_FILENAME, std::ios::trunc);
+        }
+
+        void setDebug(bool src)
+        {
+            _isDebug = src;
+        }
+
+        std::ostream &debug(const std::string &funcName, const std::string &file, int line)
+        {
+            _is_prev_debug = true;
+
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            if (_isDebug) {
+                *_stream << "[DEBUG] " << getTime() << " - " << funcName << " in " << file << ":" << line << " - ";
+                return *_stream;
+            } else {
+                return _nullStream;
+            }
+        }
+
+        std::ostream &info(const std::string &funcName, const std::string &file, int line)
+        {
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            *_stream << "\033[0m[INFO] " << getTime() << " - " << funcName << " in " << file << ":" << line << " - ";
+            return *_stream;
+        }
+
+        std::ostream &success(const std::string &funcName, const std::string &file, int line)
+        {
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            *_stream << "\033[92m[SUCCESS] " << getTime() << " - " << funcName << " in " << file << ":" << line
+                     << " - ";
+            return *_stream;
+        }
+
+        std::ostream &warning(const std::string &funcName, const std::string &file, int line)
+        {
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            (*_stream) << "\033[0m\033[33m[WARNING] " << getTime() << " - " << funcName << " in " << file << ":" << line
+                       << " - ";
+            return (*_stream);
+        }
+
+        std::ostream &error(const std::string &funcName, const std::string &file, int line)
+        {
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            *_stream << "\033[0m\033[31m[ERROR] " << getTime() << " - " << funcName << " in " << file << ":" << line
+                     << " - ";
+            return *_stream;
+        }
+
+        std::ostream &fatal(const std::string &funcName, const std::string &file, int line)
+        {
+            _is_fatal = true;
+            if (!ENABLE_LOGGER) {
+                return *_stream;
+            }
+            *_stream << "\033[0m\033[1;4;31m[FATAL] " << getTime() << " - " << funcName << " in " << file << ":" << line
+                     << " - ";
+            return *_stream;
+        }
+    };
+}

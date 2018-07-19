@@ -27,7 +27,7 @@ namespace Component
 
         void print() override
         {
-            LOG.log("\t\tPosition " + std::to_string(_x) + " " + std::to_string(_y));
+            LOG_DEBUG << "\t\tPosition " << _x << " " << _y << LOG_ENDL;
         }
     };
 
@@ -43,7 +43,7 @@ namespace Component
 
         void print() override
         {
-            LOG.log("\t\tAcceleration " + std::to_string(_grav));
+            LOG_DEBUG << "\t\tAcceleration " << _grav << LOG_ENDL;
         }
     };
 }
@@ -63,7 +63,7 @@ namespace System
 
         void print() override
         {
-            LOG.log("\t\tMovement system");
+            LOG_DEBUG << "\t\tMovement system" << LOG_ENDL;
         }
     };
 }

@@ -104,11 +104,11 @@ namespace Alfred
 
                 if constexpr (std::is_same<Ret, void>::value) {
                     static_cast<___Event<Ret, Args...> *>(_events[name])->execute(args...);
-                    _eventsMutex.unlock();
+                    _eventsMutex.unlock(); // TODO deadlock if event in event
                     return;
                 } else {
                     std::vector<Ret> ret = static_cast<___Event<Ret, Args...> *>(_events[name])->execute(args...);
-                    _eventsMutex.unlock();
+                    _eventsMutex.unlock(); // TODO deadlock if event in event
                     return ret;
                 }
             }

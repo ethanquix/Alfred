@@ -9,6 +9,21 @@ namespace Alfred
     {
         class Component;
 
+        class ComponentDontExist : public std::exception
+        {
+            std::string message;
+        public:
+            ComponentDontExist(const std::string& msg)
+                : message(std::string("Error trying to access bad component: ") + msg)
+            {}
+
+            const char* what() const throw() override
+            {
+                return message.c_str();
+            }
+
+        };
+
         class Entity
         {
           private:
@@ -37,8 +52,8 @@ namespace Alfred
 
             void print()
             {
-                LOG.log("\tID: " + std::to_string(_idx));
-                LOG.log("\t\tComponents: ");
+                LOG_DEBUG << "\tID: " << _idx << LOG_ENDL;
+                LOG_DEBUG << "\t\tComponents: " << LOG_ENDL;
                 for (auto &c : _components)
                 {
                     c->print();
@@ -103,8 +118,7 @@ namespace Alfred
             T &getComponent() const
             {
                 if (_componentBitSet[getComponentTypeID<T>()] == 0)
-                    std::cout << "ERROR TRYING TO ACCESS BAD COMPONENT"
-                              << std::endl; //TODO replace this by custom exception
+                    throw ComponentDontExist("don't exist");
                 auto ptr(_componentArray[getComponentTypeID<T>()]);
                 return *static_cast<T *>(ptr);
             }

@@ -13,17 +13,17 @@
 
 TEST(Logger, Exception)
 {
-    LOG.log("log");
-    LOG.log(Alfred::Logger::LOG_DEBUG, "debug");
-    LOG.log(Alfred::Logger::LOG_INFO, "info");
-    LOG.log(Alfred::Logger::LOG_WARNING, "warning");
-    LOG.log(Alfred::Logger::LOG_ERROR, "error");
+    LOG_SET_CONSOLE;
+    LOG_INFO << "info" << LOG_ENDL;
+    LOG_DEBUG << "debug" << LOG_ENDL;
+    LOG_WARNING <<"warning" << LOG_ENDL;
+    LOG_ERROR << "error" << LOG_ENDL;
 
-    ASSERT_THROW(LOG.log(Alfred::Logger::LOG_FATAL, "fatal"), Alfred::LoggerFatal);
+    ASSERT_THROW(LOG_FATAL << "fatal" << LOG_ENDL, Alfred::LoggerFatal);
 }
 
-TEST(Logger, Timer)
-{
-    LOG.timer_start("yop", "il sert a rien");
-    LOG.timer_fire("yop");
-}
+//TEST(Logger, Timer)
+//{
+//    LOG.timer_start("yop", "il sert a rien");
+//    LOG.timer_fire("yop");
+//}

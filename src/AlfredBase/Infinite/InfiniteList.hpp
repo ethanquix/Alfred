@@ -27,6 +27,17 @@ namespace Alfred
             ILO_FILTER
         };
 
+        /**
+         * @brief InfiniteList does something
+         * @tparam T type of element contained in the list
+         * @details I have something more long winded to say about it.  See example
+         * \rst
+         * .. note::
+         *   C UNE NOTE
+         * \endrst
+         * in examplefile.cs: \example example_InfiniteList_PrimeNumber.cpp
+         * This was an example
+         */
         template <typename T>
         class InfiniteList
         {
