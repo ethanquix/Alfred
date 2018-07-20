@@ -66,7 +66,10 @@ endif()
 #--------- EXAMPLES ---------#
 
 add_executable(example_InfiniteList_PrimeNumber examples/InfiniteList/example_InfiniteList_PrimeNumber.cpp)
-target_link_libraries(example_InfiniteList_PrimeNumber AlfredBase gtest)
+target_link_libraries(example_InfiniteList_PrimeNumber AlfredBase)
+
+add_executable(example_Partial examples/Function/example_Partial.cpp)
+target_link_libraries(example_Partial AlfredBase)
 
 #--------- INSTALL ---------#
 
