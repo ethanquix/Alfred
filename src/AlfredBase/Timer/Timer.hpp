@@ -8,6 +8,8 @@
 #include <cassert>
 #include <thread>
 
+//TODO onTick set tick Duration
+
 namespace Alfred
 {
   namespace Time
@@ -100,31 +102,31 @@ namespace Alfred
         /*
          * Start the timer
          */
-        void start()
+        void setup()
         {
           assert(_max > 0 && "Alfred - Timer: You have not set time before calling start (timer.setTime)");
           timeStart = std::chrono::system_clock::now();
           precTime = -1;
         }
 
-        void asyncStart()
+        void run(bool async= false)
         {
-          _asyncTimer = new std::thread([this]() {
-            this->start();
-            this->run();
-          });
-        }
-
-        void run()
-        {
-          while (this->update());
+            if (async) {
+                _asyncTimer = new std::thread([this]() {
+                    while (this->update());
+                });
+            } else
+                while (this->update());
         }
 
         /*
          * Restart the timer
          */
-        void restart()
-        { start(); };
+        void restart(bool async= false)
+        {
+            setup();
+            run(async);
+        };
 
         /**
          * Update the timer

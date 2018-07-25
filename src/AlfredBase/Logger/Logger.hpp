@@ -18,6 +18,7 @@ enum __CONSOLE_LOG_ENUM
 
 #define LOG_SET_CONSOLE Alfred::Logger::get().setOutput(CONSOLE_LOG)
 #define LOG_SET_FILE(path) Alfred::Logger::get().setOutput(path)
+#define LOG_SET_FORMAT(format) Alfred::Logger::get().setTimeFormat(format)
 #define LOG_ENABLE_DEBUG Alfred::Logger::get().setDebug(true)
 #define LOG_DISABLE_DEBUG Alfred::Logger::get().setDebug(false)
 #define LOG_DEBUG Alfred::Logger::get().debug(__FUNCTION__, __FILE__, __LINE__)

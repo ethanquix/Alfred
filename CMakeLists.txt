@@ -71,6 +71,27 @@ target_link_libraries(example_InfiniteList_PrimeNumber AlfredBase)
 add_executable(example_Partial examples/Function/example_Partial.cpp)
 target_link_libraries(example_Partial AlfredBase)
 
+add_executable(example_Defer examples/Utils/example_Defer.cpp)
+target_link_libraries(example_Defer AlfredBase)
+
+add_executable(example_Counter examples/Utils/example_Counter.cpp)
+target_link_libraries(example_Counter AlfredBase)
+
+add_executable(example_DynamicLibrary examples/Utils/example_DynamicLibrary.cpp)
+target_link_libraries(example_DynamicLibrary AlfredBase)
+
+add_executable(example_EventManager examples/EventManager/example_EventManager.cpp)
+target_link_libraries(example_EventManager AlfredBase)
+
+add_executable(example_Logger examples/Logger/example_Logger.cpp)
+target_link_libraries(example_Logger AlfredBase)
+
+add_executable(example_Timer_SimpleTimer examples/Timer/example_Timer_SimpleTimer.cpp)
+target_link_libraries(example_Timer_SimpleTimer AlfredBase)
+
+add_executable(example_Timer_Timer examples/Timer/example_Timer_Timer.cpp)
+target_link_libraries(example_Timer_Timer AlfredBase)
+
 #--------- INSTALL ---------#
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
