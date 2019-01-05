@@ -32,7 +32,7 @@ int main()
     auto b = Ennemy("air");
     auto c = Ennemy("ground");
 
-    Alfred::EventManager::Manager::get().addEvent("player hit");
+    Alfred::EventManager::Manager::get().addEvent<void>("player hit");
 
     std::vector<int> damages = Alfred::EventManager::Manager::get().fire<int>("ennemy attack", "air");
 

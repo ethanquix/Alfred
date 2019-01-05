@@ -4,9 +4,10 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <mutex>
 #include <AlfredBase/Utils/Singleton.hpp>
 #include <AlfredBase/Utils/MakeFinal.hpp>
-#include <mutex>
+#include <ostream>
 #include "AlfredBase/EventManager/EventManagerExceptions.hpp"
 
 #pragma GCC diagnostic ignored "-Wsubobject-linkage"
@@ -21,6 +22,8 @@ namespace Alfred
         {
             class ___event_helper
             {
+              public:
+                virtual std::string str() = 0;
             };
 
             template <typename Ret, typename ...Params>
@@ -30,6 +33,16 @@ namespace Alfred
                 std::unordered_map<EventListener, std::function<Ret(Params...)>> _watchers;
 
               public:
+
+                ___Event() :
+                _watchers()
+                {}
+
+                virtual ~___Event()
+                {
+                  _watchers.clear();
+                }
+
                 EventListener addWatchers(const std::function<Ret(Params...)> &_func)
                 {
                     _watchers[_loc] = _func;
@@ -57,58 +70,78 @@ namespace Alfred
                 {
                     _watchers.erase(i);
                 }
+
+                std::string str() override
+                {
+                  std::string out = std::to_string(_watchers.size());
+
+                  return out;
+                }
             };
         }
 
         class Manager : public Alfred::Utils::Singleton<Manager>, virtual public Alfred::Utils::MakeFinal<Manager>
         {
-            std::mutex _eventsMutex;
+            std::recursive_mutex _mutex;
             std::unordered_map<std::string, ___event_helper *> _events;
+            std::unordered_map<std::string, int> _counter;
+
+          public:
+            Manager() :
+            _events(),
+            _counter()
+            {
+            }
+
+            ~Manager() override
+            {
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
+              for (const auto &e : _events)
+                delete e.second;
+            }
 
           public:
             template <typename Ret, typename ...Params>
             void addEvent(const std::string &name)
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 if (_events.count(name) > 0) {
-                    _eventsMutex.unlock();
                     throw EventNameExist(name);
                 }
+
+              _counter[name] = 0;
+
                 _events[name] = new ___Event<Ret, Params...>();
-                _eventsMutex.unlock();
             }
 
             void deleteEvent(const std::string &name)
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 _events.erase(name);
-                _eventsMutex.unlock();
             }
 
             void clear()
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 _events.clear();
-                _eventsMutex.unlock();
             }
 
             template <typename Ret, typename ...Args>
             typename std::conditional<std::is_same<Ret, void>::value, void, std::vector<Ret>>::type
             fire(const std::string &name, const Args... args)
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 if (_events.count(name) <= 0) {
-                    _eventsMutex.unlock();
                     throw EventDontExist(name);
                 }
 
+                _counter[name] += 1;
+
                 if constexpr (std::is_same<Ret, void>::value) {
                     static_cast<___Event<Ret, Args...> *>(_events[name])->execute(args...);
-                    _eventsMutex.unlock(); // TODO deadlock if event in event
                     return;
                 } else {
                     std::vector<Ret> ret = static_cast<___Event<Ret, Args...> *>(_events[name])->execute(args...);
-                    _eventsMutex.unlock(); // TODO deadlock if event in event
                     return ret;
                 }
             }
@@ -116,25 +149,33 @@ namespace Alfred
             template <typename Ret, typename ...Params, typename Fctor>
             const EventListener listen(const std::string &name, const Fctor &func)
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 if (_events.count(name) <= 0) {
-                    _eventsMutex.unlock();
-                    throw EventDontExist(name);
+                    addEvent<Ret>(name);
+//                    throw EventDontExist(name);
                 }
                 EventListener ret = static_cast<___Event<Ret, Params...> *>(_events[name])->addWatchers(func);
-                _eventsMutex.unlock();
                 return ret;
             }
 
             template <typename Ret, typename ...Args>
             void unlisten(const std::string &name, const EventListener listenerID)
             {
-                _eventsMutex.lock();
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
                 static_cast<___Event<Ret, Args...> *>(_events[name])->deleteWatcher(listenerID);
-                _eventsMutex.unlock();
             };
+
+            std::string str()
+            {
+              std::string out = "Events:\n";
+              std::lock_guard<std::recursive_mutex> lock(_mutex);
+
+              for (const auto &e : _events) {
+                out += "- " + e.first + "\t- fired " + std::to_string(_counter[e.first]) + " times - [";
+                out += e.second->str() + "]\n";
+              }
+              return out;
+            }
         };
     }
 }
-
-
