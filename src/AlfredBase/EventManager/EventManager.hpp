@@ -132,7 +132,15 @@ namespace Alfred
             {
               std::lock_guard<std::recursive_mutex> lock(_mutex);
                 if (_events.count(name) <= 0) {
-                    throw EventDontExist(name);
+                  if constexpr (std::is_same<Ret, void>::value) {
+                    return;
+                  }
+                  else
+                    {
+                      std::vector<Ret> ret{};
+                      return ret;
+                    }
+//                    throw EventDontExist(name);
                 }
 
                 _counter[name] += 1;
