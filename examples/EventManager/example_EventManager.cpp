@@ -5,38 +5,44 @@
 
 class Ennemy
 {
-private:
+  private:
+    Alfred::EventManager::Manager &_manager;
     int _damage = 2;
     std::string name;
 
-public:
-    Ennemy(std::string name)
+  public:
+    Ennemy(std::string name, Alfred::EventManager::Manager &manager) :
+      _manager(manager)
     {
-        this->name = std::move(name);
+      this->name = std::move(name);
 
-        Alfred::EventManager::Manager::get().listen<int, std::string>("ennemy attack", [&] (std::string name) -> int {
-            if (name == this->name)
-            {
-                std::cout << "I have touched the player, doing " << _damage << "damages" << std::endl;
-                return _damage;
-            }
-            else
-                return 0;
-        });
+      _manager.listen<int, std::string>("ennemy attack", [&](std::string name) -> int {
+        if (name == this->name) {
+          std::cout << "I have touched the player, doing " << _damage << "damages" << std::endl;
+          return _damage;
+        } else
+          return 0;
+      });
     }
 };
 
 int main()
 {
-    auto a = Ennemy("air");
-    auto b = Ennemy("air");
-    auto c = Ennemy("ground");
+  Alfred::EventManager::Manager em;
 
-    Alfred::EventManager::Manager::get().addEvent<void>("player hit");
+  em.addEvent<int, std::string>("ennemy attack");
 
-    std::vector<int> damages = Alfred::EventManager::Manager::get().fire<int>("ennemy attack", "air");
+  auto a = Ennemy("air", em);
+  auto b = Ennemy("air", em);
+  auto c = Ennemy("ground", em);
 
-    std::cout << "Sum of damages is " << std::accumulate(damages.begin(), damages.end(), 0) << std::endl; // 4
+  std::vector<int> damages = em.fireAndReturn<int, std::string>("ennemy attack", "air");
 
-    return 0;
+  std::cout << "Sum of damages is " << std::accumulate(damages.begin(), damages.end(), 0) << std::endl; // 4
+
+  em.listen<void>("test void", [] () { std::cout << "Test void return is successfull" << std::endl; });
+
+  em.fire<void>("test void");
+
+  return 0;
 }
