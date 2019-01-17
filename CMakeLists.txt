@@ -28,7 +28,7 @@ include_directories(src)
 
 add_library(AlfredBase INTERFACE)
 
-target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/AlfredBase> $<INSTALL_INTERFACE:src/>)
+target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/> $<INSTALL_INTERFACE:src/>)
 
 target_link_libraries(AlfredBase INTERFACE Threads::Threads)
 
