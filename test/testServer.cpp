@@ -9,9 +9,9 @@
 //*/
 //
 //#include <vector>
-//#include "AlfredBase/Network/Implem/ServerTCP.hpp"
+//#include "Alfred/Network/Implem/ServerTCP.hpp"
 //#include "testServerClient.hpp"
-//#include "AlfredBase/Network/premade/ClientPremade.hpp"
+//#include "Alfred/Network/premade/ClientPremade.hpp"
 //
 //int main()
 //{

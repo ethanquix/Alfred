@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "AlfredBase/Ecs/Manager.hpp"
+#include "Alfred/Ecs/Manager.hpp"
 
 namespace Component
 {

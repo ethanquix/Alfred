@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "AlfredBase/Serializer/Implementation/StringSerializer.hpp"
+#include "Alfred/Serializer/Implementation/StringSerializer.hpp"
 
 
 class TestSerializerClass : public Alfred::Serializer::ISerializer<Alfred::Serializer::StringSerializer, TestSerializerClass>

@@ -1,4 +1,4 @@
-#include <AlfredBase/Utils/DynamicLibrary.hpp>
+#include <Alfred/Utils/DynamicLibrary.hpp>
 
 int main()
 {

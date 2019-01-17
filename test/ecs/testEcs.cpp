@@ -8,7 +8,7 @@
 // testEcs.cpp created 02/11/17
 
 #include <gtest/gtest.h>
-#include "AlfredBase/Ecs/Manager.hpp"
+#include "Alfred/Ecs/Manager.hpp"
 #include "ComponentPosition.hpp"
 
 // TODO IDEA

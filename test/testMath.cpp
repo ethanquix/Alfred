@@ -9,7 +9,7 @@
 */
 
 #include <gtest/gtest.h>
-#include "AlfredBase/Math/Math.hpp"
+#include "Alfred/Math/Math.hpp"
 
 TEST(Math, Matrix)
 {

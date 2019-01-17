@@ -9,7 +9,7 @@
 */
 
 #include <gtest/gtest.h>
-#include "AlfredBase/Random/Random.hpp"
+#include "Alfred/Random/Random.hpp"
 
 TEST(Random, String)
 {

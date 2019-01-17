@@ -1,4 +1,4 @@
-#include <AlfredBase/Utils/Counter.hpp>
+#include <Alfred/Utils/Counter.hpp>
 #include <iostream>
 
 typedef int Bar;

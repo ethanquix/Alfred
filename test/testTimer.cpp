@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "AlfredBase/Timer/Timer.hpp"
+#include "Alfred/Timer/Timer.hpp"
 
 void funcUpdate(const std::string &str)
 {

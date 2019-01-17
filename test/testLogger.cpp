@@ -9,7 +9,7 @@
 */
 
 #include <gtest/gtest.h>
-#include "AlfredBase/Logger/Logger.hpp"
+#include "Alfred/Logger/Logger.hpp"
 
 TEST(Logger, Exception)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <AlfredBase/Network/Implem/UDP.hpp>
+#include <Alfred/Network/Implem/UDP.hpp>
 
 class testClientUDP : public Alfred::Network::UDP
 {

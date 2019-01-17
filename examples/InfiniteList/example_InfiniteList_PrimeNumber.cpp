@@ -1,5 +1,5 @@
-#include "AlfredBase/Infinite/InfiniteList.hpp"
-#include "AlfredBase/Infinite/premade/InfiniteListPremade.hpp"
+#include "Alfred/Infinite/InfiniteList.hpp"
+#include "Alfred/Infinite/premade/InfiniteListPremade.hpp"
 
 
 bool isPrime(int x)

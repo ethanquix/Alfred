@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-project(AlfredBase VERSION 0.1 LANGUAGES CXX)
-
-#Signature
-include(Header.cmake)
-PRINT_HEADER()
+project(Alfred VERSION 0.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -26,22 +22,22 @@ include_directories(src)
 
 #--------- LIBRARY ---------#
 
-add_library(AlfredBase INTERFACE)
+add_library(Alfred INTERFACE)
 
-target_include_directories(AlfredBase INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/> $<INSTALL_INTERFACE:src/>)
+target_include_directories(Alfred INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/> $<INSTALL_INTERFACE:src/>)
 
-target_link_libraries(AlfredBase INTERFACE Threads::Threads)
+target_link_libraries(Alfred INTERFACE Threads::Threads)
 
-target_compile_features(AlfredBase
+target_compile_features(Alfred
         INTERFACE cxx_auto_type cxx_variadic_templates)
 
-if(WIN32)
-    target_link_libraries(AlfredBase INTERFACE wsock32 ws2_32)
-endif()
+if (WIN32)
+    target_link_libraries(Alfred INTERFACE wsock32 ws2_32)
+endif ()
 
 #--------- TESTING ---------#
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
+if (EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
 
     add_subdirectory(test/googletest)
 
@@ -55,64 +51,60 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
             ${PROJECT_SOURCE_DIR}/test/ecs/*.hpp
             )
 
-    add_executable(AlfredBase_TEST ${TEST_SRC})
-    target_link_libraries(AlfredBase_TEST AlfredBase gtest)
-    add_test(all AlfredBase_TEST)
+    add_executable(Alfred_TEST ${TEST_SRC})
+    target_link_libraries(Alfred_TEST Alfred gtest)
+    add_test(all Alfred_TEST)
 
-else()
+else ()
     message("No googletest folder found in /test/googletest. Please clone it using submodules")
-endif()
+endif ()
 
 #--------- EXAMPLES ---------#
 
-add_executable(example_InfiniteList_PrimeNumber examples/InfiniteList/example_InfiniteList_PrimeNumber.cpp)
-target_link_libraries(example_InfiniteList_PrimeNumber AlfredBase)
+if (NOT ALFRED_NO_EXEMPLES)
 
-add_executable(example_Partial examples/Function/example_Partial.cpp)
-target_link_libraries(example_Partial AlfredBase)
+    add_executable(example_InfiniteList_PrimeNumber examples/InfiniteList/example_InfiniteList_PrimeNumber.cpp)
+    target_link_libraries(example_InfiniteList_PrimeNumber Alfred)
 
-add_executable(example_Defer examples/Utils/example_Defer.cpp)
-target_link_libraries(example_Defer AlfredBase)
+    add_executable(example_Partial examples/Function/example_Partial.cpp)
+    target_link_libraries(example_Partial Alfred)
 
-add_executable(example_Counter examples/Utils/example_Counter.cpp)
-target_link_libraries(example_Counter AlfredBase)
+    add_executable(example_Defer examples/Utils/example_Defer.cpp)
+    target_link_libraries(example_Defer Alfred)
 
-add_executable(example_DynamicLibrary examples/Utils/example_DynamicLibrary.cpp)
-target_link_libraries(example_DynamicLibrary AlfredBase)
+    add_executable(example_Counter examples/Utils/example_Counter.cpp)
+    target_link_libraries(example_Counter Alfred)
 
-add_executable(example_EventManager examples/EventManager/example_EventManager.cpp)
-target_link_libraries(example_EventManager AlfredBase)
+    add_executable(example_DynamicLibrary examples/Utils/example_DynamicLibrary.cpp)
+    target_link_libraries(example_DynamicLibrary Alfred)
 
-add_executable(example_Logger examples/Logger/example_Logger.cpp)
-target_link_libraries(example_Logger AlfredBase)
+    add_executable(example_EventManager examples/EventManager/example_EventManager.cpp)
+    target_link_libraries(example_EventManager Alfred)
 
-add_executable(example_Timer_SimpleTimer examples/Timer/example_Timer_SimpleTimer.cpp)
-target_link_libraries(example_Timer_SimpleTimer AlfredBase)
+    add_executable(example_Logger examples/Logger/example_Logger.cpp)
+    target_link_libraries(example_Logger Alfred)
 
-add_executable(example_Timer_Timer examples/Timer/example_Timer_Timer.cpp)
-target_link_libraries(example_Timer_Timer AlfredBase)
+    add_executable(example_Timer_SimpleTimer examples/Timer/example_Timer_SimpleTimer.cpp)
+    target_link_libraries(example_Timer_SimpleTimer Alfred)
 
+    add_executable(example_Timer_Timer examples/Timer/example_Timer_Timer.cpp)
+    target_link_libraries(example_Timer_Timer Alfred)
+
+endif ()
 #--------- INSTALL ---------#
 
 # 'make install' to the correct locations (provided by GNUInstallDirs).
-install(TARGETS AlfredBase EXPORT AlfredBaseConfig
+install(TARGETS Alfred EXPORT AlfredConfig
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})  # This is for Windows
 
-install(DIRECTORY src/AlfredBase DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY src/Alfred DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # This makes the project importable from the install directory
 # Put config file in per-project dir (name MUST match), can also
 # just go into 'cmake'.
-install(EXPORT AlfredBaseConfig DESTINATION share/AlfredBase/cmake)
+install(EXPORT AlfredConfig DESTINATION share/Alfred/cmake)
 
 # This makes the project importable from the build directory
-export(TARGETS AlfredBase FILE AlfredBaseConfig.cmake)
-
-## TMP TODO DELETE THIS
-#add_executable(udpClientTest test/server/udp/TestClientUDP.cpp test/server/udp/TestClientUDP.hpp)
-#target_link_libraries(udpClientTest AlfredBase)
-#
-#add_executable(udpServerTest test/server/udp/TestServerUDP.cpp test/server/udp/TestServerUDP.hpp)
-#target_link_libraries(udpServerTest AlfredBase)
+export(TARGETS Alfred FILE AlfredConfig.cmake)

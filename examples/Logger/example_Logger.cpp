@@ -1,4 +1,4 @@
-#include "AlfredBase/Logger/Logger.hpp"
+#include "Alfred/Logger/Logger.hpp"
 
 int main()
 {

@@ -10,8 +10,8 @@
 
 #include <gtest/gtest.h>
 
-#include "AlfredBase/Infinite/InfiniteList.hpp"
-#include "AlfredBase/Infinite/premade/InfiniteListPremade.hpp"
+#include "Alfred/Infinite/InfiniteList.hpp"
+#include "Alfred/Infinite/premade/InfiniteListPremade.hpp"
 
 void calc_primeNumber_to(int max);
 void calc_square_primeNumber_num(int max);

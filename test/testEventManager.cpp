@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "AlfredBase/EventManager/EventManager.hpp"
+#include "Alfred/EventManager/EventManager.hpp"
 
 static std::string verif = "";
 

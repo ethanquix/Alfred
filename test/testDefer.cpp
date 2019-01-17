@@ -1,7 +1,7 @@
-#include <AlfredBase/Utils/Defer.hpp>
-#include <AlfredBase/Utils/Counter.hpp>
+#include <Alfred/Utils/Defer.hpp>
+#include <Alfred/Utils/Counter.hpp>
 #include <iostream>
-#include <AlfredBase/Utils/MapSingleton.hpp>
+#include <Alfred/Utils/MapSingleton.hpp>
 #include <gtest/gtest.h>
 
 

@@ -1,5 +1,5 @@
-#include "AlfredBase/Function/Partial.hpp"
-#include "AlfredBase/Logger/Logger.hpp"
+#include "Alfred/Function/Partial.hpp"
+#include "Alfred/Logger/Logger.hpp"
 
 int add(int a, int b)
 {
