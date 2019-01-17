@@ -56,12 +56,14 @@ if (EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
     add_test(all Alfred_TEST)
 
 else ()
-    message("No googletest folder found in /test/googletest. Please clone it using submodules")
+    message("[ALFRED] No googletest folder found in /test/googletest. Please clone it using submodules")
 endif ()
 
 #--------- EXAMPLES ---------#
 
 if (NOT ALFRED_NO_EXEMPLES)
+
+    message("[ALFRED] set(ALFRED_NO_EXEMPLES TRUE) to disable exemples")
 
     add_executable(example_InfiniteList_PrimeNumber examples/InfiniteList/example_InfiniteList_PrimeNumber.cpp)
     target_link_libraries(example_InfiniteList_PrimeNumber Alfred)
