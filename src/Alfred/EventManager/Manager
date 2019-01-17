@@ -5,7 +5,7 @@
 #include <functional>
 #include <vector>
 #include <mutex>
-#include <Alfred/Utils/Singleton.hpp>
+#include <cstdint>
 #include <Alfred/Utils/MakeFinal.hpp>
 #include <ostream>
 #include "Alfred/EventManager/EventManagerExceptions.hpp"
@@ -18,6 +18,20 @@
 //#else
 
 //#endif
+
+namespace detail
+{
+  // FNV-1a 32bit hashing algorithm.
+  constexpr std::uint32_t fnv1a_32(char const* s, std::size_t count)
+  {
+    return ((count ? fnv1a_32(s, count - 1) : 2166136261u) ^ s[count]) * 16777619u;
+  }
+}    // namespace detail
+
+constexpr std::uint32_t operator"" _hash(char const* s, std::size_t count)
+{
+  return detail::fnv1a_32(s, count);
+}
 
 namespace Alfred
 {
@@ -90,8 +104,8 @@ namespace Alfred
     class Manager : virtual public Alfred::Utils::MakeFinal<Manager>
     {
         std::recursive_mutex _mutex;
-        std::unordered_map<std::string, ___event_helper *> _events;
-        std::unordered_map<std::string, int> _counter;
+        std::unordered_map<int, ___event_helper *> _events;
+        std::unordered_map<int, int> _counter;
 
       public:
         Manager() :
@@ -109,7 +123,7 @@ namespace Alfred
 
       public:
         template <typename Ret, typename ...Params>
-        void addEvent(const std::string &name)
+        void addEvent(int name)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           if (_events.count(name) > 0) {
@@ -121,7 +135,7 @@ namespace Alfred
           _events[name] = new ___Event<Ret, Params...>();
         }
 
-        void deleteEvent(const std::string &name)
+        void deleteEvent(int name)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           _events.erase(name);
@@ -134,7 +148,7 @@ namespace Alfred
         }
 
         template <typename Ret, typename ...Args>
-        std::vector<Ret> fireAndReturn(const std::string &name, const Args... args)
+        std::vector<Ret> fireAndReturn(int name, const Args... args)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           if (_events.count(name) <= 0) {
@@ -148,7 +162,7 @@ namespace Alfred
         }
 
         template <typename Ret, typename ...Args>
-        void fire(const std::string &name, const Args... args)
+        void fire(int name, const Args... args)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           if (_events.count(name) <= 0) {
@@ -162,7 +176,7 @@ namespace Alfred
         }
 
         template <typename Ret, typename ...Params, typename Fctor>
-        const EventListener listen(const std::string &name, const Fctor &func)
+        const EventListener listen(int name, const Fctor &func)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           if (_events.count(name) <= 0) {
@@ -174,7 +188,7 @@ namespace Alfred
         }
 
         template <typename Ret, typename ...Args>
-        void unlisten(const std::string &name, const EventListener listenerID)
+        void unlisten(int name, const EventListener listenerID)
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           static_cast<___Event<Ret, Args...> *>(_events[name])->deleteWatcher(listenerID);
@@ -186,7 +200,7 @@ namespace Alfred
           std::lock_guard<std::recursive_mutex> lock(_mutex);
 
           for (const auto &e : _events) {
-            out += "- " + e.first + "\t- fired " + std::to_string(_counter[e.first]) + " times - [";
+            out += "- " + std::to_string(e.first) + "\t- fired " + std::to_string(_counter[e.first]) + " times - [";
             out += e.second->str() + "]\n";
           }
           return out;

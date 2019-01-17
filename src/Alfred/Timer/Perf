@@ -1,0 +1,65 @@
+#pragma once
+
+#include <chrono>
+
+namespace Alfred
+{
+  namespace Time
+  {
+    class PerfTimer
+    {
+      private:
+        float _out;
+        std::chrono::time_point<std::chrono::high_resolution_clock> _start;
+
+      public:
+        PerfTimer()
+        {
+          _out = 0.0f;
+          _start = std::chrono::high_resolution_clock::now();
+        }
+
+        virtual ~PerfTimer()
+        {
+        }
+
+        void start()
+        {
+          _start = std::chrono::high_resolution_clock::now();
+        }
+
+        void capture()
+        {
+          auto end = std::chrono::high_resolution_clock::now();
+          _out += std::chrono::duration_cast<std::chrono::nanoseconds>(end - _start).count();
+          _start = end;
+        }
+
+        void reset()
+        {
+          _out = 0.0f;
+        }
+
+        float get()
+        {
+          return _out;
+        }
+
+        float getMilli()
+        {
+          return _out / 1000000;
+        }
+
+        float getMicro()
+        {
+          return _out / 1000;
+        }
+
+        float getSec()
+        {
+          return _out / 1000000000;
+        }
+    };
+  }
+}
+

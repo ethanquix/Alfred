@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Alfred/Timer/SimpleTimer.hpp"
+#include "Alfred/Timer/Perf"
 
 int main()
 {
