@@ -18,6 +18,21 @@ class EventNameExist : public std::exception
 
 };
 
+class EventNameExistDebug : public std::exception
+{
+    std::string message;
+public:
+    EventNameExistDebug(std::string msg)
+            : message(std::string("Error Event with this name already exist: ") + msg)
+    {}
+
+    const char* what() const throw() override
+    {
+        return message.c_str();
+    }
+
+};
+
 class EventDontExist : public std::exception
 {
     std::string message;
