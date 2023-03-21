@@ -19,7 +19,7 @@
 #include "FindOS.hpp"
 #include <Alfred/Utils/NonCopyable.hpp>
 #include <unordered_map>
-#include "Logger/Logger.hpp"
+#include "Alfred/Logger/Logger.hpp"
 #include <type_traits>
 #include <stdio.h>
 #include <string>
@@ -74,7 +74,7 @@ namespace Alfred
             }
 
             LibLoader() :
-                _osLibEnding(getOSDynLibExtension()),
+                _osLibEnding(getOSDynLibExtension())
             {}
         };
     }

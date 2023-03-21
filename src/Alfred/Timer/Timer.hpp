@@ -136,7 +136,7 @@ namespace Alfred
         { return (!_update()); };
 
         /**
-         * Add a checkpoint to the timer. Raise exception if a checkpoint with this name already exist at time time
+         * Add a checkpoint to the timer. Raise exception if a checkpoint with this name already exist at time
          * @param time Triggered at Time seconds
          * @param name Name of the breakpoint
          * @param func Callback in form std::function<void()>
@@ -239,7 +239,7 @@ namespace Alfred
           } else {
             if (_onEnd != nullptr)
               _onEnd();
-            _update = [this]() -> bool { return true; };
+            _update = []() -> bool { return true; };
           }
           return remaining_time <= 0;
         }

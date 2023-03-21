@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "Alfred/EventManager/Manager"
+#include "Alfred/EventManager/Manager.hpp"
 
 static std::string verif = "";
 
@@ -24,19 +24,19 @@ TEST(EventManager, Return)
     Alfred::EventManager::Manager m;
     int ret = 0;
 
-    m.addEvent<void, std::string>("test event return");
+    m.addEvent<void, std::string>("test event return"_hash);
 
-    m.listen<int, int>("test event return", [&] (int x) -> int {
+    m.listen<int, int>("test event return"_hash, [&] (int x) -> int {
         ret += x;
         return 1;
     });
 
-    m.listen<int, int>("test event return", [&] (int x) -> int {
+    m.listen<int, int>("test event return"_hash, [&] (int x) -> int {
         ret += x;
         return 2;
     });
 
-    auto retOfCallback = m.fire<int, int>("test event return", 1);
+    auto retOfCallback = m.fireAndReturn<int, int>("test event return"_hash, 1);
 
     ASSERT_EQ(ret, 2);
 
@@ -50,17 +50,17 @@ TEST(EventManager, Call)
 {
     Alfred::EventManager::Manager m;
 
-    m.addEvent<int, int>("test event call");
+    m.addEvent<int, int>("test event call"_hash);
 
     std::function<void(std::string)> function = display;
 
-    m.listen<void, std::string>("test event call", display);
-    m.listen<void, std::string>("test event call", function);
-    m.listen<void, std::string>("test event call", [] (std::string x) -> void { display(x); });
+    m.listen<void, std::string>("test event call"_hash, display);
+    m.listen<void, std::string>("test event call"_hash, function);
+    m.listen<void, std::string>("test event call"_hash, [] (std::string x) -> void { display(x); });
 
     std::string a = "a";
 
-    m.fire<void, std::string>("test event call", a);
+    m.fire<void, std::string>("test event call"_hash, a);
 
     ASSERT_EQ(verif, "aaa");
 }
@@ -72,18 +72,18 @@ TEST(EventManager, unlisten)
 
     Alfred::EventManager::Manager m;
 
-    m.addEvent<void, int *>("test unlisten");
+    m.addEvent<void, int *>("test unlisten"_hash);
 
-    m.listen<void, int *>("test unlisten", [] (int *ii) -> void {
+    m.listen<void, int *>("test unlisten"_hash, [] (int *ii) -> void {
         *ii += 1;
     });
 
-    listener = m.listen<void, int *>("test unlisten", [] (int *ii) -> void {
+    listener = m.listen<void, int *>("test unlisten"_hash, [] (int *ii) -> void {
         *ii += 1;
     });
 
-    m.unlisten<void, int *>("test unlisten", listener);
+    m.unlisten<void, int *>("test unlisten"_hash, listener);
 
-    m.fire<void, int *>("test unlisten", &i);
+    m.fire<void, int *>("test unlisten"_hash, &i);
     ASSERT_EQ(i, 1);
 }

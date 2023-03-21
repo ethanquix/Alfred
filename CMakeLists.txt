@@ -52,7 +52,7 @@ if (EXISTS "${PROJECT_SOURCE_DIR}/test/googletest/CMakeLists.txt")
             )
 
     add_executable(Alfred_TEST ${TEST_SRC})
-    target_link_libraries(Alfred_TEST Alfred gtest)
+    target_link_libraries(Alfred_TEST Alfred gtest gtest_main)
     add_test(all Alfred_TEST)
 
 else ()

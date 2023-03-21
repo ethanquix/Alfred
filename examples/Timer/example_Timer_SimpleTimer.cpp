@@ -3,16 +3,16 @@
 
 int main()
 {
-    Alfred::Time::SimpleTimer t;
+    Alfred::Time::PerfTimer t;
 
-    std::cout << t.elapsed() << std::endl;
+    std::cout << t.capture()->get() << std::endl;
 
     int i = 0;
-    t.restart();
+    t.reset();
 
     while (i < 1000)
         i++;
 
-    std::cout << t.elapsed() << std::endl;
+    std::cout << t.capture()->getMilli() << std::endl;
 
 }

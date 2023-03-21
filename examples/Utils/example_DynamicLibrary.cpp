@@ -6,11 +6,13 @@ int main()
 
     std::cout << "Lib end with " << libExtension << std::endl;
 
-    typedef typedef char const *(*libFunction)();
+    typedef char const *(*libFunction)();
 
     Alfred::Utils::LibLoader<libFunction> loader;
 
     libFunction lf = loader.getSymbol("liblocation/mylib" + libExtension);
+
+    lf();
 
     return 0;
 }

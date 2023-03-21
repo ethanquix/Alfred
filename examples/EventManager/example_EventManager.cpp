@@ -1,4 +1,4 @@
-#include <Alfred/EventManager/Manager>
+#include <Alfred/EventManager/Manager.hpp>
 #include <Alfred/Timer/Perf>
 #include <iostream>
 #include <numeric>

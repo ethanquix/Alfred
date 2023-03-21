@@ -28,11 +28,12 @@ namespace Alfred
           _start = std::chrono::high_resolution_clock::now();
         }
 
-        void capture()
+        PerfTimer *capture()
         {
           auto end = std::chrono::high_resolution_clock::now();
           _out += std::chrono::duration_cast<std::chrono::nanoseconds>(end - _start).count();
           _start = end;
+          return this;
         }
 
         void reset()

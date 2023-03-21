@@ -114,7 +114,7 @@ namespace Alfred
         {
         }
 
-        ~Manager()
+        virtual ~Manager()
         {
           std::lock_guard<std::recursive_mutex> lock(_mutex);
           for (const auto &e : _events)
